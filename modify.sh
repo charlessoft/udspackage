@@ -10,7 +10,7 @@ function deal()
     fi
 
     sed -e '2 d' ${RIAK_VMARGS_BAK} | \
-        sed -e '2 a/-name riak@${IPDEST}' > ${RIAK_VMARGS}
+        sed -e '2 a/-name riak@TEMP_IPHOST' > ${RIAK_VMARGS}
 }
 function askoverwrite()
 {

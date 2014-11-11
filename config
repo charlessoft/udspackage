@@ -4,6 +4,18 @@ META_SERVER=10.211.55.18
 NAME_SERVER=10.211.55.19
 
 
+checkfile=( curl \
+    git \
+    sss \
+    sssd \
+    )
+
+RIAK_RINK=( \
+    10.211.55.18 \
+    10.211.55.19 \
+    10.211.55.20 \
+    )
+
 RIAK_VMARGS=/etc/riak/vm.args
 RIAK_VMARGS_BAK=/etc/riak/vm.args_bak
 RIAK_APPCONFIG=/etc/riak/app.config
@@ -11,8 +23,3 @@ RIAK_APPCONFIG_BAK=/etc/riak/app.config_bak
 RIAK_HTTP_PORT=8098
 
 
-checkfile=( curl \
-        git \
-        sss \
-        sssd \
-        )
