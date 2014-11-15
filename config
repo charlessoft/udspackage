@@ -1,4 +1,5 @@
 #!/bin/bash
+source ./error
 TMP_PATH=/tmp
 ID_RSA_PUB=$HOME/.ssh/id_rsa.pub
 LOG_COLLECT=${TMP_PATH}/udslog.log

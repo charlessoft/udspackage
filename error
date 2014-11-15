@@ -1,0 +1,4 @@
+#!/bin/bash 
+#文件不存在
+FILE_NO_EXIST=12
+

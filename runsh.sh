@@ -6,6 +6,26 @@ source ./config
 source ./checkenv.sh
 source ./report.sh
 source ./install.sh
+
+function dealres()
+{
+    echo "res=$1";
+    case $1 in 
+        ${FILE_NO_EXIST}) 
+            echo "文件不存在";;
+        *)
+            echo "未知错误";;
+        0)
+            echo "成功";;
+        7)
+            echo "Riak curl 网络检查失败!退出安装,请检查原因!";;
+    esac
+    if [ ${res} -ne 0 ]; then \
+        exit ${res}; \
+    fi
+
+}
+
 #1:generate slave install shell 
 function generatePatchShell()
 {
@@ -90,9 +110,10 @@ function run()
     #---parseok----
 
     doinstall
-    if [ $? -ne 0 ]; then \
-        echo "安装失败"; \
-    fi
+    #dealres $?
+    #if [ $? -ne 0 ]; then \
+        #echo "安装失败"; \
+    #fi
         
     dostart
     
