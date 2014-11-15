@@ -49,8 +49,11 @@ function install()
     echo "$1 安装Riak";
     if [ -f ${RIAK_FILE} ]; then \
         rpm -ivh ${RIAK_FILE};
-        echo "sh modify_$1.sh";
-        sh modify_$1.sh;
+        if [ $? -eq 0 ]; then \
+            echo "sh modify_$1.sh"; \
+            sh modify_$1.sh; \
+        else
+            exit 1;
         #sudo riak start;
     fi
 

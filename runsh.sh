@@ -90,6 +90,10 @@ function run()
     #---parseok----
 
     doinstall
+    if [ $? -ne 0 ]; then \
+        echo "安装失败"; \
+    fi
+        
     dostart
     
     dojoinring
