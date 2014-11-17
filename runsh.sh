@@ -5,7 +5,7 @@
 source ./config
 source ./checkenv.sh
 source ./report.sh
-source ./install.sh
+source ./riak_install.sh
 source ./iptables.sh
 
 function dealres()
@@ -25,6 +25,11 @@ function dealres()
         exit ${res}; \
     fi
 
+}
+SCRIPT=`basename $0`
+function usage()
+{
+    echo "Usage ${SCRIPT} aaa"
 }
 
 #1:generate slave install shell 
@@ -127,10 +132,91 @@ function run()
     exit 1;
 }
 
-run
+#run
+
+function riak_admin()
+{
+    case "$1" in
+        start)
+            echo "riak start..."
+            ;;
+        stop)
+            echo "riak stop..."
+            ;;
+        join)
+            echo "join..."
+            ;;
+        install)
+            echo "riak install.."
+            ;;
+        unstall)
+            echo "riak unstall..."
+            ;;
+        all)
+            echo "riak all..."
+            echo "aaadddd"
+            ;;
+        *)
+            echo "nonono"
+            ;;
+    esac 
+    #echo "riak_admin"
+    #echo $*
+}
+
+function env_admin()
+{
+    case "$1" in 
+        nopwd)
+            echo "免密码登陆配置"
+            confiesshlogin
+            ;;
+        checkenv)
+            echo "环境检测并且收集"
+            docheck
+            docollectres
+            generateEnvrpt
+            ;;
+        gencfg)
+            echo "生成脚本"
+            generateShell
+            ;;
+        distribute)
+            echo "分发到各台机器"
+            copyudspackage
+            ;;
+        *)
+            echo "envevnevnenn"
+            ;;
+    esac
+}
+
+case "$1" in 
+    env)
+        shift
+        env_admin "$@"
+        ;;
+    riak)
+        shift
+        riak_admin "$@"
+        ;;
+    *)
+        echo "===="
+        ;;
+esac
+
+function riak_help()
+{
+    echo "\
+        Usage: ${SCRIPT} riak <command>
+
+    The following commands stage changes to riak membership.
+    "
+}
 
 
-#2:install riak
+
+#2:install riak "
 
 
 
