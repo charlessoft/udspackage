@@ -6,6 +6,7 @@ source ./config
 source ./checkenv.sh
 source ./report.sh
 source ./install.sh
+source ./iptables.sh
 
 function dealres()
 {
@@ -108,7 +109,8 @@ function run()
     generateEnvrpt
 
     #---parseok----
-
+    doaccessPort   
+    echo "sss";
     doinstall
     #dealres $?
     #if [ $? -ne 0 ]; then \
