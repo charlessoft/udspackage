@@ -7,6 +7,8 @@ source ./checkenv.sh
 source ./report.sh
 source ./riak_install.sh
 source ./iptables.sh
+source ./mongodb_patch.sh
+source ./mongodb_install.sh
 
 function dealres()
 {
@@ -104,7 +106,7 @@ function run()
     #3.环境检测并且收集
     #echo ${RIAK_FIRST_NODE}
     #exit 1;
-    generateShell
+    #generateShell
     confiesshlogin
 
     copyudspackage
@@ -134,6 +136,14 @@ function run()
 
 #run
 
+function riak_help()
+{
+    echo "\
+        Usage: ${SCRIPT} riak <command>
+
+    The following commands stage changes to riak membership.
+    "
+}
 function riak_admin()
 {
     case "$1" in
@@ -148,6 +158,7 @@ function riak_admin()
             ;;
         install)
             echo "riak install.."
+            doinstall
             ;;
         unstall)
             echo "riak unstall..."
@@ -157,7 +168,7 @@ function riak_admin()
             echo "aaadddd"
             ;;
         *)
-            echo "nonono"
+            riak_help
             ;;
     esac 
     #echo "riak_admin"
@@ -185,11 +196,61 @@ function env_admin()
             echo "分发到各台机器"
             copyudspackage
             ;;
+        iptables)
+            echo "允许ip列表"
+            doaccessPort
+            
+            ;;
         *)
-            echo "envevnevnenn"
+            echo "nopwd checkenv gencfg distribute"
             ;;
     esac
 }
+
+function mongodb_admin()
+{
+    case "$1" in 
+        start)
+            echo "mongodb start"
+            domongodb_start
+            ;;
+        install)
+            echo "mongodb install"
+
+            deal_mongody_patch  ${MONGODB_MASTER}
+            deal_mongody_patch  ${MONGODB_ARBITER}
+            for i in ${MONGODB_SLAVE_ARR[@]}; do
+                deal_mongody_patch  $i
+            done 
+            copyudspackage
+            domongodb_install
+            ;;
+        gencfg)
+            echo "mongodb generate cfg"
+            deal_mongody_patch  ${MONGODB_MASTER}
+            deal_mongody_patch  ${MONGODB_ARBITER}
+            for i in ${MONGODB_SLAVE_ARR[@]}; do
+                deal_mongody_patch  $i
+            done 
+            ;;
+        isonline)
+            echo "mongodb isonlne";
+            domongodb_isonline
+            ;;
+        cluster)
+            echo "mongodb cluster";
+            domongodb_cluster
+        destroy)
+            echo "mongodb destroy";
+            domongodb_destroy
+            ;;
+        *)
+            echo "install gencfg"
+            ;;
+    esac
+
+}
+
 
 case "$1" in 
     env)
@@ -200,19 +261,16 @@ case "$1" in
         shift
         riak_admin "$@"
         ;;
+    mongodb)
+        shift 
+        mongodb_admin "$@"
+        ;;
     *)
-        echo "===="
+        #run
+        echo "请选择 env riak"
         ;;
 esac
 
-function riak_help()
-{
-    echo "\
-        Usage: ${SCRIPT} riak <command>
-
-    The following commands stage changes to riak membership.
-    "
-}
 
 
 

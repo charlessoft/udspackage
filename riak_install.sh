@@ -49,11 +49,13 @@ function install()
             echo "${RIAK_FILE}文件不存在退"; exit 1;
         fi
     else 
-        echo "riak 已经安装";
+        #echo "riak 已经安装";
+        rpm -ivh ${RIAK_FILE}
     fi
-    sh modify_$1.sh
+    sh modify.sh $1
 
 }
+
 
 function joinring()
 {
@@ -91,7 +93,7 @@ function dojoinring()
         echo "$1 Riak 检测启动成功,准备加入环中"; \
             ssh -p 22 "$i" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
-            sh install.sh joinring $i"
+            sh riak_install.sh joinring $i"
 
         res=$?
         if [ ${res} -ne 0 ]; then \
@@ -109,7 +111,7 @@ function dojoinring()
 
     ssh -p "22" "${RIAK_FIRST_NODE}" "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        sh install.sh commit ${RIAK_FIRST_NODE}; \
+        sh riak_install.sh commit ${RIAK_FIRST_NODE}; \
         "
 
     #sudo riak-admin cluster plan
@@ -133,7 +135,7 @@ function dostart()
     for i in ${RIAK_RINK[@]}; do 
         ssh -p 22 "$i" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
-            sh install.sh startRiak $i \
+            sh riak_install.sh startRiak $i \
             "
         if [ $? -ne 0 ]; then \
             echo "启动失败 $1"
@@ -151,7 +153,7 @@ function doinstall()
 
         ssh -p 22 "$i" "cd ${UDSPACKAGE_PATH}; \
            source /etc/profile; \
-           sh install.sh install $i; \
+           sh riak_install.sh install $i; \
            "
         res=$?
         if [ ${res} -ne 0 ]; then 

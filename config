@@ -1,6 +1,7 @@
 #!/bin/bash
 source ./error
-TMP_PATH=/tmp
+SSH_PORT=22
+TMP_PATH=/home/charles/
 ID_RSA_PUB=$HOME/.ssh/id_rsa.pub
 LOG_COLLECT=${TMP_PATH}/udslog.log
 LOG=${TMP_PATH}/udsinstall.log
@@ -24,10 +25,14 @@ RIAK_RINK=( \
     10.211.55.22 \
     )
 RIAK_FIRST_NODE=${RIAK_RINK[0]}
+#1.4.0
 RIAK_VMARGS=/etc/riak/vm.args
 RIAK_VMARGS_BAK=/etc/riak/vm.args_bak
 RIAK_APPCONFIG=/etc/riak/app.config
 RIAK_APPCONFIG_BAK=/etc/riak/app.config_bak
+#2.0.2
+RIAK_CONF_BAK=/etc/riak/riak.conf_bak
+RIAK_CONF=/etc/riak/riak.conf
 RIAK_HTTP_PORT=8098
 #node链接端口
 RIAK_EPMD_PORT=4369
@@ -35,14 +40,35 @@ RIAK_HANDOFF_PORT=8099
 RIAK_DEFPORT=44571
 
 
-MONGODB_DBPATH=/var/lib/mongodb
-MONGODB_LOGPATH=/var/log/mongodb/mongodb.log
-PORT=27017
-MONGODB_MASTER=10.211.55.18
-MONGODB_SLAVE=10.211.55.19
+MONGODB_FILE=mongodb-linux-x86_64-2.6.3
+
+#MONGODB MASTER
+MONGODB_MASTER=10.211.55.18:27017
+MONGODB_MASTER_DBPATH=/home/mongodb/data/master  
+MONGODB_MASTER_LOGPATH=/home/mongodb/log/master.log 
+MONGODB_MASTER_PIDFILEPATH=/home/mongodb/master.pid
+
+#MONGODB SLAVE
+MONGODB_SLAVE=10.211.55.21:27017
+MONGODB_SLAVE_DBPATH=/home/mongodb/data/slave
+MONGODB_SLAVE_LOGPATH=/home/mongodb/log/slave.log
+MONGODB_SLAVE_PIDFILEPATH=/home/mongodb/slave.pid
+
+MONGODB_SLAVE_ARR=( \
+    ${MONGODB_SLAVE} \
+    ${MONGODB_SLAVE} \
+    )
+
+#MONGODB ARIBTER
+MONGODB_ARBITER=10.211.55.22:27017
+MONGODB_ARBITER_DBPATH=/home/mongodb/data/slave
+MONGODB_ARBITER_LOGPATH=/home/mongodb/log/slave.log
+MONGODB_ARBITER_PIDFILEPATH=/home/mongodb/slave.pid
+
+#MONGODB SLAVE
 
 
-RIAK_FILE=riak-1.4.0-1.el5.x86_64.rpm
+RIAK_FILE=riak-2.0.2-1.el5.x86_64.rpm
 
 IPTABLES_FILE=/etc/sysconfig/iptables
 IPTABLES_ACCESS_PORT=( \
@@ -50,4 +76,7 @@ IPTABLES_ACCESS_PORT=( \
     ${RIAK_EPMD_PORT} \
     ${RIAK_HANDOFF_PORT} \
     ${RIAK_DEFPORT} \
+    "`echo ${MONGODB_MASTER} | cut -d: -f 2`" \
+    "`echo ${MONGODB_SLAVE} | cut -d: -f 2`" \
+    "`echo ${MONGODB_ARBITER} | cut -d: -f 2`" \
     )

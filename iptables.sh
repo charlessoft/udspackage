@@ -87,6 +87,4 @@ then
     #$3 为端口
     #accessPort $2 $3
     accessPortArr $2
-else 
-    echo "saaa"
 fi

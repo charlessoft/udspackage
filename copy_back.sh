@@ -5,7 +5,7 @@ if [ ! -n "$1" ]; then
     echo "nil"
 else
     echo "ok"
-    scp -r $1:/tmp/${DESTFOLDER} ../
+    scp -r $1:/home/charles/${DESTFOLDER} ../
 fi
 #scp -r ../ci/ $1:/home/charles/
 #scp -r ../ci/ charles@10.211.55.3:/home/charles/

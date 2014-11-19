@@ -42,6 +42,32 @@ function deal_appconfig()
         sed -e 's/riak_kv_bitcask_backend/riak_kv_eleveldb_backend/g' > ${RIAK_APPCONFIG}
 }
 
+function deal_riakconf()
+{
+    echo "IP:$1"
+    if [ -f "${RIAK_CONF_BAK}" ]; then \
+        cp ${RIAK_CONF_BAK} ${RIAK_CONF}; \
+    else
+        cp ${RIAK_CONF} ${RIAK_CONF_BAK}; \
+    fi
+
+    echo "sed -e 's/nodename\ =\ riak@1.1.1.1/namenode = riak@$1' "riak.conf"  > ${RIAK_CONF}"
+    sed -e 's/nodename\ =\ riak@1.1.1.1/nodename = riak@'$1'/g' "riak.conf"  > ${RIAK_CONF}
+
+}
+
+if [ "$1" = "" ]; then \
+    echo "需要指定修改的ip地址"; exit 1;
+fi
 deal_sudoers
-deal_vmargs
-deal_appconfig
+deal_riakconf $1
+#if [ "$1" = riakconf ]
+#then 
+    #echo "riakconf ====="
+    #deal_riakconf $2
+#fi
+
+#deal_riakconf
+#deal_sudoers
+#deal_vmargs
+#deal_appconfig
