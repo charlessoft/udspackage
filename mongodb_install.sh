@@ -69,6 +69,7 @@ function mongodb_cluster()
 
 function domongodb_cluster()
 {
+    echo "domongodb_cluster";
 }
 
 

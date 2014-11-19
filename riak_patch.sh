@@ -14,33 +14,33 @@ function deal_sudoers()
 }
 
 
-function deal_vmargs()
-{
-    if [ -f "${RIAK_VMARGS_BAK}" ]; then \
-        echo "存在${RIAK_VMARGS_BAK}"; \
-        cp ${RIAK_VMARGS_BAK} ${RIAK_VMARGS}; \
-    else \
-        cp ${RIAK_VMARGS} ${RIAK_VMARGS_BAK} 
-    fi
+#function deal_vmargs()
+#{
+    #if [ -f "${RIAK_VMARGS_BAK}" ]; then \
+        #echo "存在${RIAK_VMARGS_BAK}"; \
+        #cp ${RIAK_VMARGS_BAK} ${RIAK_VMARGS}; \
+    #else \
+        #cp ${RIAK_VMARGS} ${RIAK_VMARGS_BAK} 
+    #fi
 
-    echo "sed -e '2 d' ${RIAK_VMARGS_BAK} | \
-        sed -e '1 a-name riak@TEMP_IPHOST' > ${RIAK_VMARGS}"
+    #echo "sed -e '2 d' ${RIAK_VMARGS_BAK} | \
+        #sed -e '1 a-name riak@TEMP_IPHOST' > ${RIAK_VMARGS}"
 
-    sed -e '2 d' ${RIAK_VMARGS_BAK} | \
-        sed -e '1 a-name riak@TEMP_IPHOST' > ${RIAK_VMARGS}
-}
+    #sed -e '2 d' ${RIAK_VMARGS_BAK} | \
+        #sed -e '1 a-name riak@TEMP_IPHOST' > ${RIAK_VMARGS}
+#}
 
-function deal_appconfig()
-{
-    if [ -f "${RIAK_APPCONFIG_BAK}" ]; then \
-        cp ${RIAK_APPCONFIG_BAK} ${RIAK_APPCONFIG}; \
-    else \
-        cp ${RIAK_APPCONFIG} ${RIAK_APPCONFIG_BAK}; \
-    fi
-    #{pb, [ {"127.0.0.1", 8087 } ]}
-    sed -e 's/127.0.0.1/0.0.0.0/g' ${RIAK_APPCONFIG_BAK} | \
-        sed -e 's/riak_kv_bitcask_backend/riak_kv_eleveldb_backend/g' > ${RIAK_APPCONFIG}
-}
+#function deal_appconfig()
+#{
+    #if [ -f "${RIAK_APPCONFIG_BAK}" ]; then \
+        #cp ${RIAK_APPCONFIG_BAK} ${RIAK_APPCONFIG}; \
+    #else \
+        #cp ${RIAK_APPCONFIG} ${RIAK_APPCONFIG_BAK}; \
+    #fi
+    ##{pb, [ {"127.0.0.1", 8087 } ]}
+    #sed -e 's/127.0.0.1/0.0.0.0/g' ${RIAK_APPCONFIG_BAK} | \
+        #sed -e 's/riak_kv_bitcask_backend/riak_kv_eleveldb_backend/g' > ${RIAK_APPCONFIG}
+#}
 
 function deal_riakconf()
 {

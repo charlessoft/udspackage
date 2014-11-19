@@ -1,7 +1,7 @@
 #!/bin/bash 
 source ./config
 
-function startRiak()
+function riak_start()
 {
     res=0
 
@@ -37,7 +37,7 @@ function startRiak()
 
 }
 
-function install()
+function riak_install()
 {
     echo "$1 安装Riak";
     `which riak` > /dev/null  
@@ -52,18 +52,18 @@ function install()
         #echo "riak 已经安装";
         rpm -ivh ${RIAK_FILE}
     fi
-    sh modify.sh $1
+    sh riak_patch.sh $1
 
 }
 
 
-function joinring()
+function riak_joinring()
 {
     echo "joinring == $1"
     if [ "$1" != "${RIAK_FIRST_NODE}" ]; then \
         echo "$1 joing ${RIAK_FIRST_NODE}"
-        echo "riak-admin status | grep member | grep -rin "$1""
-        riak-admin status | grep member | grep -rin "$1"
+        echo "riak-admin status | grep member | grep -rin "${RIAK_FIRST_NODE}""
+        riak-admin status | grep member | grep -rin "${RIAK_FIRST_NODE}"
         if [ $? -ne 0 ]; then \
             echo "riak-admin cluster join riak@${RIAK_FIRST_NODE};"
             riak-admin cluster join riak@${RIAK_FIRST_NODE};
@@ -73,11 +73,13 @@ function joinring()
                 echo "$1 加入 ${RIAK_FIRST_NODE} 失败!";
                 exit 1;
             fi
+        else 
+            echo "$1 已经加入到环中";
         fi
     fi
 }
 
-function dojoinring()
+function doriak_joinring()
 {
     for i in ${RIAK_RINK[@]}; do 
         echo $i
@@ -93,35 +95,40 @@ function dojoinring()
         echo "$1 Riak 检测启动成功,准备加入环中"; \
             ssh -p 22 "$i" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
-            sh riak_install.sh joinring $i"
+            sh riak_install.sh riak_joinring $i"
 
         res=$?
         if [ ${res} -ne 0 ]; then \
+            echo "cluster 加入失败 ${res}";
             exit ${res};
         fi
         
-        #if [ ${res} -eq 0 ]; then \
-        #else
-            #echo "$1 Riak 检测启动失败!,退出安装,请检查原因!";
-            #return 1;
-        #fi
-
-
     done
 
     ssh -p "22" "${RIAK_FIRST_NODE}" "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
         sh riak_install.sh commit ${RIAK_FIRST_NODE}; \
         "
-
-    #sudo riak-admin cluster plan
-    #sudo riak-admin cluster commit
-
-
-    
 }
 
-function commit()
+function riak_unstall()
+{
+    echo "$1 卸载riak"
+    riak stop
+    rpm -e `rpm -q riak | awk 'NR==1'`
+}
+
+function doriak_unstall()
+{
+    for i in ${RIAK_RINK[@]}; do
+        ssh -p ${SSH_PORT} "$i" \
+            "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh riak_install.sh riak_unstall $i"
+    done
+}
+
+function riak_commit()
 {
 
     riak-admin cluster plan 
@@ -129,13 +136,13 @@ function commit()
 }
 
 
-function dostart()
+function doriak_start()
 {
     echo "启动各台Riak"
     for i in ${RIAK_RINK[@]}; do 
         ssh -p 22 "$i" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
-            sh riak_install.sh startRiak $i \
+            sh riak_install.sh riak_start $i \
             "
         if [ $? -ne 0 ]; then \
             echo "启动失败 $1"
@@ -146,14 +153,14 @@ function dostart()
     sleep 10s
 }
 
-function doinstall()
+function doriak_install()
 {
     for i in ${RIAK_RINK[@]}; do
         echo "远程连接到$i安装Riak"
 
         ssh -p 22 "$i" "cd ${UDSPACKAGE_PATH}; \
            source /etc/profile; \
-           sh riak_install.sh install $i; \
+           sh riak_install.sh riak_install $i; \
            "
         res=$?
         if [ ${res} -ne 0 ]; then 
@@ -163,26 +170,37 @@ function doinstall()
 }
 
 
-if [ "$1" = install ] 
+if [ "$1" = riak_install ] 
 then 
+    HOSTIP=$2
     echo "开始安装Riak"
-    install $2
+    riak_install ${HOSTIP}
 fi 
 
-if [ "$1" = joinring ]
+if [ "$1" = riak_joinring ]
 then
-    echo "joinring"
-    joinring $2
+    HOSTIP=$2
+    echo "riak_joinring"
+    riak_joinring ${HOSTIP}
 fi
 
-if [ "$1" = startRiak ]
+if [ "$1" = riak_start ]
 then 
-    echo "startRiak===="
-    startRiak $2
+    HOSTIP=$2
+    echo "riak start startRiak===="
+    riak_start ${HOSTIP}
 fi
 
-if [ "$1" = commit ]
+if [ "$1" = riak_commit ]
 then 
-    echo "commit ====="
-    commit $2
+    HOSTIP=$2
+    echo "riak_commit ====="
+    riak_commit ${HOSTIP}
+fi
+
+if [ "$1" = riak_unstall ]
+then 
+    HOSTIP=$2
+    echo "riak_unstall ====="
+    riak_unstall ${HOSTIP}
 fi

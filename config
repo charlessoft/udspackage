@@ -67,10 +67,22 @@ MONGODB_ARBITER_PIDFILEPATH=/home/mongodb/slave.pid
 
 #MONGODB SLAVE
 
+ZOOKEEPER_FILE=zookeeper-3.4.6
 
 RIAK_FILE=riak-2.0.2-1.el5.x86_64.rpm
 
 IPTABLES_FILE=/etc/sysconfig/iptables
+
+
+#ZOOKEEPER
+ZOOKEEPER_DATADIR=/home/zookeeper/data
+ZOOKEEPER_LOGDIR=/home/zookeeper/data/log
+ZOOKEEPER_ARR=( \
+    10.211.55.18 \
+    10.211.55.21 \
+    10.211.55.22 \
+    )
+
 IPTABLES_ACCESS_PORT=( \
     ${RIAK_HTTP_PORT} \
     ${RIAK_EPMD_PORT} \

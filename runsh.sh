@@ -9,6 +9,7 @@ source ./riak_install.sh
 source ./iptables.sh
 source ./mongodb_patch.sh
 source ./mongodb_install.sh
+source ./zk_install.sh
 
 function dealres()
 {
@@ -35,17 +36,17 @@ function usage()
 }
 
 #1:generate slave install shell 
-function generatePatchShell()
-{
-    echo '正在生成 '$1' patch 脚本'
-    cp modify.sh modify_$1.sh
-    res=`echo $?`
-    if [ ${res} == "0" ]; then \
-        sed -i "s/TEMP_IPHOST/$1/g" modify_$1.sh; \
-    else 
-        echo "no"
-    fi
-}
+#function generatePatchShell()
+#{
+    #echo '正在生成 '$1' patch 脚本'
+    #cp modify.sh modify_$1.sh
+    #res=`echo $?`
+    #if [ ${res} == "0" ]; then \
+        #sed -i "s/TEMP_IPHOST/$1/g" modify_$1.sh; \
+    #else 
+        #echo "no"
+    #fi
+#}
 
 function copyudspackage()
 {
@@ -81,23 +82,23 @@ function confiesshlogin()
     done
 }
 
-function generateShell()
-{
-    echo "生成各台安装脚本"
-    #echo ${RIAK_RINK[@]}
-    nIndex=0
-    for i in ${RIAK_RINK[@]}; do
-        #if [ ${nIndex} == 0 ]; then \
-            #echo "生成Riak_FirstNode_安装脚本"; \
-        #else 
-            #echo "生成Riak安装脚本";
-        #fi
-        #let nIndex=$nIndex+1
-        #echo $nIndex
-        generatePatchShell $i 
-    done
+#function generateShell()
+#{
+    #echo "生成各台安装脚本"
+    ##echo ${RIAK_RINK[@]}
+    #nIndex=0
+    #for i in ${RIAK_RINK[@]}; do
+        ##if [ ${nIndex} == 0 ]; then \
+            ##echo "生成Riak_FirstNode_安装脚本"; \
+        ##else 
+            ##echo "生成Riak安装脚本";
+        ##fi
+        ##let nIndex=$nIndex+1
+        ##echo $nIndex
+        #generatePatchShell $i 
+    #done
 
-}
+#}
 
 function run()
 {
@@ -149,19 +150,23 @@ function riak_admin()
     case "$1" in
         start)
             echo "riak start..."
+            doriak_start
             ;;
         stop)
             echo "riak stop..."
+        
             ;;
         join)
             echo "join..."
+            doriak_joinring
             ;;
         install)
             echo "riak install.."
-            doinstall
+            doriak_install
             ;;
         unstall)
             echo "riak unstall..."
+            doriak_unstall
             ;;
         all)
             echo "riak all..."
@@ -188,10 +193,10 @@ function env_admin()
             docollectres
             generateEnvrpt
             ;;
-        gencfg)
-            echo "生成脚本"
-            generateShell
-            ;;
+        #gencfg)
+            #echo "生成脚本"
+            #generateShell
+            #;;
         distribute)
             echo "分发到各台机器"
             copyudspackage
@@ -203,6 +208,20 @@ function env_admin()
             ;;
         *)
             echo "nopwd checkenv gencfg distribute"
+            ;;
+    esac
+}
+
+function zookeeper_admin()
+{
+
+    case "$1" in
+        install)
+            echo "zk install..."
+            dozk_install
+            ;;
+        *)
+            echo "zookeeper"
             ;;
     esac
 }
@@ -240,6 +259,7 @@ function mongodb_admin()
         cluster)
             echo "mongodb cluster";
             domongodb_cluster
+            ;;
         destroy)
             echo "mongodb destroy";
             domongodb_destroy
@@ -264,6 +284,10 @@ case "$1" in
     mongodb)
         shift 
         mongodb_admin "$@"
+        ;;
+    zookeeper)
+        shift
+        zookeeper_admin "$@"
         ;;
     *)
         #run
