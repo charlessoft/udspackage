@@ -10,6 +10,9 @@ source ./iptables.sh
 source ./mongodb_patch.sh
 source ./mongodb_install.sh
 source ./zk_install.sh
+source ./jdk_install.sh
+source ./env.sh
+source ./zk_patch.sh
 
 function dealres()
 {
@@ -29,10 +32,14 @@ function dealres()
     fi
 
 }
+
 SCRIPT=`basename $0`
+export CURPWD=$(cd `dirname $0`; pwd)
+
 function usage()
 {
     echo "Usage ${SCRIPT} aaa"
+    
 }
 
 #1:generate slave install shell 
@@ -53,9 +60,11 @@ function copyudspackage()
     for i in ${RIAK_RINK[@]}; do
         echo "复制uds安装包到" $i "${TMP_PATH}目录"
         scp -r ../${UDSPACKAGE_FILE} $i:${TMP_PATH}
-        if [ $? -eq 1 ]; then \
-            echo "复制文件失败 $i"; exit 1;
-        fi
+        #临时测试去掉,后期需要还远
+        #if [ $? -eq 1 ]; then \
+            #echo "复制文件失败 $i"; exit 1;
+        #fi
+        #临时测试去掉,后期需要还远
     done 
 }
 
@@ -193,10 +202,9 @@ function env_admin()
             docollectres
             generateEnvrpt
             ;;
-        #gencfg)
-            #echo "生成脚本"
-            #generateShell
-            #;;
+        setenv)
+            echo "设置环境变量"
+            ;;
         distribute)
             echo "分发到各台机器"
             copyudspackage
@@ -204,7 +212,6 @@ function env_admin()
         iptables)
             echo "允许ip列表"
             doaccessPort
-            
             ;;
         *)
             echo "nopwd checkenv gencfg distribute"
@@ -214,18 +221,56 @@ function env_admin()
 
 function zookeeper_admin()
 {
-
     case "$1" in
         install)
             echo "zk install..."
             dozk_install
             ;;
+        start)
+            echo "zk start..."
+            dozk_start
+            ;;
+        stop)
+            echo "zk stop..."
+            dozk_stop
+            ;;
+        status)
+            echo "zk status..."
+            dozk_status
+            ;;
+        gencfg)
+            echo "zk gencfg..."
+            for i in ${ZOOKEEPER_NODE_ARR[@]}; do
+                HOSTIP=`echo $i | \
+                    awk -F= '{print $2}' | \
+                    awk -F: '{print $1}'`
+                deal_zkconfig ${HOSTIP}
+            done 
+            ;;
+        destroy)
+            echo "删除zookeeper"
+            dozk_destroy
+            ;;
+
         *)
             echo "zookeeper"
             ;;
     esac
 }
 
+function jdk_admin()
+{
+    case "$1" in
+        install)
+            echo "jdk install";
+            dojdk_install 
+            ;;
+        *)
+            echo "jdk install ";
+            ;;
+    esac
+
+}
 function mongodb_admin()
 {
     case "$1" in 
@@ -235,13 +280,6 @@ function mongodb_admin()
             ;;
         install)
             echo "mongodb install"
-
-            deal_mongody_patch  ${MONGODB_MASTER}
-            deal_mongody_patch  ${MONGODB_ARBITER}
-            for i in ${MONGODB_SLAVE_ARR[@]}; do
-                deal_mongody_patch  $i
-            done 
-            copyudspackage
             domongodb_install
             ;;
         gencfg)
@@ -289,6 +327,11 @@ case "$1" in
         shift
         zookeeper_admin "$@"
         ;;
+    jdk)
+        shift
+        jdk_admin "$@"
+        ;;
+
     *)
         #run
         echo "请选择 env riak"

@@ -46,8 +46,8 @@ function mongodb_install()
     HOSTIP=$1
     echo "${HOSTIP} 安装 mongodb"
     
-    if [ -f ${MONGODB_FILE}.gz ]; then \
-        tar zxvf ${MONGODB_FILE}.gz; \
+    if [ ! -d ${MONGODB_FILE} ] && [ -f ${MONGODB_FILE}.gz ]; then \
+        tar zxvf ${MONGODB_FILE}.gz 2>&1 >/dev/null; \
     fi
 
     #cd ${MONGODB_FILE}/bin; \
@@ -103,6 +103,7 @@ function mongodb_start()
         if [ -d ${MONGODB_FILE} ]; then \
             cd ${MONGODB_FILE}/bin; \
             ./mongod -f ../../mongodb_${HOSTIP}.conf; \
+            cd ../../;
         else 
             echo "mongodb ${MONGODB_FILE} 目录文件不存在";
             exit 1;
@@ -110,6 +111,7 @@ function mongodb_start()
     else 
         echo "${HOSTIP} mongodb 已经启动";
     fi
+    
     
 }
 
