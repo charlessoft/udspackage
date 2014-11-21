@@ -13,6 +13,9 @@ source ./zk_install.sh
 source ./jdk_install.sh
 source ./env.sh
 source ./zk_patch.sh
+. ./fscontent_install.sh
+. ./fsmeta_install.sh 
+. ./fsname_install.sh
 
 function dealres()
 {
@@ -154,6 +157,63 @@ function riak_help()
     The following commands stage changes to riak membership.
     "
 }
+
+
+function fsname_admin()
+{
+    case "$1" in
+        start)
+            echo "nameserver start...";
+            dofsname_start;
+            ;;
+        stop)
+            echo "nameserver stop...";
+            dofsname_stop;
+            ;;
+        status)
+            echo "nameserver status...";
+            dofsname_status;
+            ;;
+    esac
+}
+
+function fsmeta_admin()
+{
+    case "$1" in
+        start)
+            echo "metaserver start...";
+            dofsmeta_start;
+            ;;
+        stop)
+            echo "nameserver stop...";
+            dofsmeta_stop;
+            ;;
+        status)
+            echo "nameserver status...";
+            dofsmate_status;
+            ;;
+    esac
+}
+
+function fscontent_admin()
+{
+    case "$1" in
+        start)
+            echo "content start...";
+            dofscontent_start;
+            ;;
+        stop)
+            echo "content stop...";
+            dofscontent_stop;
+            ;;
+        *)
+            echo "content start stop status";
+            ;;
+    esac 
+
+
+}
+
 function riak_admin()
 {
     case "$1" in
@@ -331,10 +391,29 @@ case "$1" in
         shift
         jdk_admin "$@"
         ;;
-
+    fscontent)
+        shift
+        echo "fs-content";
+        fscontent_admin "$@";
+        ;;
+    fsname)
+        shift
+        echo "fs-name";
+        fsname_admin "$@";
+        ;;
+    fsmeta)
+        shift
+        echo "fs-meta";
+        fsmeta_admin "$@";
+        ;;
+    fsjetty)
+        shfit
+        echo "fs-jetty";
+        fsjetty_admin "$@";
+        ;;
     *)
         #run
-        echo "请选择 env riak"
+        echo "请选择 env riak mongodb zookeeper jdk fscontent fsname fsmeta fsjetty"
         ;;
 esac
 

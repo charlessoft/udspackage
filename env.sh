@@ -12,7 +12,7 @@ function setjdkenv()
     export PATH=${JAVA_BIN}:${PATH}
 
     if [ ! -d ${JAVA_HOME} ]; then \
-        echo "JDK 路径不存在,无法设置"; exit 1;
+        echo "JDK 路径不存在,无法设置环境变量"; return 1;
     fi
     echo export JAVA_HOME=${JAVA_HOME} >> ${ENVBASHRC}
     echo export JAVA_BIN=${JAVA_HOME}/bin >> ${ENVBASHRC}
@@ -26,6 +26,7 @@ function initenv()
 {
     rm -fr envbashrc
     setjdkenv
+    return $?;
 }
 
 

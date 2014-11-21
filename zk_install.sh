@@ -94,7 +94,7 @@ function zk_status()
 
 function zk_collectlog()
 {
-
+    echo "zk_collectionlog";
 }
 
 
