@@ -2,6 +2,20 @@
 . ./config 
 . ./env.sh
 
+function fscontent_status()
+{
+    HOSTIP=$1
+    echo "${HOSTIP} fscontent status";
+    ps -ef | grep "fs-content" | grep -v "grep"
+    res=$?
+    if [ ${res} -eq 0 ]; then \
+        echo "${HOSTIP} fs-contentserver 正在运行"; \
+    else
+        echo "${HOSTIP} fs-contentserver 未运行"; \
+    fi
+    return ${res}
+}
+
 function fscontent_install()
 {
     HOSTIP=$1
@@ -13,12 +27,19 @@ function fscontent_start()
     HOSTIP=$1
     initenv
     if [ $? -ne 0 ]; then \
-        echo "环境变量不正确无法启动 fscontent-server"; exit 1;
+        echo "环境变量不正确无法启动 fs-contentserver"; exit 1;
     fi
+
+    fscontent_status
+    if [ $? -eq 0 ]; then \
+        echo "${HOSTIP} fs-contentserver已经启动"; exit 0;
+    fi
+
     echo "${HOSTIP} fscontent start";
     #java -version
-    cd fs-contentserver/target && \
-        java -jar -server -Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M fs-contentserver-1.0-SNAPSHOT.jar
+    cd ${CONTENT_FILE}/target && \
+        java -jar -server ${CONTENT_SERVER_PARAMS} fs-contentserver-1.0-SNAPSHOT.jar
+        #java -jar -server -Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M fs-contentserver-1.0-SNAPSHOT.jar
     cd ../../
 }
 
@@ -27,13 +48,17 @@ function fscontent_stop()
 {
     HOSTIP=$1
     echo "${HOSTIP} fscontent stop";
+    fscontent_status
+    if [ $? -eq 0 ]; then \
+        #kill 
+        kill `ps -ef | grep "fs-content" | grep -v "grep" | awk '{print $2}'`; \
+            if [ $? -eq 0 ]; then \
+                echo "${HOSTIP} fs-contentserver 成功关闭进程";
+            fi
+    fi
+
 }
 
-function fscontent_status()
-{
-    HOSTIP=$1
-    echo "${HOSTIP} fscontent status";
-}
 
 function dofscontent_install()
 {
@@ -46,7 +71,9 @@ function dofscontent_start()
     ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        sh fscontent_install.sh content_start ${CONTENT_SERVER};"
+        nohup sh fscontent_install.sh content_start ${CONTENT_SERVER}  \
+        > ${CONTENT_FILE}/target/fscontent_log.log 2>&1 &"
+    sleep 2s
 }
 
 function dofscontent_stop()

@@ -1,116 +1,80 @@
 #!/bin/bash 
-#sh copy.sh 10.211.55.19
-#sh copy.sh 10.211.55.20
-#sh copy.sh centos
-source ./config
-source ./checkenv.sh
-source ./report.sh
-source ./riak_install.sh
-source ./iptables.sh
-source ./mongodb_patch.sh
-source ./mongodb_install.sh
-source ./zk_install.sh
-source ./jdk_install.sh
-source ./env.sh
-source ./zk_patch.sh
+. ./config
+. ./checkenv.sh
+. ./report.sh
+. ./riak_install.sh
+. ./iptables.sh
+. ./mongodb_patch.sh
+. ./mongodb_install.sh
+. ./zk_install.sh
+. ./jdk_install.sh
+. ./env.sh
+. ./zk_patch.sh
 . ./fscontent_install.sh
 . ./fsmeta_install.sh 
 . ./fsname_install.sh
 
-function dealres()
-{
-    echo "res=$1";
-    case $1 in 
-        ${FILE_NO_EXIST}) 
-            echo "文件不存在";;
-        *)
-            echo "未知错误";;
-        0)
-            echo "成功";;
-        7)
-            echo "Riak curl 网络检查失败!退出安装,请检查原因!";;
-    esac
-    if [ ${res} -ne 0 ]; then \
-        exit ${res}; \
-    fi
-
-}
 
 SCRIPT=`basename $0`
 export CURPWD=$(cd `dirname $0`; pwd)
 
 function usage()
 {
-    echo "Usage ${SCRIPT} aaa"
-    
+    echo "\
+Usage: ${SCRIPT} <command>
+where <command> is one of the following:
+        { env | riak | mongodb | zookeeper | jdk | fscontent | fsname | fsmeta }
+    " 
 }
 
-#1:generate slave install shell 
-#function generatePatchShell()
-#{
-    #echo '正在生成 '$1' patch 脚本'
-    #cp modify.sh modify_$1.sh
-    #res=`echo $?`
-    #if [ ${res} == "0" ]; then \
-        #sed -i "s/TEMP_IPHOST/$1/g" modify_$1.sh; \
-    #else 
-        #echo "no"
-    #fi
-#}
-
-function copyudspackage()
+function env_help()
 {
-    for i in ${RIAK_RINK[@]}; do
-        echo "复制uds安装包到" $i "${TMP_PATH}目录"
-        scp -r ../${UDSPACKAGE_FILE} $i:${TMP_PATH}
-        #临时测试去掉,后期需要还远
-        #if [ $? -eq 1 ]; then \
-            #echo "复制文件失败 $i"; exit 1;
-        #fi
-        #临时测试去掉,后期需要还远
-    done 
+    echo "\
+Usage: ${SCRIPT} env <command>
+where <command> is one of the following:
+    { nopwd | checkenv | setenv | distribute } "
 }
 
-function generateInstallShell()
+
+function riak_help()
 {
-    echo $1
-
+    echo "\
+Usage: ${SCRIPT} riak <command>
+where <command> is one of the following:  
+\
+    { install | uninstall | start | stop | status | join | commit }"
 }
 
-#配置ssh 免密码登陆
-function confiesshlogin()
+
+function  fsname_help()
 {
-    if [ -f ${ID_RSA_PUB} ]; then \
-        echo "本机id_rsa.pub 存在! ===ok"; \
-    else
-        echo "id_rsa.pub 不存在,请调用ssh-kengen 命令生成id_rsa.pub";
-        exit 1; 
-    fi
-    for i in ${RIAK_RINK[@]}; do \
-        ssh-copy-id -i $ID_RSA_PUB $USER@$i; \
-        if [ $? -eq 1 ]; then \
-            echo "免密码登陆失败,请检查原因"; exit 1; \
-        fi
-    done
+    echo "\
+Usage: ${SCRIPT} fsname <command>
+where <command> is one of the following:  
+\
+    { start | stop | status }"
 }
 
-#function generateShell()
-#{
-    #echo "生成各台安装脚本"
-    ##echo ${RIAK_RINK[@]}
-    #nIndex=0
-    #for i in ${RIAK_RINK[@]}; do
-        ##if [ ${nIndex} == 0 ]; then \
-            ##echo "生成Riak_FirstNode_安装脚本"; \
-        ##else 
-            ##echo "生成Riak安装脚本";
-        ##fi
-        ##let nIndex=$nIndex+1
-        ##echo $nIndex
-        #generatePatchShell $i 
-    #done
+function fscontent_help()
+{
+    echo "\
+Usage: ${SCRIPT} fscontent <command>
+where <command> is one of the following:  
+\
+    { start | stop | status }"
 
-#}
+}
+
+function fsmeta_help()
+{
+    echo "\
+Usage: ${SCRIPT} fsmeta <command>
+where <command> is one of the following:  
+\
+    { start | stop | status }"
+
+}
+
 
 function run()
 {
@@ -122,7 +86,7 @@ function run()
     #generateShell
     confiesshlogin
 
-    copyudspackage
+    distributepackage
     docheck
     docollectres
     ##parseres
@@ -140,7 +104,6 @@ function run()
     dostart
     
     dojoinring
-    #generateInstallShell
     #checkenv
     #collectenvres
     echo "exitttt";
@@ -149,14 +112,6 @@ function run()
 
 #run
 
-function riak_help()
-{
-    echo "\
-        Usage: ${SCRIPT} riak <command>
-
-    The following commands stage changes to riak membership.
-    "
-}
 
 
 function fsname_admin()
@@ -174,6 +129,9 @@ function fsname_admin()
             echo "nameserver status...";
             dofsname_status;
             ;;
+        *)
+            fsname_help;
+            ;;
     esac
 }
 
@@ -185,13 +143,15 @@ function fsmeta_admin()
             dofsmeta_start;
             ;;
         stop)
-            echo "nameserver stop...";
+            echo "metaserver stop...";
             dofsmeta_stop;
             ;;
         status)
-            echo "nameserver status...";
-            dofsmate_status;
+            echo "metaserver status...";
+            dofsmeta_status;
             ;;
+        *)
+            fsmeta_help;
     esac
 }
 
@@ -206,8 +166,12 @@ function fscontent_admin()
             echo "content stop...";
             dofscontent_stop;
             ;;
+        status)
+            echo "content status...";
+            dofscontent_status;
+            ;;
         *)
-            echo "content start stop status";
+            fscontent_help;
             ;;
     esac 
 
@@ -218,35 +182,40 @@ function riak_admin()
 {
     case "$1" in
         start)
-            echo "riak start..."
-            doriak_start
+            echo "riak start...";
+            doriak_start;
             ;;
         stop)
-            echo "riak stop..."
-        
+            echo "riak stop...";
+            doriak_stop;
+            ;;
+        status)
+            echo "riak status...";
+            doriak_status;
             ;;
         join)
-            echo "join..."
-            doriak_joinring
+            echo "join...";
+            doriak_joinring;
+            ;;
+        commit)
+            echo "commit...";
+            doriak_commit;
             ;;
         install)
-            echo "riak install.."
-            doriak_install
+            echo "riak install..";
+            doriak_install;
             ;;
         unstall)
-            echo "riak unstall..."
-            doriak_unstall
+            echo "riak unstall...";
+            doriak_unstall;
             ;;
         all)
-            echo "riak all..."
-            echo "aaadddd"
+            echo "riak all...";
             ;;
         *)
             riak_help
             ;;
     esac 
-    #echo "riak_admin"
-    #echo $*
 }
 
 function env_admin()
@@ -267,14 +236,14 @@ function env_admin()
             ;;
         distribute)
             echo "分发到各台机器"
-            copyudspackage
+            distributepackage
             ;;
         iptables)
             echo "允许ip列表"
             doaccessPort
             ;;
         *)
-            echo "nopwd checkenv gencfg distribute"
+            env_help;
             ;;
     esac
 }
@@ -406,23 +375,14 @@ case "$1" in
         echo "fs-meta";
         fsmeta_admin "$@";
         ;;
-    fsjetty)
-        shfit
-        echo "fs-jetty";
-        fsjetty_admin "$@";
-        ;;
+    #fsjetty)
+        #shfit
+        #echo "fs-jetty";
+        #fsjetty_admin "$@";
+        #;;
     *)
-        #run
-        echo "请选择 env riak mongodb zookeeper jdk fscontent fsname fsmeta fsjetty"
+        usage;
         ;;
 esac
-
-
-
-
-#2:install riak "
-
-
-
 
 

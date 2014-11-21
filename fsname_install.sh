@@ -2,6 +2,14 @@
 . ./config 
 . ./env.sh
 
+function fsname_status()
+{
+    HOSTIP=$1
+    echo "${HOSTIP} name status";
+    ps -ef | grep "fs-nameserver" | grep -v "grep"
+    return $?
+}
+
 function fsname_install()
 {
     HOSTIP=$1
@@ -15,10 +23,15 @@ function fsname_start()
     if [ $? -ne 0 ]; then \
         echo "环境变量不正确无法启动 fsname-server"; exit 1;
     fi
+    fsname_status
+    if [ $? -eq 0 ]; then \
+        echo "${HOSTIP} fs-nameserver正在运行"; exit 0;
+    fi
+
     echo "${HOSTIP} name start";
     #java -version
-    cd fs-nameserver/target && \
-        java -jar -server -Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M fs-nameserver-1.0-SNAPSHOT.jar
+    cd ${NAME_FILE}/target && \
+        java -jar -server ${NAME_SERVER_PARAMS} fs-nameserver-1.0-SNAPSHOT.jar
     cd ../../
 }
 
@@ -27,13 +40,18 @@ function fsname_stop()
 {
     HOSTIP=$1
     echo "${HOSTIP} name stop";
+
+    fsname_status
+    if [ $? -eq 0 ]; then \
+        kill `ps -ef | grep "fs-nameserver" | grep -v "grep" | awk '{print $2}'`; \
+            if [ $? -eq 0 ]; then \
+                echo "${HOSTIP} 成功关闭 fsnameserver 进程";
+            fi
+        else 
+            echo "${HOSTIP} fsnameserver程序未启动";
+    fi
 }
 
-function name_status()
-{
-    HOSTIP=$1
-    echo "${HOSTIP} name status";
-}
 
 function dofsname_install()
 {
@@ -46,7 +64,9 @@ function dofsname_start()
     ssh -p "${SSH_PORT}" "${NAME_SERVER}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        sh fsname_install.sh fsname_start ${NAME_SERVER};"
+        nohup sh fsname_install.sh fsname_start ${NAME_SERVER} \
+        > ${NAME_FILE}/target/fsname_log.log 2>&1 &"
+
 }
 
 function dofsname_stop()
@@ -59,14 +79,14 @@ function dofsname_stop()
 }
 
 
-function doname_status()
+function dofsname_status()
 {
-    echo "doname_status";
+    echo "dofsname_status";
 
     ssh -p "${SSH_PORT}" "${NAME_SERVER}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        sh fsname_install.sh name_status ${NAME_SERVER};"
+        sh fsname_install.sh fsname_status ${NAME_SERVER};"
 
 }
 

@@ -1,6 +1,25 @@
 #!/bin/bash 
 source ./config
 
+function riak_install()
+{
+    echo "$1 安装Riak";
+    `which riak` > /dev/null  
+    if [ $? -ne 0  ]; then \
+        echo "未安装riak,开始安装riak"; \
+        if [ -f ${RIAK_FILE} ]; then \
+            rpm -ivh ${RIAK_FILE}; \
+        else
+            echo "${RIAK_FILE}文件不存在退"; exit 1;
+        fi
+    else 
+        #echo "riak 已经安装";
+        rpm -ivh ${RIAK_FILE}
+    fi
+    sh riak_patch.sh $1
+
+}
+
 function riak_start()
 {
     res=0
@@ -37,22 +56,24 @@ function riak_start()
 
 }
 
-function riak_install()
+function riak_status()
 {
-    echo "$1 安装Riak";
-    `which riak` > /dev/null  
-    if [ $? -ne 0  ]; then \
-        echo "未安装riak,开始安装riak"; \
-        if [ -f ${RIAK_FILE} ]; then \
-            rpm -ivh ${RIAK_FILE}; \
-        else
-            echo "${RIAK_FILE}文件不存在退"; exit 1;
+    service riak status
+
+}
+
+function doriak_status()
+{
+    echo "获取各台Riak status"
+    for i in ${RIAK_RINK[@]}; do 
+        ssh -p 22 "$i" "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh riak_install.sh riak_status $i \
+            "
+        if [ $? -ne 0 ]; then \
+            echo "查询失败 $1"
         fi
-    else 
-        #echo "riak 已经安装";
-        rpm -ivh ${RIAK_FILE}
-    fi
-    sh riak_patch.sh $1
+    done
 
 }
 
@@ -105,10 +126,6 @@ function doriak_joinring()
         
     done
 
-    ssh -p "22" "${RIAK_FIRST_NODE}" "cd ${UDSPACKAGE_PATH}; \
-        source /etc/profile; \
-        sh riak_install.sh commit ${RIAK_FIRST_NODE}; \
-        "
 }
 
 function riak_unstall()
@@ -116,6 +133,26 @@ function riak_unstall()
     echo "$1 卸载riak"
     riak stop
     rpm -e `rpm -q riak | awk 'NR==1'`
+}
+
+function riak_stop()
+{
+
+    echo "riak stop";
+    riak stop;
+}
+
+function doriak_stop()
+{
+    for i in ${RIAK_RINK[@]}; do 
+        ssh -p 22 "$i" "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh riak_install.sh riak_stop $i \
+            "
+        if [ $? -ne 0 ]; then \
+            echo "停止失败 $1"
+        fi
+    done
 }
 
 function doriak_unstall()
@@ -135,6 +172,28 @@ function riak_commit()
     riak-admin cluster commit 
 }
 
+function doriak_commit()
+{
+    echo "commit Riak"
+    #for i in ${RIAK_RINK[@]}; do 
+        #ssh -p 22 "$i" "cd ${UDSPACKAGE_PATH}; \
+            #source /etc/profile; \
+            #sh riak_install.sh riak_start $i \
+            #"
+        #if [ $? -ne 0 ]; then \
+            #echo "启动失败 $1"
+        #fi
+    #done
+
+    #echo "睡觉=="
+    #sleep 10s
+
+    ssh -p "22" "${RIAK_FIRST_NODE}" "cd ${UDSPACKAGE_PATH}; \
+        source /etc/profile; \
+        sh riak_install.sh riak_commit ${RIAK_FIRST_NODE}; \
+        "
+}
+
 
 function doriak_start()
 {
@@ -149,7 +208,6 @@ function doriak_start()
         fi
     done
 
-    echo "睡觉=="
     sleep 10s
 }
 
@@ -203,4 +261,20 @@ then
     HOSTIP=$2
     echo "riak_unstall ====="
     riak_unstall ${HOSTIP}
+fi
+
+
+if [ "$1" = riak_status ]
+then 
+    HOSTIP=$2
+    echo "riak_status ====="
+    riak_status ${HOSTIP}
+fi
+
+
+if [ "$1" = riak_stop ]
+then 
+    HOSTIP=$2
+    echo "riak_stop ====="
+    riak_stop ${HOSTIP}
 fi

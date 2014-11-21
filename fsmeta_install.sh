@@ -2,6 +2,20 @@
 . ./config 
 . ./env.sh
 
+function fsmeta_status()
+{
+    HOSTIP=$1
+    echo "${HOSTIP} meta status";
+    ps -ef | grep "fs-metaserver" | grep -v "grep" 2>&1 >/dev/null
+    res=$?
+    if [ ${res} -eq 0 ]; then \
+        echo "${HOSTIP} fs-metaserver 正在运行"; \
+    else
+        echo "${HOSTIP} fs-metaserver 未运行"; \
+    fi
+    return ${res}
+}
+
 function fsmeta_install()
 {
     HOSTIP=$1
@@ -15,10 +29,14 @@ function fsmeta_start()
     if [ $? -ne 0 ]; then \
         echo "环境变量不正确无法启动 fsmeta-server"; exit 1;
     fi
+    fsmeta_status
+    if [ $? -eq 0 ]; then \
+        echo "${HOSTIP} fs-metaserver 正在运行"; exit 0;
+    fi
+
     echo "${HOSTIP} meta start";
-    #java -version
     cd fs-metaserver/target && \
-        java -jar -server -Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M fs-metaserver-1.0-SNAPSHOT.jar
+        java -jar -server ${META_SERVER_PARAMS} fs-metaserver-1.0-SNAPSHOT.jar
     cd ../../
 }
 
@@ -27,13 +45,17 @@ function fsmate_stop()
 {
     HOSTIP=$1
     echo "${HOSTIP} meta stop";
+
+    fsmeta_status
+    if [ $? -eq 0 ]; then \
+        #kill 
+        kill `ps -ef |grep "fs-metaserver" |grep -v "grep" | awk '{print $2}'`; \
+            if [ $? -eq 0 ]; then \
+                echo "${HOSTIP} fsmetaserver成功关闭进程";
+            fi
+    fi
 }
 
-function fsmeta_status()
-{
-    HOSTIP=$1
-    echo "${HOSTIP} meta status";
-}
 
 function dofsmeta_install()
 {
@@ -46,12 +68,13 @@ function dofsmeta_start()
     ssh -p "${SSH_PORT}" "${META_SERVER}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        sh fsmeta_install.sh fsmeta_start ${META_SERVER};"
+        nohup sh fsmeta_install.sh fsmeta_start ${META_SERVER} \
+        > ${META_FILE}/target/fsmeta_log.log 2>&1 &"
 }
 
-function dofsmate_stop()
+function dofsmeta_stop()
 {
-    echo "dometa_status";
+    echo "dofsmeta_stop";
     ssh -p "${SSH_PORT}" "${META_SERVER}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
@@ -59,9 +82,9 @@ function dofsmate_stop()
 }
 
 
-function dometa_status()
+function dofsmeta_status()
 {
-    echo "dometa_status";
+    echo "fsdometa_status";
 
     ssh -p "${SSH_PORT}" "${META_SERVER}" \
         "cd ${UDSPACKAGE_PATH}; \
