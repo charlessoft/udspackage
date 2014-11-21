@@ -67,7 +67,7 @@ function doaccessPort()
     echo "Riak 增加允许端口 ${RIAK_HTTP_PORT} "; \
     for i in ${RIAK_RINK[@]}; do 
         echo $i
-            ssh -p "${SSH_PORT}"" "$i" \
+            ssh -p ${SSH_PORT} "$i" \
                 "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
             sh iptables.sh accessPort $i ${RIAK_HTTP_PORT}"
