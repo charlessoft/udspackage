@@ -28,7 +28,7 @@ function checkenv()
 function docheck()
 {
     for i in ${RIAK_RINK[@]}; do
-        ssh -p 22 "$i" "cd ${UDSPACKAGE_PATH}; \
+        ssh -p "${SSH_PORT}" "$i" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
             sh checkenv.sh checkenv $i; \
             exit;"

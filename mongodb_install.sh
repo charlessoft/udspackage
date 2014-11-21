@@ -172,7 +172,7 @@ function domongodb_start()
 
     echo "远程启动 ${MONGODB_ARBITER} arbiter mongodb"
 
-    ssh -p 22 "`echo ${MONGODB_ARBITER}|cut -d: -f 1`" \
+    ssh -p ${SSH_PORT} "`echo ${MONGODB_ARBITER}|cut -d: -f 1`" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
         sh mongodb_install.sh mongodb_start ${MONGODB_ARBITER} \
@@ -204,7 +204,7 @@ function domongodb_install()
 {
     #安装 master
     echo "远程连接到${MONGODB_MASTER} 安装mongodb "
-    ssh -p 22 "`echo ${MONGODB_MASTER}|cut -d: -f 1`" "cd ${UDSPACKAGE_PATH}; \
+    ssh -p ${SSH_PORT} "`echo ${MONGODB_MASTER}|cut -d: -f 1`" "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
         sh mongodb_install.sh mongodb_install ${MONGODB_MASTER} \
         "
@@ -217,7 +217,7 @@ function domongodb_install()
     for i in ${MONGODB_SLAVE_ARR[@]}; do
         echo "远程连接到$i安装 slave mongodb"
 
-        ssh -p 22 "`echo $i|cut -d: -f 1`" "cd ${UDSPACKAGE_PATH}; \
+        ssh -p ${SSH_PORT} "`echo $i|cut -d: -f 1`" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
             sh mongodb_install.sh mongodb_install $i; \
             "
@@ -229,7 +229,7 @@ function domongodb_install()
 
     echo "安装 ${MONGODB_ARBITER} 安装 arbiter mongodb"
 
-    ssh -p 22 "`echo ${MONGODB_ARBITER}|cut -d: -f 1`" "cd ${UDSPACKAGE_PATH}; \
+    ssh -p ${SSH_PORT} "`echo ${MONGODB_ARBITER}|cut -d: -f 1`" "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
         sh mongodb_install.sh mongodb_install ${MONGODB_ARBITER} \
         "

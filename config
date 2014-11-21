@@ -1,7 +1,13 @@
 #!/bin/bash
-source ./error
 ENVBASHRC=envbashrc
 SSH_PORT=22
+
+MONGODB_FILE=mongodb-linux-x86_64-2.6.3
+JDK_FILE=jdk1.6.0_45
+RIAK_FILE=riak-2.0.2-1.el5.x86_64.rpm
+
+IPTABLES_FILE=/etc/sysconfig/iptables
+
 TMP_PATH=/home/charles/
 ID_RSA_PUB=$HOME/.ssh/id_rsa.pub
 LOG_COLLECT=${TMP_PATH}/udslog.log
@@ -33,11 +39,6 @@ RIAK_RINK=( \
     10.211.55.22 \
     )
 RIAK_FIRST_NODE=${RIAK_RINK[0]}
-#1.4.0
-RIAK_VMARGS=/etc/riak/vm.args
-RIAK_VMARGS_BAK=/etc/riak/vm.args_bak
-RIAK_APPCONFIG=/etc/riak/app.config
-RIAK_APPCONFIG_BAK=/etc/riak/app.config_bak
 #2.0.2
 RIAK_CONF_BAK=/etc/riak/riak.conf_bak
 RIAK_CONF=/etc/riak/riak.conf
@@ -45,11 +46,7 @@ RIAK_HTTP_PORT=8098
 #node链接端口
 RIAK_EPMD_PORT=4369
 RIAK_HANDOFF_PORT=8099
-
 RIAK_DEFPORT=44571
-
-
-MONGODB_FILE=mongodb-linux-x86_64-2.6.3
 
 #MONGODB MASTER
 MONGODB_MASTER=10.211.55.18:27017
@@ -75,14 +72,8 @@ MONGODB_ARBITER_LOGPATH=/home/charles/mongodb/log/slave.log
 MONGODB_ARBITER_PIDFILEPATH=/home/charles/mongodb/slave.pid
 
 #MONGODB SLAVE
-
 ZOOKEEPER_FILE=zookeeper-3.4.6
 
-JDK_FILE=jdk1.6.0_45
-
-RIAK_FILE=riak-2.0.2-1.el5.x86_64.rpm
-
-IPTABLES_FILE=/etc/sysconfig/iptables
 
 #JAVA
 JDK_ARR=( \

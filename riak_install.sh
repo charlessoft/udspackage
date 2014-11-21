@@ -66,7 +66,7 @@ function doriak_status()
 {
     echo "获取各台Riak status"
     for i in ${RIAK_RINK[@]}; do 
-        ssh -p 22 "$i" "cd ${UDSPACKAGE_PATH}; \
+        ssh -p ${SSH_PORT} "$i" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
             sh riak_install.sh riak_status $i \
             "
@@ -114,7 +114,7 @@ function doriak_joinring()
         fi
 
         echo "$1 Riak 检测启动成功,准备加入环中"; \
-            ssh -p 22 "$i" "cd ${UDSPACKAGE_PATH}; \
+            ssh -p ${SSH_PORT} "$i" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
             sh riak_install.sh riak_joinring $i"
 
@@ -145,7 +145,7 @@ function riak_stop()
 function doriak_stop()
 {
     for i in ${RIAK_RINK[@]}; do 
-        ssh -p 22 "$i" "cd ${UDSPACKAGE_PATH}; \
+        ssh -p ${SSH_PORT} "$i" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
             sh riak_install.sh riak_stop $i \
             "
@@ -170,25 +170,18 @@ function riak_commit()
 
     riak-admin cluster plan 
     riak-admin cluster commit 
+    riak-admin bucket-type create uds_fs_no_mult '{"props":{"allow_mult":false, "last_write_wins":true}}'
+    riak-admin bucket-type activate uds_fs_no_mult
+    riak-admin bucket-type list 
+    #ji群 ok
+
 }
 
 function doriak_commit()
 {
     echo "commit Riak"
-    #for i in ${RIAK_RINK[@]}; do 
-        #ssh -p 22 "$i" "cd ${UDSPACKAGE_PATH}; \
-            #source /etc/profile; \
-            #sh riak_install.sh riak_start $i \
-            #"
-        #if [ $? -ne 0 ]; then \
-            #echo "启动失败 $1"
-        #fi
-    #done
 
-    #echo "睡觉=="
-    #sleep 10s
-
-    ssh -p "22" "${RIAK_FIRST_NODE}" "cd ${UDSPACKAGE_PATH}; \
+    ssh -p ${SSH_PORT} "${RIAK_FIRST_NODE}" "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
         sh riak_install.sh riak_commit ${RIAK_FIRST_NODE}; \
         "
@@ -199,7 +192,7 @@ function doriak_start()
 {
     echo "启动各台Riak"
     for i in ${RIAK_RINK[@]}; do 
-        ssh -p 22 "$i" "cd ${UDSPACKAGE_PATH}; \
+        ssh -p ${SSH_PORT} "$i" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
             sh riak_install.sh riak_start $i \
             "
@@ -216,7 +209,7 @@ function doriak_install()
     for i in ${RIAK_RINK[@]}; do
         echo "远程连接到$i安装Riak"
 
-        ssh -p 22 "$i" "cd ${UDSPACKAGE_PATH}; \
+        ssh -p ${SSH_PORT} "$i" "cd ${UDSPACKAGE_PATH}; \
            source /etc/profile; \
            sh riak_install.sh riak_install $i; \
            "
