@@ -48,6 +48,11 @@ function mongodb_install()
     
     if [ ! -d ${MONGODB_FILE} ] && [ -f ${MONGODB_FILE}.gz ]; then \
         tar zxvf ${MONGODB_FILE}.gz -C ./bin 2>&1 >/dev/null; \
+        if [ $? -ne 0 ]; then \
+            echo "mongodb 解压失败"; \
+        else 
+            echo "mongodb 安装成功";
+        fi 
     fi
 
     #cd ${MONGODB_FILE}/bin; \

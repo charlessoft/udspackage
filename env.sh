@@ -7,7 +7,7 @@ function setjdkenv()
     #export ${JAVA_HOME}
 
     export CURPWD=$(cd `dirname $0`; pwd)
-    export JAVA_HOME=${CURPWD}/${JDK_FILE}
+    export JAVA_HOME=${CURPWD}/bin/${JDK_FILE}
     export JAVA_BIN=${JAVA_HOME}/bin
     export PATH=${JAVA_BIN}:${PATH}
 

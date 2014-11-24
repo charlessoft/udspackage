@@ -19,11 +19,11 @@ function jdk_install()
     #fi
 
     if [ ! -d ${JDK_FILE} ] && [ -f ${JDK_FILE}.tar.gz ]; then \
-        tar zxvf ${JDK_FILE}.tar.gz  2>&1 >/dev/null 
+        tar zxvf ${JDK_FILE}.tar.gz -C ./bin 2>&1 >/dev/null 
         if [ $? -ne 0 ]; then \
             echo "jdk 解压失败"; \
         else 
-            echo "安装成功";
+            echo "jdk 安装成功";
         fi 
     else 
         echo "jdk已经安装";
@@ -48,6 +48,8 @@ function dojdk_install()
 }
 
 
+export JDK_FILE=bin/${JDK_FILE}
+#echo "${JDK_FILE}";
 
 
 if [ "$1" = jdk_install ]

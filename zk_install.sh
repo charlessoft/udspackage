@@ -9,7 +9,12 @@ function zk_install()
     echo "${HOSTIP}:${MYID} zk_install..."
 
     if [  ! -d ${ZOOKEEPER_FILE} ] && [ -f ${ZOOKEEPER_FILE}.tar.gz  ]; then \
-        tar zxvf ${ZOOKEEPER_FILE}.tar.gz 2>&1 >/dev/null;
+        tar zxvf ${ZOOKEEPER_FILE}.tar.gz -C ./bin 2>&1 >/dev/null;
+        if [ $? -ne 0 ]; then \
+            echo "zookeeper 解压失败"; \
+        else 
+            echo "zookeeper 安装成功";
+        fi 
     fi
 
     echo "cp ./zoo_${HOSTIP}.cfg  ./${ZOOKEEPER_FILE}/conf/zoo.cfg";
@@ -28,6 +33,9 @@ function zk_start()
     echo "$1 zk_start..."
     
     initenv
+    if [ $? -ne 0 ]; then \
+        exit 1;
+    fi
     cd ${ZOOKEEPER_FILE}/bin && \
         sh ./zkServer.sh start
     cd ../../
@@ -168,6 +176,9 @@ function dozk_status()
             "
     done
 }
+
+
+export ZOOKEEPER_FILE=bin/${ZOOKEEPER_FILE}
 
 if [ "$1" = zk_install ]
 then 
