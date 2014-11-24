@@ -9,7 +9,8 @@ function deal_sudoers()
     else 
         cp ${SUDOERS_PATH} ${SUDOERS_PATH}_bak
     fi
-    echo "sed -e 's/Defaults\ \ \ \ requiretty/#Defaults    requiretty' ${SUDOERS_PATH}_bak > ${SUDOERS_PATH}"
+    #echo "sed -e 's/Defaults\ \ \ \ requiretty/#Defaults    requiretty' ${SUDOERS_PATH}_bak > ${SUDOERS_PATH}"
+    echo "设置sudo权限允许终端启动";
     sed -e 's/Defaults\ \ \ \ requiretty/#Defaults    requiretty/g' ${SUDOERS_PATH}_bak > ${SUDOERS_PATH}
 }
 
@@ -51,7 +52,8 @@ function deal_riakconf()
         cp ${RIAK_CONF} ${RIAK_CONF_BAK}; \
     fi
 
-    echo "sed -e 's/nodename\ =\ riak@1.1.1.1/namenode = riak@$1' "riak.conf"  > ${RIAK_CONF}"
+    #echo "sed -e 's/nodename\ =\ riak@1.1.1.1/namenode = riak@$1' "riak.conf"  > ${RIAK_CONF}"
+    echo "配置riakconf"
     sed -e 's/nodename\ =\ riak@1.1.1.1/nodename = riak@'$1'/g' "riak.conf"  > ${RIAK_CONF}
 
 }

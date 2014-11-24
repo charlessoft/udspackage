@@ -223,6 +223,10 @@ function doriak_install()
 }
 
 
+
+export RIAK_FILE=bin/${RIAK_FILE}
+
+
 if [ "$1" = riak_install ] 
 then 
     HOSTIP=$2
