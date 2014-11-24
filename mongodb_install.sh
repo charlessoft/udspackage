@@ -1,7 +1,7 @@
 #!/bin/bash 
 source ./config 
 
-function mongodb_isonline()
+function mongodb_status()
 {
     HOSTIP=$1
     echo "${HOSTIP} 检测 mongodb 是否运行"
@@ -107,7 +107,7 @@ function mongodb_start()
     HOSTIP=$1
     echo "${HOSTIP} 启动 mongodb "
 
-    mongodb_isonline ${HOSTIP}
+    mongodb_status ${HOSTIP}
     if [ $? -ne 0 ]; then \
         echo  "${HOSTIP} mongodb 没启动"; \
         if [ -d ${MONGODB_FILE} ]; then \
@@ -135,17 +135,17 @@ function mongodb_stop()
 }
 
 
-function domongodb_isonline()
+function domongodb_status()
 {
-    mongodb_isonline ${MONGODB_MASTER}
+    mongodb_status ${MONGODB_MASTER}
     echo ""
     for i in ${MONGODB_SLAVE_ARR[@]}; do
-        mongodb_isonline $i
+        mongodb_status $i
         echo ""
     done
     echo "" 
 
-    mongodb_isonline ${MONGODB_ARBITER}
+    mongodb_status ${MONGODB_ARBITER}
     echo ""
 }
 
@@ -278,9 +278,9 @@ then
     mongodb_start ${HOSTIP}
 fi
 
-if [ "$1" = mongodb_isonline ]
+if [ "$1" = mongodb_status ]
 then
-    echo "mongodb_isonline ===="
+    echo "mongodb_status ===="
     echo "参数共计 $#个"
     shift 
     #if [ $# -ne 2 ]; then \
@@ -289,5 +289,5 @@ then
     #fi 
     HOSTIP=$1
     #PORT=$2
-    mongodb_isonline ${HOSTIP}
+    mongodb_status ${HOSTIP}
 fi

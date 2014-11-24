@@ -337,9 +337,9 @@ function mongodb_admin()
                 deal_mongody_patch  $i
             done 
             ;;
-        isonline)
-            echo "mongodb isonlne";
-            domongodb_isonline
+        status)
+            echo "mongodb status";
+            domongodb_status
             ;;
         cluster)
             echo "mongodb cluster";
