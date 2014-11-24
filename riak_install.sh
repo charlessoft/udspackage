@@ -1,20 +1,22 @@
 #!/bin/bash 
-source ./config
+. ./config
+. ./env.sh
 
 function riak_install()
 {
     echo "$1 安装Riak";
     `which riak` > /dev/null  
     if [ $? -ne 0  ]; then \
-        echo "未安装riak,开始安装riak"; \
+        cfont -red "未安装riak,开始安装riak \n" -reset; \
         if [ -f ${RIAK_FILE} ]; then \
             rpm -ivh ${RIAK_FILE}; \
         else
-            echo "${RIAK_FILE}文件不存在退"; exit 1;
+            cfont -red "${RIAK_FILE} 文件不存在退出 \n" -reset; exit 1;
         fi
     else 
         #echo "riak 已经安装";
-        rpm -ivh ${RIAK_FILE}
+        #rpm -ivh ${RIAK_FILE}
+        cfont -red "已经安装 " `rpm -q riak` "\n" -reset;
     fi
     sh riak_patch.sh $1
 
@@ -26,14 +28,14 @@ function riak_start()
 
     #用riak ping 得不到内容,改用getpid
     pid=`riak getpid | awk '{print $1}'`
-    echo "$1 端口号:${pid}"
+    cfont -green "$1 端口号:${pid}\n" -reset;
     if [ "${pid}" == "Node" ]; then \
         echo "riak 未运行,启动riak...";
         riak start
         if [ $? -eq 0 ]; then \
             echo "启动成功!"; \
         else
-            echo "$1 riak 启动失败!"; 
+            cfont -red "$1 riak 启动失败!" -reset;
             res=1
         fi
     else 
@@ -42,12 +44,12 @@ function riak_start()
         riak stop
         riak start
         if [ $? -eq 0 ]; then \
-            pid=`riak getpid | awk '{print $1}'`
-            echo "Riak 进程号${pid}" \
-            echo "重启成功!"; \
+            pid=`riak getpid | awk '{print $1}'`;
+            echo "Riak 进程号${pid}"; \
+            cfont -green "重启成功!\n" -reset; \
         else
-            echo "$1 riak 重启失败!"; 
-            res=1
+            cfont -red "$1 riak 重启失败!\n" -reset; 
+            res=1;
         fi
 
         #riak-admin cluster join riak@

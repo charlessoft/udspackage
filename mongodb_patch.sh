@@ -24,5 +24,68 @@ function deal_mongody_patch()
 
 }
 
+function deal_mongodb_cluster_js_patch()
+{
+    MONGODB_CLUSTER_JS=mongodb_cluster.js
+    rm -fr ./${MONGODB_CLUSTER_JS}
+    
+    nIndex=0
+    MAXPRIORITY=100
+    #生成mongodb js 脚本
+    echo "var db = connect('${MONGODB_MASTER}/admin');" >> ${MONGODB_CLUSTER_JS};
+    echo "var cfg={
+        \"_id\":\"testrs\",
+        \"members\":[" >> ${MONGODB_CLUSTER_JS};
+
+    #生成master 
+    echo "
+        {
+        \"_id\":${nIndex},
+        \"host\":\"${MONGODB_MASTER}\",
+        \"priority\":${MAXPRIORITY}
+        }" >> ${MONGODB_CLUSTER_JS};
+
+    #生成slave
+
+    for i in ${MONGODB_SLAVE_ARR[@]}; do 
+        let nIndex=$nIndex+1;
+        let npriority=${MAXPRIORITY}-${nIndex};
+        echo "
+        ,{
+        \"_id\":${nIndex},
+        \"host\":\"${i}\",
+        \"priority\":${npriority}
+        }" >> ${MONGODB_CLUSTER_JS};
+    done
+
+
+
+    #生成arbiter
+    let nIndex=$nIndex+1;
+    #写入arbiter
+    echo "
+        ,{
+        \"_id\":${nIndex},
+        \"host\":\"${MONGODB_ARBITER}\",
+        \"arbiterOnly\":true
+        }" >> ${MONGODB_CLUSTER_JS};
+        
+
+    echo "]}">> ${MONGODB_CLUSTER_JS};
+    echo "printjson(rs.initiate(cfg));" >> ${MONGODB_CLUSTER_JS};
+    echo "printjson(rs.config());" >> ${MONGODB_CLUSTER_JS};
+        #]
+#printjson(rs.config());
+
+
+}
+
 #echo ${MONGODB_MASTER}
 #deal_mongody_patch  10.211.55.21
+
+if [ "$1" = deal_mongodb_cluster_js_patch ]
+then 
+    HOSTIP=$2
+    echo "deal_mongodb_cluster_js_patch====="
+    deal_mongodb_cluster_js_patch ${HOSTIP}
+fi

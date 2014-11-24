@@ -62,7 +62,7 @@ MONGODB_SLAVE_PIDFILEPATH=/home/charles/mongodb/slave.pid
 
 MONGODB_SLAVE_ARR=( \
     ${MONGODB_SLAVE} \
-    ${MONGODB_SLAVE} \
+    #${MONGODB_SLAVE} \
     )
 
 #MONGODB ARIBTER

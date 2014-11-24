@@ -3,10 +3,10 @@
 . ./env.sh
 function zk_install()
 {
-    echo "zk_install..."
 
     HOSTIP=$1
     MYID=$2
+    echo "${HOSTIP}:${MYID} zk_install..."
 
     if [  ! -d ${ZOOKEEPER_FILE} ] && [ -f ${ZOOKEEPER_FILE}.tar.gz  ]; then \
         tar zxvf ${ZOOKEEPER_FILE}.tar.gz 2>&1 >/dev/null;
@@ -84,7 +84,8 @@ function dozk_destroy()
 
 function zk_status()
 {
-    echo "zk_status..."
+    HOSTIP=$1
+    echo "${HOSTIP} zk_status..."
     initenv
     cd ${ZOOKEEPER_FILE}/bin && \
         sh ./zkServer.sh status

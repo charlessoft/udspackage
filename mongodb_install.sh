@@ -58,6 +58,8 @@ function mongodb_install()
 
 function mongodb_cluster()
 {
+    HOSTIP=$1
+    echo "${HOSTIP} cluster"
     if [ -d ${MONGODB_FILE} ]; then \
         cd ${MONGODB_FILE}/bin; \
         ./mongo ../../mongodb_cluster.js; \
@@ -70,7 +72,15 @@ function mongodb_cluster()
 function domongodb_cluster()
 {
     echo "domongodb_cluster";
+    HOSTIP=`echo ${MONGODB_ARBITER}|cut -d: -f 1`
+    echo ${HOSTIP}
+    ssh -p ${SSH_PORT} "${HOSTIP}" \
+        "cd ${UDSPACKAGE_PATH}; \
+        source /etc/profile; \
+        sh mongodb_install.sh mongodb_cluster ${HOSTIP}"
+
 }
+
 
 
 function mongodb_mkdir_master()
@@ -246,6 +256,14 @@ then
     HOSTIP=$2
     mongodb_init ${HOSTIP}
     mongodb_install ${HOSTIP}
+fi
+
+
+if [ "$1" = mongodb_cluster ]
+then 
+    echo "mongodb_cluster ====="
+    HOSTIP=$2
+    mongodb_cluster ${HOSTIP}
 fi
 
 if [ "$1" = mongodb_start ]

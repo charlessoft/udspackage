@@ -20,11 +20,14 @@ export CURPWD=$(cd `dirname $0`; pwd)
 
 function usage()
 {
+cfont  -red 
     echo "\
 Usage: ${SCRIPT} <command>
 where <command> is one of the following:
         { env | riak | mongodb | zookeeper | jdk | fscontent | fsname | fsmeta }
-    " 
+    "   
+cfont -reset
+
 }
 
 function env_help()
@@ -44,6 +47,17 @@ where <command> is one of the following:
 \
     { install | uninstall | start | stop | status | join | commit }"
 }
+
+function mongodb_help()
+{
+    echo "\ 
+Usage: ${SCRIPT} riak <command>
+where <command> is one of the following:  
+\
+    { start | install | gencfg | isonline | cluster | destroy }
+    "
+}
+
 
 
 function  fsname_help()
@@ -242,6 +256,10 @@ function env_admin()
             echo "允许ip列表"
             doaccessPort
             ;;
+        #init)
+            #echo "初始化环境,以及相关配置信息";
+            #mongodb_admin gencfg 
+            #zookeeper_admin gencfg
         *)
             env_help;
             ;;
@@ -332,7 +350,7 @@ function mongodb_admin()
             domongodb_destroy
             ;;
         *)
-            echo "install gencfg"
+            mongodb_help;
             ;;
     esac
 
