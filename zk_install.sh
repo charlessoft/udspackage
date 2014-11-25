@@ -6,18 +6,24 @@ function zk_install()
 
     HOSTIP=$1
     MYID=$2
-    echo "${HOSTIP}:${MYID} zk_install..."
+    echo "${HOSTIP}:${MYID} zk_install...";
 
     if [  ! -d ${ZOOKEEPER_FILE} ] && [ -f ${ZOOKEEPER_FILE}.tar.gz  ]; then \
         tar zxvf ${ZOOKEEPER_FILE}.tar.gz -C ./bin 2>&1 >/dev/null;
         if [ $? -ne 0 ]; then \
-            echo "zookeeper 解压失败"; \
+            cfont -red "zookeeper install fail!\n" -reset; \
         else 
-            echo "zookeeper 安装成功";
+            cfont -green " zookeeper install successfully!\n" -reset;
         fi 
+    else \
+        cfont -green "zookeeper already installed!\n" -reset;
     fi
 
-    echo "cp ./zoo_${HOSTIP}.cfg  ./${ZOOKEEPER_FILE}/conf/zoo.cfg";
+    #echo "cp ./zoo_${HOSTIP}.cfg  ./${ZOOKEEPER_FILE}/conf/zoo.cfg";
+    if [ ! -f ./zoo_${HOSTIP}.cfg ]; then \
+        cfont -red "zoo_${HOSTIP}.cfg No such file!\n" --reset; exit 1;
+    fi
+
     cp ./zoo_${HOSTIP}.cfg  ./${ZOOKEEPER_FILE}/conf/zoo.cfg;
     mkdir ${ZOOKEEPER_DATADIR} -p
     mkdir ${ZOOKEEPER_LOGDIR} -p
@@ -30,24 +36,36 @@ function zk_install()
 
 function zk_start()
 {
-    echo "$1 zk_start..."
+    HOSTIP=$1
+    echo "${HOSTIP} zk_start...";
     
     initenv
     if [ $? -ne 0 ]; then \
         exit 1;
     fi
+
     cd ${ZOOKEEPER_FILE}/bin && \
-        sh ./zkServer.sh start
+        sh ./zkServer.sh start > tmp.log
+        sleep 3s;
+        cfont -green 
+        echo `cat tmp.log`;
+        cfont -reset
     cd ../../
 
 }
 
 function zk_stop()
 {
-    echo "zk_stop...";
+    HOSTIP=$1
+    echo "${HOSTIP} zk_stop...";
     initenv 
     cd ${ZOOKEEPER_FILE}/bin && \
-        sh ./zkServer.sh stop
+        sh ./zkServer.sh stop > tmp.log
+        sleep 2s;
+        cfont -green 
+        echo `cat tmp.log`; 
+        cfont -reset;
+
     cd ../../
 }
 
@@ -64,10 +82,8 @@ function zk_destroy()
     rm -fr ${ZOOKEEPER_DATADIR};
     echo "RESSS=$?"
 
-
     rm -fr ${ZOOKEEPER_LOGDIR}
     echo "RESSS=$?"
-
 
     rm -fr ${ZOOKEEPER_FILE}
     echo "RESSS=$?"
@@ -96,7 +112,11 @@ function zk_status()
     echo "${HOSTIP} zk_status..."
     initenv
     cd ${ZOOKEEPER_FILE}/bin && \
-        sh ./zkServer.sh status
+        sh ./zkServer.sh status > tmp.log 
+        sleep 2s;
+        cfont -green 
+        echo `cat tmp.log`;
+        cfont -reset
     cd ../../
 }
 
@@ -182,7 +202,6 @@ export ZOOKEEPER_FILE=bin/${ZOOKEEPER_FILE}
 
 if [ "$1" = zk_install ]
 then 
-    echo "zk_install ====="
     HOSTIP=$2
     MYID=$3
     zk_install ${HOSTIP} ${MYID}
@@ -190,7 +209,6 @@ fi
 
 if [ "$1" = zk_start ]
 then 
-    echo "zk_start ====="
     HOSTIP=$2
     zk_start ${HOSTIP} 
 fi
@@ -198,7 +216,6 @@ fi
 
 if [ "$1" = zk_status ]
 then 
-    echo "zk_status ====="
     HOSTIP=$2
     zk_status ${HOSTIP} 
 fi
@@ -207,7 +224,6 @@ fi
 
 if [ "$1" = zk_stop ]
 then 
-    echo "zk_stop ====="
     HOSTIP=$2
     zk_stop ${HOSTIP} 
 fi

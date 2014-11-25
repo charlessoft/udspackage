@@ -32,60 +32,72 @@ cfont -reset
 
 function env_help()
 {
+cfont  -red 
     echo "\
 Usage: ${SCRIPT} env <command>
 where <command> is one of the following:
     { nopwd | checkenv | setenv | distribute } "
+cfont -reset
 }
 
 
 function riak_help()
 {
-    echo "\
+cfont  -red 
+    echo "
 Usage: ${SCRIPT} riak <command>
 where <command> is one of the following:  
 \
     { install | uninstall | start | stop | status | join | commit }"
+cfont -reset
 }
 
 function mongodb_help()
 {
-    echo "\ 
+cfont  -red 
+    echo " 
 Usage: ${SCRIPT} riak <command>
 where <command> is one of the following:  
 \
-    { start | install | gencfg | isonline | cluster | destroy }
+    { start | install | gencfg | status | cluster | destroy }
     "
+cfont  -reset
 }
 
 
 
 function  fsname_help()
 {
+    cfont -red
     echo "\
 Usage: ${SCRIPT} fsname <command>
 where <command> is one of the following:  
 \
     { start | stop | status }"
+cfont -reset
 }
 
 function fscontent_help()
 {
+cfont -red
     echo "\
 Usage: ${SCRIPT} fscontent <command>
 where <command> is one of the following:  
 \
     { start | stop | status }"
+cfont -reset
 
 }
 
 function fsmeta_help()
 {
+cfont -red
     echo "\
 Usage: ${SCRIPT} fsmeta <command>
 where <command> is one of the following:  
 \
     { start | stop | status }"
+cfont -reset
 
 }
 
@@ -336,18 +348,23 @@ function mongodb_admin()
             for i in ${MONGODB_SLAVE_ARR[@]}; do
                 deal_mongody_patch  $i
             done 
+            deal_mongodb_cluster_js_patch 
             ;;
         status)
             echo "mongodb status";
-            domongodb_status
+            domongodb_status;
             ;;
         cluster)
             echo "mongodb cluster";
-            domongodb_cluster
+            domongodb_cluster;
             ;;
         destroy)
             echo "mongodb destroy";
-            domongodb_destroy
+            domongodb_destroy;
+            ;;
+        stop)
+            echo "=====mongodb stop=====";
+            domongodb_stop;
             ;;
         *)
             mongodb_help;
@@ -357,6 +374,35 @@ function mongodb_admin()
 }
 
 
+
+function runall()
+{
+   
+    zookeeper_admin gencfg 
+    mongodb_admin gencfg 
+    #env_admin nopwd
+    env_admin distribute
+    #sudo sh runsh.sh env nopwd
+    sudo sh runsh.sh env iptables
+
+    sudo sh runsh.sh riak install 
+    sudo sh runsh.sh riak start 
+   
+    jdk_admin install 
+    zookeeper_admin install 
+    zookeeper_admin start
+    zookeeper_admin stop
+
+    mongodb_admin install
+    mongodb_admin start
+
+    #mongodb_admin stop
+    #mongodb_admin install 
+    
+    
+
+    
+}
 case "$1" in 
     env)
         shift
@@ -392,6 +438,11 @@ case "$1" in
         shift
         echo "fs-meta";
         fsmeta_admin "$@";
+        ;;
+    runall)
+        shift
+        echo "runall";
+        runall "$@";
         ;;
     #fsjetty)
         #shfit

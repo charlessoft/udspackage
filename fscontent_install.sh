@@ -2,6 +2,8 @@
 . ./config 
 . ./env.sh
 
+export CONTENT_FILE=bin/${CONTENT_FILE}
+#echo "${CONTENT_FILE}"
 function fscontent_status()
 {
     HOSTIP=$1
@@ -72,7 +74,7 @@ function dofscontent_start()
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
         nohup sh fscontent_install.sh content_start ${CONTENT_SERVER}  \
-        > ${CONTENT_FILE}/target/fscontent_log.log 2>&1 &"
+        > log/fscontent_log.log 2>&1 &"
     sleep 2s
 }
 

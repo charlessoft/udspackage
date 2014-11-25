@@ -4,19 +4,19 @@
 
 function riak_install()
 {
-    echo "$1 安装Riak";
-    `which riak` > /dev/null  
+    echo "$1 install Riak";
+    `which riak` > /dev/null;
     if [ $? -ne 0  ]; then \
-        cfont -red "未安装riak,开始安装riak \n" -reset; \
+        cfont -green "begin install riak ...\n" -reset; \
         if [ -f ${RIAK_FILE} ]; then \
             rpm -ivh ${RIAK_FILE}; \
         else
-            cfont -red "${RIAK_FILE} 文件不存在退出 \n" -reset; exit 1;
+            cfont -red "${RIAK_FILE} No such file!\n" -reset; exit 1;
         fi
     else 
         #echo "riak 已经安装";
         #rpm -ivh ${RIAK_FILE}
-        cfont -red "已经安装 " `rpm -q riak` "\n" -reset;
+        cfont -red "already installed " `rpm -q riak` "\n" -reset;
     fi
     sh riak_patch.sh $1
 
@@ -26,29 +26,34 @@ function riak_start()
 {
     res=0
 
+    `which riak` > /dev/null;
+    if [ $? -ne 0  ]; then \
+        exit 1; \
+    fi
+
     #用riak ping 得不到内容,改用getpid
     pid=`riak getpid | awk '{print $1}'`
-    cfont -green "$1 端口号:${pid}\n" -reset;
+    cfont -green "$1 port:${pid}\n" -reset;
     if [ "${pid}" == "Node" ]; then \
-        echo "riak 未运行,启动riak...";
+        cfont -green "start riak...\n" -reset;
         riak start
         if [ $? -eq 0 ]; then \
-            echo "启动成功!"; \
+            cfont -green "start successfully!\n" -reset; \
         else
-            cfont -red "$1 riak 启动失败!" -reset;
+            cfont -red "$1 riak fail!" -reset;
             res=1
         fi
     else 
-        echo "正在运行.....重新启动下";
+        echo "already running.....restart riak";
 
         riak stop
         riak start
         if [ $? -eq 0 ]; then \
             pid=`riak getpid | awk '{print $1}'`;
-            echo "Riak 进程号${pid}"; \
-            cfont -green "重启成功!\n" -reset; \
+            echo "Riak pid: ${pid}"; \
+            cfont -green "restart successfully!\n" -reset; \
         else
-            cfont -red "$1 riak 重启失败!\n" -reset; 
+            cfont -red "$1 riak restart fail!\n" -reset; 
             res=1;
         fi
 
@@ -66,14 +71,14 @@ function riak_status()
 
 function doriak_status()
 {
-    echo "获取各台Riak status"
+    echo "get Riak status"
     for i in ${RIAK_RINK[@]}; do 
         ssh -p ${SSH_PORT} "$i" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
             sh riak_install.sh riak_status $i \
             "
         if [ $? -ne 0 ]; then \
-            echo "查询失败 $1"
+            echo "query status fail $1"
         fi
     done
 
@@ -91,13 +96,13 @@ function riak_joinring()
             echo "riak-admin cluster join riak@${RIAK_FIRST_NODE};"
             riak-admin cluster join riak@${RIAK_FIRST_NODE};
             if [ $? -eq 0 ]; then \
-                echo "$1 加入 ${RIAK_FIRST_NODE} 成功!"; \
+                cfont -green "$1 join ${RIAK_FIRST_NODE} successfully!\n" -reset; \
             else 
-                echo "$1 加入 ${RIAK_FIRST_NODE} 失败!";
+                cfont -red "$1 join ${RIAK_FIRST_NODE} fail!\n" -reset;
                 exit 1;
             fi
         else 
-            echo "$1 已经加入到环中";
+            cfont -green "$1 already join the ring\n" -reset;
         fi
     fi
 }
@@ -111,18 +116,18 @@ function doriak_joinring()
         res=$?
         echo "====curl ${res}"
         if [ ${res} -ne 0 ]; then \
-            echo "Riak curl 网络检查失败!退出安装,请检查原因!";
+            cfont -red "Riak curl network check fail!\n" -reset;
             exit $?;
         fi
 
-        echo "$1 Riak 检测启动成功,准备加入环中"; \
+        cfont -green "$1 Riak network check successfully,join the ring\n" -reset; \
             ssh -p ${SSH_PORT} "$i" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
             sh riak_install.sh riak_joinring $i"
 
         res=$?
         if [ ${res} -ne 0 ]; then \
-            echo "cluster 加入失败 ${res}";
+            cfont -red "cluster join fail ${res}\n" -reset;
             exit ${res};
         fi
         
@@ -152,7 +157,7 @@ function doriak_stop()
             sh riak_install.sh riak_stop $i \
             "
         if [ $? -ne 0 ]; then \
-            echo "停止失败 $1"
+            cfont -red "stop fail $1\n" -reset;
         fi
     done
 }
@@ -175,7 +180,7 @@ function riak_commit()
     riak-admin bucket-type create uds_fs_no_mult '{"props":{"allow_mult":false, "last_write_wins":true}}'
     riak-admin bucket-type activate uds_fs_no_mult
     riak-admin bucket-type list 
-    #ji群 ok
+    #集群 ok
 
 }
 
@@ -192,14 +197,16 @@ function doriak_commit()
 
 function doriak_start()
 {
-    echo "启动各台Riak"
+    echo "start Riak"
     for i in ${RIAK_RINK[@]}; do 
         ssh -p ${SSH_PORT} "$i" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
             sh riak_install.sh riak_start $i \
             "
         if [ $? -ne 0 ]; then \
-            echo "启动失败 $1"
+            cfont -red "$i riak start fail $1\n" -reset;
+            exit 1;
+                
         fi
     done
 
@@ -209,7 +216,7 @@ function doriak_start()
 function doriak_install()
 {
     for i in ${RIAK_RINK[@]}; do
-        echo "远程连接到$i安装Riak"
+        echo "$i install Riak";
 
         ssh -p ${SSH_PORT} "$i" "cd ${UDSPACKAGE_PATH}; \
            source /etc/profile; \
@@ -230,7 +237,7 @@ export RIAK_FILE=bin/${RIAK_FILE}
 if [ "$1" = riak_install ] 
 then 
     HOSTIP=$2
-    echo "开始安装Riak"
+    echo "install Riak"
     riak_install ${HOSTIP}
 fi 
 

@@ -15,3 +15,7 @@ UDS自动安装部署工具
 
 
 
+1.riak
+2.jdk
+3.zookeeper
+4.mongodb 

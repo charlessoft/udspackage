@@ -2,6 +2,7 @@
 . ./config 
 . ./env.sh
 
+export META_FILE=bin/${META_FILE}
 function fsmeta_status()
 {
     HOSTIP=$1
@@ -35,7 +36,7 @@ function fsmeta_start()
     fi
 
     echo "${HOSTIP} meta start";
-    cd fs-metaserver/target && \
+    cd ${META_FILE}/target && \
         java -jar -server ${META_SERVER_PARAMS} fs-metaserver-1.0-SNAPSHOT.jar
     cd ../../
 }
@@ -69,7 +70,7 @@ function dofsmeta_start()
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
         nohup sh fsmeta_install.sh fsmeta_start ${META_SERVER} \
-        > ${META_FILE}/target/fsmeta_log.log 2>&1 &"
+        > log/fsmeta_log.log 2>&1 &"
 }
 
 function dofsmeta_stop()

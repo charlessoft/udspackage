@@ -2,6 +2,7 @@
 . ./config 
 . ./env.sh
 
+export NAME_FILE=bin/${NAME_FILE}
 function fsname_status()
 {
     HOSTIP=$1
@@ -65,7 +66,7 @@ function dofsname_start()
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
         nohup sh fsname_install.sh fsname_start ${NAME_SERVER} \
-        > ${NAME_FILE}/target/fsname_log.log 2>&1 &"
+        > log/fsname_log.log 2>&1 &"
 
 }
 
