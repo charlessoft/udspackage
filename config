@@ -25,6 +25,10 @@ CONTENT_FILE=fs-contentserver
 NAME_FILE=fs-nameserver
 META_FILE=fs-metaserver
 
+CONTENT_LOG_FILE=fscontent_log.log
+NAME_LOG_FILE=fsname_log.log
+META_LOG_FILE=fsmeta_log.log
+
 META_SERVER_PARAMS="-Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M"
 NAME_SERVER_PARAMS="-Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M"
 CONTENT_SERVER_PARAMS="-Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M"

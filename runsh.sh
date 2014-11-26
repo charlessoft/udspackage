@@ -155,6 +155,10 @@ function fsname_admin()
             echo "nameserver status...";
             dofsname_status;
             ;;
+        log)
+            echo "nameserver collect log...";
+            fsname_log;
+            ;;
         *)
             fsname_help;
             ;;
@@ -176,6 +180,10 @@ function fsmeta_admin()
             echo "metaserver status...";
             dofsmeta_status;
             ;;
+        log)
+            echo "metaserver collect log...";
+            fsmeta_log;
+            ;;
         *)
             fsmeta_help;
     esac
@@ -195,6 +203,10 @@ function fscontent_admin()
         status)
             echo "content status...";
             dofscontent_status;
+            ;;
+        log)
+            echo "content collect log...";
+            fscontent_log;
             ;;
         *)
             fscontent_help;
@@ -380,9 +392,9 @@ function runall()
    
     zookeeper_admin gencfg 
     mongodb_admin gencfg 
-    #env_admin nopwd
+    env_admin nopwd
     env_admin distribute
-    #sudo sh runsh.sh env nopwd
+    sudo sh runsh.sh env nopwd
     sudo sh runsh.sh env iptables
 
     sudo sh runsh.sh riak install 

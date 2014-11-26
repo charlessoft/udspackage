@@ -7,12 +7,12 @@ function fsmeta_status()
 {
     HOSTIP=$1
     echo "${HOSTIP} meta status";
-    ps -ef | grep "fs-metaserver" | grep -v "grep" 2>&1 >/dev/null
+    ps -ef | grep "fs-metaserver" | grep -v "grep" 
     res=$?
     if [ ${res} -eq 0 ]; then \
-        echo "${HOSTIP} fs-metaserver 正在运行"; \
+        cfont -green "${HOSTIP} fs-metaserver is running\n" -reset; \
     else
-        echo "${HOSTIP} fs-metaserver 未运行"; \
+        cfont -red "${HOSTIP} fs-metaserver is probably not running\n" -reset; \
     fi
     return ${res}
 }
@@ -28,11 +28,11 @@ function fsmeta_start()
     HOSTIP=$1
     initenv
     if [ $? -ne 0 ]; then \
-        echo "环境变量不正确无法启动 fsmeta-server"; exit 1;
+        cfont -red "jdk environment error! fsmeta-server start fail!\n" -reset; exit 1;
     fi
     fsmeta_status
     if [ $? -eq 0 ]; then \
-        echo "${HOSTIP} fs-metaserver 正在运行"; exit 0;
+        cfont -green "${HOSTIP} fs-metaserver is running\n" -reset; exit 0;
     fi
 
     echo "${HOSTIP} meta start";
@@ -52,7 +52,9 @@ function fsmate_stop()
         #kill 
         kill `ps -ef |grep "fs-metaserver" |grep -v "grep" | awk '{print $2}'`; \
             if [ $? -eq 0 ]; then \
-                echo "${HOSTIP} fsmetaserver成功关闭进程";
+                cfont -green "${HOSTIP} fsmetaserver stop successfully\n" -reset; \
+            else 
+                cfont -green "${HOSTIP} fsmetaserver stoped!\n" -reset;
             fi
     fi
 }
@@ -63,6 +65,20 @@ function dofsmeta_install()
     echo "dofsmeta_install";
 }
 
+function fsmeta_log()
+{
+
+   echo "${META_SERVER} collect log";
+   echo "scp ${META_SERVER}:${UDSPACKAGE_PATH}/log/${META_LOG_FILE} ./log/";
+   scp ${META_SERVER}:${UDSPACKAGE_PATH}/log/${META_LOG_FILE} ./log/
+
+   if [ $? -eq 0 ]; then \
+       cfont -green "collect ${META_LOG_FILE} log successfully!\n" -reset ;
+   else \
+       cfont -red "collecg ${META_LOG_FILE} log fail!\n" -reset;
+   fi
+}
+
 function dofsmeta_start()
 {
     echo "dofsmeta_start";
@@ -70,7 +86,7 @@ function dofsmeta_start()
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
         nohup sh fsmeta_install.sh fsmeta_start ${META_SERVER} \
-        > log/fsmeta_log.log 2>&1 &"
+        > log/${META_LOG_FILE} 2>&1 &"
 }
 
 function dofsmeta_stop()

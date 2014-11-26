@@ -38,7 +38,7 @@ function riak_start()
         cfont -green "start riak...\n" -reset;
         riak start
         if [ $? -eq 0 ]; then \
-            cfont -green "start successfully!\n" -reset; \
+            cfont -green "start success!\n" -reset; \
         else
             cfont -red "$1 riak fail!" -reset;
             res=1
@@ -51,7 +51,7 @@ function riak_start()
         if [ $? -eq 0 ]; then \
             pid=`riak getpid | awk '{print $1}'`;
             echo "Riak pid: ${pid}"; \
-            cfont -green "restart successfully!\n" -reset; \
+            cfont -green "restart success!\n" -reset; \
         else
             cfont -red "$1 riak restart fail!\n" -reset; 
             res=1;
@@ -96,7 +96,7 @@ function riak_joinring()
             echo "riak-admin cluster join riak@${RIAK_FIRST_NODE};"
             riak-admin cluster join riak@${RIAK_FIRST_NODE};
             if [ $? -eq 0 ]; then \
-                cfont -green "$1 join ${RIAK_FIRST_NODE} successfully!\n" -reset; \
+                cfont -green "$1 join ${RIAK_FIRST_NODE} success!\n" -reset; \
             else 
                 cfont -red "$1 join ${RIAK_FIRST_NODE} fail!\n" -reset;
                 exit 1;
@@ -120,7 +120,7 @@ function doriak_joinring()
             exit $?;
         fi
 
-        cfont -green "$1 Riak network check successfully,join the ring\n" -reset; \
+        cfont -green "$1 Riak network check success,join the ring\n" -reset; \
             ssh -p ${SSH_PORT} "$i" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
             sh riak_install.sh riak_joinring $i"

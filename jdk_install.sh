@@ -12,7 +12,7 @@ function jdk_install()
         if [ $? -ne 0 ]; then \
             cfont -red "jdk install fail!\n" -reset; \
         else 
-            cfont -green "jdk install successfully!\n" -reset;
+            cfont -green "jdk install success!\n" -reset;
         fi 
     else 
         cfont -green "jdk already installed!\n" -reset;

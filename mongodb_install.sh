@@ -12,7 +12,7 @@ function mongodb_status()
         cfont -red "mongodb curl network check fail! res=${res}\n" -reset;
         return ${res}; \
     else 
-        cfont -green "mongodb curl network check successfully ,mongodb is running! res=${res}\n" -reset;
+        cfont -green "mongodb curl network check success,mongodb is running! res=${res}\n" -reset;
     fi
 
 }
@@ -44,14 +44,14 @@ function mongodb_init()
 function mongodb_install()
 {
     HOSTIP=$1;
-    echo "HOSTIP} install mongodb";
+    echo "${HOSTIP} install mongodb";
     
     if [ ! -d ${MONGODB_FILE} ] && [ -f ${MONGODB_FILE}.gz ]; then \
         tar zxvf ${MONGODB_FILE}.gz -C ./bin 2>&1 >/dev/null; \
         if [ $? -ne 0 ]; then \
             cfont -red "mongodb unzip fail\n" -reset; \
         else 
-            cfont -green "mongodb unzip successfully!\n" -reset;
+            cfont -green "mongodb unzip success!\n" -reset;
         fi 
     else \
         cfont -green "mongodb is already installed!\n" -reset;
@@ -141,7 +141,7 @@ function mongodb_stop()
         ./mongod --shutdown --dbpath ${DBPATH} ;\
         sleep 3s;
         if [ $? -eq 0 ]; then \
-            cfont -green "stop mongod successfully!\n" -reset;
+            cfont -green "stop mongod success!\n" -reset;
         fi
     else 
         cfont -red "mongodb ${MONGODB_FILE} No such file!\n" -reset;

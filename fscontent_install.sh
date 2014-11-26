@@ -11,9 +11,9 @@ function fscontent_status()
     ps -ef | grep "fs-content" | grep -v "grep"
     res=$?
     if [ ${res} -eq 0 ]; then \
-        echo "${HOSTIP} fs-contentserver 正在运行"; \
-    else
-        echo "${HOSTIP} fs-contentserver 未运行"; \
+        cfont -green "${HOSTIP} fs-contentserver is running\n" -reset; \
+    else \
+        cfont -red "${HOSTIP} fs-contentserver is probably not running.\n" -reset; \
     fi
     return ${res}
 }
@@ -24,24 +24,36 @@ function fscontent_install()
     echo "${HOSTIP} content install";
 }
 
+function fscontent_log()
+{
+   echo "${CONTENT_SERVER} collect log";
+   echo "scp ${CONTENT_SERVER}:${UDSPACKAGE_PATH}/log/${CONTENT_LOG_FILE} ./log/";
+   scp ${CONTENT_SERVER}:${UDSPACKAGE_PATH}/log/${CONTENT_LOG_FILE} ./log/ 
+   if [ $? -eq 0 ]; then \
+       cfont -green "collect fscontent log success!\n" -reset ;
+   else \
+       cfont -red "collecg fscontent log fail!\n" -reset;
+   fi
+
+}
+
 function fscontent_start()
 {
     HOSTIP=$1
     initenv
     if [ $? -ne 0 ]; then \
-        echo "环境变量不正确无法启动 fs-contentserver"; exit 1;
+        cfont -red"jdk environment error ! fs-contentserver start fail\n" -reset; exit 1;
     fi
 
     fscontent_status
     if [ $? -eq 0 ]; then \
-        echo "${HOSTIP} fs-contentserver已经启动"; exit 0;
+        cfont -red "${HOSTIP} fs-contentserver already start\n" -reset; exit 0;
     fi
 
     echo "${HOSTIP} fscontent start";
     #java -version
     cd ${CONTENT_FILE}/target && \
         java -jar -server ${CONTENT_SERVER_PARAMS} fs-contentserver-1.0-SNAPSHOT.jar
-        #java -jar -server -Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M fs-contentserver-1.0-SNAPSHOT.jar
     cd ../../
 }
 
@@ -55,7 +67,7 @@ function fscontent_stop()
         #kill 
         kill `ps -ef | grep "fs-content" | grep -v "grep" | awk '{print $2}'`; \
             if [ $? -eq 0 ]; then \
-                echo "${HOSTIP} fs-contentserver 成功关闭进程";
+                cfont -green "${HOSTIP} fs-contentserver stop success\n" -reset;
             fi
     fi
 
@@ -74,8 +86,8 @@ function dofscontent_start()
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
         nohup sh fscontent_install.sh content_start ${CONTENT_SERVER}  \
-        > log/fscontent_log.log 2>&1 &"
-    sleep 2s
+        > log/${CONTENT_LOG_FILE} 2>&1 &"
+    sleep 2s;
 }
 
 function dofscontent_stop()

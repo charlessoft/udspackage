@@ -13,7 +13,7 @@ function zk_install()
         if [ $? -ne 0 ]; then \
             cfont -red "zookeeper install fail!\n" -reset; \
         else 
-            cfont -green " zookeeper install successfully!\n" -reset;
+            cfont -green " zookeeper install success!\n" -reset;
         fi 
     else \
         cfont -green "zookeeper already installed!\n" -reset;
