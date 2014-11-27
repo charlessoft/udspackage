@@ -419,21 +419,26 @@ function runall()
    
     zookeeper_admin gencfg 
     mongodb_admin gencfg 
+
     env_admin nopwd
     env_admin distribute
+
     sudo sh runsh.sh env nopwd
     sudo sh runsh.sh env iptables
 
     sudo sh runsh.sh riak install 
     sudo sh runsh.sh riak start 
+    sudo sh runsh.sh riak join 
+    sudo sh runsh.sh riak commit 
    
     jdk_admin install 
     zookeeper_admin install 
     zookeeper_admin start
-    zookeeper_admin stop
+    #zookeeper_admin stop
 
     mongodb_admin install
     mongodb_admin start
+    mongodb_admin cluster 
 
     #mongodb_admin stop
     #mongodb_admin install 
