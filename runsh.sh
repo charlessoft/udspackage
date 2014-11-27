@@ -64,7 +64,18 @@ where <command> is one of the following:
 cfont  -reset
 }
 
+function zookeeper_help()
+{
+cfont  -red 
+    echo " 
+Usage: ${SCRIPT} zookeeper <command>
+where <command> is one of the following:  
+\
+    { install | start | stop | status | gencfg | destroy  }
+    "
+cfont  -reset
 
+}
 
 function  fsname_help()
 {
@@ -231,6 +242,10 @@ function riak_admin()
             echo "riak status...";
             doriak_status;
             ;;
+        rink_status)
+            echo "riak rink status...";
+            doriak_rink_status;
+            ;;
         join)
             echo "join...";
             doriak_joinring;
@@ -269,6 +284,10 @@ function env_admin()
             docollectres
             generateEnvrpt
             ;;
+        checkinstalledstatus)
+            echo "check installed status...";
+            docheckinstalledstatus;
+            ;;
         setenv)
             echo "设置环境变量"
             ;;
@@ -277,7 +296,7 @@ function env_admin()
             distributepackage
             ;;
         iptables)
-            echo "允许ip列表"
+            echo "allow port table"
             doaccessPort
             ;;
         #init)
@@ -336,6 +355,10 @@ function jdk_admin()
             echo "jdk install";
             dojdk_install 
             ;;
+        status)
+            echo "jdk status";
+            dojdk_status;
+            ;;
         *)
             echo "jdk install ";
             ;;
@@ -369,6 +392,10 @@ function mongodb_admin()
         cluster)
             echo "mongodb cluster";
             domongodb_cluster;
+            ;;
+        cluster_status)
+            echo "mongodb cluster_status";
+            domongodb_cluster_status;
             ;;
         destroy)
             echo "mongodb destroy";

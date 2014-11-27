@@ -11,8 +11,10 @@ function fsmeta_status()
     res=$?
     if [ ${res} -eq 0 ]; then \
         cfont -green "${HOSTIP} fs-metaserver is running\n" -reset; \
+        echo "${HOSTIP} fs-metaserver check success!" > ${META_CHECK_LOG}; \
     else
         cfont -red "${HOSTIP} fs-metaserver is probably not running\n" -reset; \
+        echo "${HOSTIP} fs-metaserver check fail!" > ${META_CHECK_LOG}; \
     fi
     return ${res}
 }
@@ -52,7 +54,7 @@ function fsmate_stop()
         #kill 
         kill `ps -ef |grep "fs-metaserver" |grep -v "grep" | awk '{print $2}'`; \
             if [ $? -eq 0 ]; then \
-                cfont -green "${HOSTIP} fsmetaserver stop successfully\n" -reset; \
+                cfont -green "${HOSTIP} fsmetaserver stop success\n" -reset; \
             else 
                 cfont -green "${HOSTIP} fsmetaserver stoped!\n" -reset;
             fi
@@ -73,7 +75,7 @@ function fsmeta_log()
    scp ${META_SERVER}:${UDSPACKAGE_PATH}/log/${META_LOG_FILE} ./log/
 
    if [ $? -eq 0 ]; then \
-       cfont -green "collect ${META_LOG_FILE} log successfully!\n" -reset ;
+       cfont -green "collect ${META_LOG_FILE} log success!\n" -reset ;
    else \
        cfont -red "collecg ${META_LOG_FILE} log fail!\n" -reset;
    fi

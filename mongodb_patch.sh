@@ -32,7 +32,7 @@ function deal_mongodb_cluster_js_patch()
     nIndex=0
     MAXPRIORITY=100
     #生成mongodb js 脚本
-    echo "var db = connect('${MONGODB_MASTER}/admin');" >> ${MONGODB_CLUSTER_JS};
+    echo "var db = connect('${MONGODB_MASTER}:${MONGODB_MASTER_PORT}/admin');" >> ${MONGODB_CLUSTER_JS};
     echo "var cfg={
         \"_id\":\"testrs\",
         \"members\":[" >> ${MONGODB_CLUSTER_JS};
@@ -41,7 +41,7 @@ function deal_mongodb_cluster_js_patch()
     echo "
         {
         \"_id\":${nIndex},
-        \"host\":\"${MONGODB_MASTER}\",
+        \"host\":\"${MONGODB_MASTER}:${MONGODB_MASTER_PORT}\",
         \"priority\":${MAXPRIORITY}
         }" >> ${MONGODB_CLUSTER_JS};
 
@@ -53,7 +53,7 @@ function deal_mongodb_cluster_js_patch()
         echo "
         ,{
         \"_id\":${nIndex},
-        \"host\":\"${i}\",
+        \"host\":\"${i}:${MONGODB_SLAVE_PORT}\",
         \"priority\":${npriority}
         }" >> ${MONGODB_CLUSTER_JS};
     done
@@ -66,7 +66,7 @@ function deal_mongodb_cluster_js_patch()
     echo "
         ,{
         \"_id\":${nIndex},
-        \"host\":\"${MONGODB_ARBITER}\",
+        \"host\":\"${MONGODB_ARBITER}:${MONGODB_ARBITER_PORT}\",
         \"arbiterOnly\":true
         }" >> ${MONGODB_CLUSTER_JS};
         

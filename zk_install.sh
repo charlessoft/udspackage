@@ -1,6 +1,8 @@
 #!/bin/bash 
 . ./config 
 . ./env.sh
+export ZOOKEEPER_FILE=bin/${ZOOKEEPER_FILE}
+
 function zk_install()
 {
 
@@ -13,7 +15,7 @@ function zk_install()
         if [ $? -ne 0 ]; then \
             cfont -red "zookeeper install fail!\n" -reset; \
         else 
-            cfont -green " zookeeper install success!\n" -reset;
+            cfont -green "zookeeper install success!\n" -reset;
         fi 
     else \
         cfont -green "zookeeper already installed!\n" -reset;
@@ -39,9 +41,9 @@ function zk_start()
     HOSTIP=$1
     echo "${HOSTIP} zk_start...";
     
-    initenv
+    initenv ${HOSTIP}
     if [ $? -ne 0 ]; then \
-        exit 1;
+        return 1;
     fi
 
     cd ${ZOOKEEPER_FILE}/bin && \
@@ -58,7 +60,7 @@ function zk_stop()
 {
     HOSTIP=$1
     echo "${HOSTIP} zk_stop...";
-    initenv 
+    initenv ${HOSTIP}
     cd ${ZOOKEEPER_FILE}/bin && \
         sh ./zkServer.sh stop > tmp.log
         sleep 2s;
@@ -110,14 +112,27 @@ function zk_status()
 {
     HOSTIP=$1
     echo "${HOSTIP} zk_status..."
-    initenv
-    cd ${ZOOKEEPER_FILE}/bin && \
-        sh ./zkServer.sh status > tmp.log 
+    initenv ${HOSTIP}
+
+    if [ -d ${ZOOKEEPER_FILE}/bin ]; then \
+        cd ${ZOOKEEPER_FILE}/bin && \
+        sh ./zkServer.sh status > /tmp/tmp.log
         sleep 2s;
-        cfont -green 
-        echo `cat tmp.log`;
-        cfont -reset
-    cd ../../
+        grep -rin "error" /tmp/tmp.log 2>&1 >/dev/null;
+        if [ $? -eq 0 ]; then \
+            cfont -red
+            echo `cat /tmp/tmp.log`
+            cfont -reset
+        else \
+            cfont -green 
+            echo `cat /tmp/tmp.log`
+            cfont -reset
+        fi
+        cd ../../../;
+        sed -e 's/\(.*\)/'${HOSTIP}' zookeeper \1/g' /tmp/tmp.log > ${ZOOKEEPER_CHECK_LOG}
+    else 
+        echo "${HOSTIP} zookeeper check fail!" > ${ZOOKEEPER_CHECK_LOG}
+    fi
 }
 
 
@@ -198,7 +213,6 @@ function dozk_status()
 }
 
 
-export ZOOKEEPER_FILE=bin/${ZOOKEEPER_FILE}
 
 if [ "$1" = zk_install ]
 then 

@@ -5,10 +5,16 @@ SSH_PORT=22
 MONGODB_FILE=mongodb-linux-x86_64-2.6.3
 JDK_FILE=jdk1.6.0_45
 RIAK_FILE=riak-2.0.2-1.el5.x86_64.rpm
-
-IPTABLES_FILE=/etc/sysconfig/iptables
+ZOOKEEPER_FILE=zookeeper-3.4.6
 
 TMP_PATH=/home/charles/
+
+CONTENT_SERVER=10.211.55.18
+META_SERVER=10.211.55.21
+NAME_SERVER=10.211.55.22
+
+#default config 
+IPTABLES_FILE=/etc/sysconfig/iptables
 ID_RSA_PUB=$HOME/.ssh/id_rsa.pub
 LOG_COLLECT=${TMP_PATH}/udslog.log
 LOG=${TMP_PATH}/udsinstall.log
@@ -16,10 +22,6 @@ LOG_MERGE=${TMP_PATH}/udsmerge.log
 UDSPACKAGE_FILE=udspackage
 UDSPACKAGE_PATH=${TMP_PATH}/${UDSPACKAGE_FILE}
 SUDOERS_PATH=/etc/sudoers
-
-CONTENT_SERVER=10.211.55.18
-META_SERVER=10.211.55.21
-NAME_SERVER=10.211.55.22
 
 CONTENT_FILE=fs-contentserver
 NAME_FILE=fs-nameserver
@@ -42,6 +44,7 @@ RIAK_RINK=( \
     10.211.55.21 \
     10.211.55.22 \
     )
+
 RIAK_FIRST_NODE=${RIAK_RINK[0]}
 #2.0.2
 RIAK_CONF_BAK=/etc/riak/riak.conf_bak
@@ -53,16 +56,18 @@ RIAK_HANDOFF_PORT=8099
 RIAK_DEFPORT=44571
 
 #MONGODB MASTER
-MONGODB_MASTER=10.211.55.18:27017
+MONGODB_MASTER=10.211.55.18
 MONGODB_MASTER_DBPATH=/home/charles/mongodb/data/master  
 MONGODB_MASTER_LOGPATH=/home/charles/mongodb/log/master.log 
 MONGODB_MASTER_PIDFILEPATH=/home/charles/mongodb/master.pid
+MONGODB_MASTER_PORT=27017
 
 #MONGODB SLAVE
-MONGODB_SLAVE=10.211.55.21:27017
+MONGODB_SLAVE=10.211.55.21
 MONGODB_SLAVE_DBPATH=/home/charles/mongodb/data/slave
 MONGODB_SLAVE_LOGPATH=/home/charles/mongodb/log/slave.log
 MONGODB_SLAVE_PIDFILEPATH=/home/charles/mongodb/slave.pid
+MONGODB_SLAVE_PORT=27017
 
 MONGODB_SLAVE_ARR=( \
     ${MONGODB_SLAVE} \
@@ -70,13 +75,11 @@ MONGODB_SLAVE_ARR=( \
     )
 
 #MONGODB ARIBTER
-MONGODB_ARBITER=10.211.55.22:27017
+MONGODB_ARBITER=10.211.55.22
 MONGODB_ARBITER_DBPATH=/home/charles/mongodb/data/slave
 MONGODB_ARBITER_LOGPATH=/home/charles/mongodb/log/slave.log
 MONGODB_ARBITER_PIDFILEPATH=/home/charles/mongodb/slave.pid
-
-#MONGODB SLAVE
-ZOOKEEPER_FILE=zookeeper-3.4.6
+MONGODB_ARBITER_PORT=27017
 
 
 #JAVA
@@ -96,13 +99,10 @@ ZOOKEEPER_NODE_ARR=( \
     server.3=10.211.55.22:2888:3888 \
     )
 
+ZOOKEEPER_PORT=2181
 
+#allow port tables 
 IPTABLES_ACCESS_PORT=( \
-    ${RIAK_HTTP_PORT} \
-    ${RIAK_EPMD_PORT} \
-    ${RIAK_HANDOFF_PORT} \
-    ${RIAK_DEFPORT} \
-    "`echo ${MONGODB_MASTER} | cut -d: -f 2`" \
-    "`echo ${MONGODB_SLAVE} | cut -d: -f 2`" \
-    "`echo ${MONGODB_ARBITER} | cut -d: -f 2`" \
+    123 \
+    456 \
     )

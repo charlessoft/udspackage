@@ -12,8 +12,10 @@ function fscontent_status()
     res=$?
     if [ ${res} -eq 0 ]; then \
         cfont -green "${HOSTIP} fs-contentserver is running\n" -reset; \
+        echo "${HOSTIP} fs-contentserver check success!" > ${CONTENT_CHECK_LOG}
     else \
         cfont -red "${HOSTIP} fs-contentserver is probably not running.\n" -reset; \
+        echo "${HOSTIP} fs-contentserver check fail!" > ${CONTENT_CHECK_LOG}
     fi
     return ${res}
 }
@@ -45,7 +47,7 @@ function fscontent_start()
         cfont -red"jdk environment error ! fs-contentserver start fail\n" -reset; exit 1;
     fi
 
-    fscontent_status
+    fscontent_status ${HOSTIP}
     if [ $? -eq 0 ]; then \
         cfont -red "${HOSTIP} fs-contentserver already start\n" -reset; exit 0;
     fi
@@ -62,7 +64,7 @@ function fscontent_stop()
 {
     HOSTIP=$1
     echo "${HOSTIP} fscontent stop";
-    fscontent_status
+    fscontent_status ${HOSTIP}
     if [ $? -eq 0 ]; then \
         #kill 
         kill `ps -ef | grep "fs-content" | grep -v "grep" | awk '{print $2}'`; \
@@ -92,7 +94,7 @@ function dofscontent_start()
 
 function dofscontent_stop()
 {
-    echo "dofscontent_status";
+    echo "dofscontent_stop";
     ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \

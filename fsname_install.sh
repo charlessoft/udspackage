@@ -11,8 +11,10 @@ function fsname_status()
     res=$?
     if [ ${res} -eq 0 ]; then \
         cfont -green "${HOSTIP} fs-nameserver is running\n" -reset; \
+        echo "${HOSTIP} fs-nameserver check success!" > ${NAME_CHECK_LOG};
     else \
         cfont -red "${HOSTIP} fs-nameserver is probably not running.\n" -reset; \
+        echo "${HOSTIP} fs-nameserver check fail!" > ${NAME_CHECK_LOG}; \
     fi
     return ${res};
 }

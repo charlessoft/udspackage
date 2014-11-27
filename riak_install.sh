@@ -2,6 +2,7 @@
 . ./config
 . ./env.sh
 
+export RIAK_FILE=bin/${RIAK_FILE}
 function riak_install()
 {
     echo "$1 install Riak";
@@ -65,18 +66,27 @@ function riak_start()
 
 function riak_status()
 {
+    HOSTIP=$1
     service riak status
+    res=$?
+    if [ ${res} -eq 0 ]; then \
+        echo "${HOSTIP} riak check success!" > ${RIAK_CHECK_LOG}; \
+    else  \
+        echo "${HOSTIP} riak check fail!" > ${RIAK_CHECK_LOG};
+    fi
+    return ${res}
 
 }
 
 function doriak_status()
 {
-    echo "get Riak status"
+    echo "Riak status"
     for i in ${RIAK_RINK[@]}; do 
         ssh -p ${SSH_PORT} "$i" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
             sh riak_install.sh riak_status $i \
             "
+
         if [ $? -ne 0 ]; then \
             echo "query status fail $1"
         fi
@@ -140,6 +150,39 @@ function riak_unstall()
     echo "$1 卸载riak"
     riak stop
     rpm -e `rpm -q riak | awk 'NR==1'`
+}
+
+function riak_rink_status()
+{
+    HOSTIP=$1
+    RINKMEMBER=`riak-admin status | grep member`
+    res=0;
+    #判断riak 节点是否再 查询状态中
+    for i in ${RIAK_RINK[@]}; do 
+        echo $RINKMEMBER | grep -rin "$i" >/dev/null 2>&1
+        if [ $? -ne 0 ]; then \
+            res=1
+        fi
+    done 
+
+
+    if [ ${res} -eq 0 ]; then \
+        cfont -green "${RINKMEMBER}\n" -reset;
+        echo "${RIAK_FIRST_NODE} riak rink check success! ${RINKMEMBER}" >> ${RIAK_CHECK_LOG};
+    else 
+        cfont -red "not full riak node in the ${RINKMEMBER}\n" -reset;
+        echo "${RIAK_FIRST_NODE} riak rink check fail! ${RINKMEMBER}" >> ${RIAK_CHECK_LOG};
+    fi
+
+}
+
+function doriak_rink_status()
+{
+    ssh -p ${SSH_PORT} "${RIAK_FIRST_NODE}" \
+        "cd ${UDSPACKAGE_PATH}; \
+        source /etc/profile; \
+        sh riak_install.sh riak_rink_status ${RIAK_FIRST_NODE}"
+
 }
 
 function riak_stop()
@@ -231,7 +274,6 @@ function doriak_install()
 
 
 
-export RIAK_FILE=bin/${RIAK_FILE}
 
 
 if [ "$1" = riak_install ] 
@@ -284,3 +326,13 @@ then
     echo "riak_stop ====="
     riak_stop ${HOSTIP}
 fi
+
+
+if [ "$1" = riak_rink_status ]
+then 
+    HOSTIP=$2
+    echo "riak_rink_status ====="
+    riak_rink_status ${HOSTIP}
+fi
+
+

@@ -1,18 +1,22 @@
 #!/bin/bash 
 . ./config 
 . ./env.sh
+export MONGODB_FILE=bin/${MONGODB_FILE}
 function mongodb_status()
 {
     HOSTIP=$1
-    echo "check ${HOSTIP} mongodb whether is running";
-    curl http://${HOSTIP} &> /dev/null 
+    PORT=$2
+    echo "check ${HOSTIP}:${PORT} mongodb whether is running";
+    curl http://${HOSTIP}:${PORT} &> /dev/null 
     res=$?
-    #echo "curl return ${res}";
+    
     if [ ${res} -ne 0 ]; then \
         cfont -red "mongodb curl network check fail! res=${res}\n" -reset;
+        echo "${HOSTIP} mongodb check fail!" >> ${MONGODB_CHECK_LOG}
         return ${res}; \
     else 
         cfont -green "mongodb curl network check success,mongodb is running! res=${res}\n" -reset;
+        echo "${HOSTIP} mongodb check success!" >> ${MONGODB_CHECK_LOG}
     fi
 
 }
@@ -46,15 +50,19 @@ function mongodb_install()
     HOSTIP=$1;
     echo "${HOSTIP} install mongodb";
     
-    if [ ! -d ${MONGODB_FILE} ] && [ -f ${MONGODB_FILE}.gz ]; then \
-        tar zxvf ${MONGODB_FILE}.gz -C ./bin 2>&1 >/dev/null; \
-        if [ $? -ne 0 ]; then \
-            cfont -red "mongodb unzip fail\n" -reset; \
+    if [ ! -d ${MONGODB_FILE} ]; then \
+        if [ -f ${MONGODB_FILE}.gz ]; then \
+            tar zxvf ${MONGODB_FILE}.gz -C ./bin 2>&1 >/dev/null; \
+            if [ $? -ne 0 ]; then \
+                cfont -red "mongodb unzip fail\n" -reset; \
+            else 
+                cfont -green "mongodb unzip success!\n" -reset;
+            fi 
         else 
-            cfont -green "mongodb unzip success!\n" -reset;
-        fi 
-    else \
-        cfont -green "mongodb is already installed!\n" -reset;
+            cfont -red "${MONGODB_FILE}.gz No such file!\n" -reset;
+        fi
+else 
+    cfont -green "mongodb already installed\n" -reset;
     fi
 
 }
@@ -85,6 +93,29 @@ function domongodb_cluster()
 
 }
 
+function mongodb_cluster_status()
+{
+    HOSTIP=$1
+    echo "${HOSTIP} cluster"
+    if [ -d ${MONGODB_FILE} ]; then \
+        cd ${MONGODB_FILE}/bin; \
+        ./mongo ../../../mongodb_cluster_status.js; \
+    else 
+        cfont -red "mongodb ${MONGODB_FILE} No such file!\n" -reset;
+        exit 1;
+    fi
+}
+
+function domongodb_cluster_status()
+{
+    echo "domongodb_cluster_status"
+    HOSTIP=`echo ${MONGODB_ARBITER}|cut -d: -f 1`
+    echo ${HOSTIP}
+    ssh -p ${SSH_PORT} "${HOSTIP}" \
+        "cd ${UDSPACKAGE_PATH}; \
+        source /etc/profile; \
+        sh mongodb_install.sh mongodb_cluster_status ${HOSTIP}"
+}
 
 
 function mongodb_mkdir_master()
@@ -197,15 +228,16 @@ function domongodb_stop()
 
 function domongodb_status()
 {
-    mongodb_status ${MONGODB_MASTER}
+    rm -fr ${MONGODB_CHECK_LOG}
+    mongodb_status ${MONGODB_MASTER} ${MONGODB_MASTER_PORT}
     echo ""
     for i in ${MONGODB_SLAVE_ARR[@]}; do
-        mongodb_status $i
+        mongodb_status $i ${MONGODB_SLAVE_PORT}
         echo ""
     done
     echo "" 
 
-    mongodb_status ${MONGODB_ARBITER}
+    mongodb_status ${MONGODB_ARBITER} ${MONGODB_ARBITER_PORT}
     echo ""
 }
 
@@ -213,11 +245,11 @@ function domongodb_start()
 {
     echo "start master mongodb ";
     #echo "hello world" | cut -d " "
-    ssh -p ${SSH_PORT} "`echo ${MONGODB_MASTER}|cut -d: -f 1`" \
+    ssh -p ${SSH_PORT} "${MONGODB_MASTER}" \
         " \
         cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        sh mongodb_install.sh mongodb_start ${MONGODB_MASTER} \
+        sh mongodb_install.sh mongodb_start ${MONGODB_MASTER} ${MONGODB_MASTER_PORT} \
         "
     res=$?
     if [ ${res} -ne 0 ]; then \
@@ -228,10 +260,10 @@ function domongodb_start()
     for i in ${MONGODB_SLAVE_ARR[@]}; do
         echo "start $i slave mongodb";
 
-        ssh -p ${SSH_PORT} "`echo $i|cut -d: -f 1`" \
+        ssh -p ${SSH_PORT} "$i" \
             "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
-            sh mongodb_install.sh mongodb_start $i; \
+            sh mongodb_install.sh mongodb_start $i ${MONGODB_SLAVE_PORT}; \
             "
         res=$?
         if [ ${res} -ne 0 ]; then 
@@ -242,10 +274,10 @@ function domongodb_start()
 
     echo "start ${MONGODB_ARBITER} arbiter mongodb"
 
-    ssh -p ${SSH_PORT} "`echo ${MONGODB_ARBITER}|cut -d: -f 1`" \
+    ssh -p ${SSH_PORT} "${MONGODB_ARBITER}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        sh mongodb_install.sh mongodb_start ${MONGODB_ARBITER} \
+        sh mongodb_install.sh mongodb_start ${MONGODB_ARBITER} ${MONGODB_ARBITER_PORT} \
         "
     res=$?
     if [ ${res} -ne 0 ]; then \
@@ -268,7 +300,8 @@ function domongodb_destroy()
 function domongodb_install()
 {
     #安装 master
-    ssh -p ${SSH_PORT} "`echo ${MONGODB_MASTER}|cut -d: -f 1`" "cd ${UDSPACKAGE_PATH}; \
+    ssh -p ${SSH_PORT} "${MONGODB_MASTER}" \
+        "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
         sh mongodb_install.sh mongodb_install ${MONGODB_MASTER} \
         "
@@ -281,7 +314,8 @@ function domongodb_install()
     for i in ${MONGODB_SLAVE_ARR[@]}; do
         #echo "$i安装 slave mongodb"
 
-        ssh -p ${SSH_PORT} "`echo $i|cut -d: -f 1`" "cd ${UDSPACKAGE_PATH}; \
+        ssh -p ${SSH_PORT} "$i" \
+            "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
             sh mongodb_install.sh mongodb_install $i; \
             "
@@ -292,7 +326,8 @@ function domongodb_install()
     done
 
     #echo "${MONGODB_ARBITER} 安装 arbiter mongodb"
-    ssh -p ${SSH_PORT} "`echo ${MONGODB_ARBITER}|cut -d: -f 1`" "cd ${UDSPACKAGE_PATH}; \
+    ssh -p ${SSH_PORT} "${MONGODB_ARBITER}" \
+        "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
         sh mongodb_install.sh mongodb_install ${MONGODB_ARBITER} \
         "
@@ -302,7 +337,6 @@ function domongodb_install()
     fi
 }
 
-export MONGODB_FILE=bin/${MONGODB_FILE}
 
 if [ "$1" = mongodb_install ]
 then 
@@ -332,7 +366,8 @@ if [ "$1" = mongodb_status ]
 then
     shift 
     HOSTIP=$1
-    mongodb_status ${HOSTIP}
+    PORT=$2
+    mongodb_status ${HOSTIP} ${PORT}
 fi
 
 
@@ -342,4 +377,12 @@ then
     HOSTIP=$1
     DBPATH=$2
     mongodb_stop ${HOSTIP} ${DBPATH}
+fi
+
+
+if [ "$1" = mongodb_cluster_status ]
+then
+    shift 
+    HOSTIP=$1
+    mongodb_cluster_status ${HOSTIP}
 fi

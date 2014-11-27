@@ -1,18 +1,26 @@
 #!/bin/bash 
 . ./config
+export JDK_FILE=bin/${JDK_FILE}
+
+#内部使用,不需要放在config中
+export MONGODB_CHECK_LOG=log/mongodbcheck.log 
+export JDK_CHECK_LOG=log/jdkcheck.log
+export RIAK_CHECK_LOG=log/riakcheck.log
+export ZOOKEEPER_CHECK_LOG=log/zookcheck.log 
+export CONTENT_CHECK_LOG=log/contentservercheck.log
+export NAME_CHECK_LOG=log/nameservercheck.log
+export META_CHECK_LOG=log/metaservercheck.log
+
+
 function setjdkenv()
 {
-    #export CURPWD=$(cd `dirname $0`; pwd)
-    #JAVA_HOME=${}
-    #export ${JAVA_HOME}
-
     export CURPWD=$(cd `dirname $0`; pwd)
-    export JAVA_HOME=${CURPWD}/bin/${JDK_FILE}
+    export JAVA_HOME=${CURPWD}/${JDK_FILE}
     export JAVA_BIN=${JAVA_HOME}/bin
     export PATH=${JAVA_BIN}:${PATH}
 
     if [ ! -d ${JAVA_HOME} ]; then \
-        echo "JDK 路径不存在,无法设置环境变量"; return 1;
+        cfont -red "JDK ${JAVA_HOME} No such file!\n" -reset ; return 1;
     fi
     echo export JAVA_HOME=${JAVA_HOME} >> ${ENVBASHRC}
     echo export JAVA_BIN=${JAVA_HOME}/bin >> ${ENVBASHRC}
@@ -24,6 +32,8 @@ function setjdkenv()
 
 function initenv()
 {
+    HOSTIP=$1
+    echo "${HOSTIP} initenv...";
     rm -fr envbashrc
     setjdkenv
     return $?;
@@ -132,4 +142,11 @@ then
     HOSTIP=$2
     echo "setjdkenv ====="
     setjdkenv ${HOSTIP}
+fi
+
+
+if [ "$1" = initenv ]
+then 
+    HOSTIP=$2
+    initenv ${HOSTIP}
 fi
