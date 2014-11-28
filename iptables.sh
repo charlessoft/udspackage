@@ -7,7 +7,7 @@ function initporttable()
 {
     rm -fr ${PORTTMP}
     for i in ${ZOOKEEPER_NODE_ARR[*]}; do 
-        echo $i | awk -F: '{printf("%s\n%s\n", $2,$3)}' >> ${PORTTMP}
+        echo $i | awk -F: '{ printf("%s\n%s\n", $2,$3) }' >> ${PORTTMP}
     done 
 
     for i in ${IPTABLES_ACCESS_PORT[*]}; do 
@@ -53,34 +53,6 @@ function accessPortArr()
     service iptables stop 
     return 0
 }
-
-#function accessPort()
-#{
-    #PORTTMP=/tmp/porttmp; 
-    #ACCPORT=$2
-    #echo "设置允许端口信息$1 ${ACCPORT}"
-
-    ##判断是否已经存在端口列表
-    #grep "${ACCPORT}\>" ${IPTABLES_FILE} > /dev/null 
-    #if [ $? -ne 0 ]; then \
-        #echo "增加允许端口" ; \
-        #grep -n "22\>" ${IPTABLES_FILE} | awk -F: 'NR==1 \
-              #{ \
-                  #sub(/22/,"'${ACCPORT}'",$2 ); printf("%s\n%s",$1,$2) ; \
-              #}'  > ${PORTTMP}
-        
-    #LINE=`sed -n '1p' ${PORTTMP}`
-    #CONTENT=`sed -n '2p' ${PORTTMP}`
-    ##echo "sed -i '"${LINE}" a"${CONTENT}"' ${IPTABLES_FILE}"
-    #sed -i "${LINE} a ${CONTENT}" ${IPTABLES_FILE}
-
-    #else 
-        #echo "已经设置了允许端口 $2"; \
-    #fi
-##
-    #service iptables restart
-
-#}
 
 
 function doaccessPort()

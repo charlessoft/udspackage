@@ -13,6 +13,7 @@
 . ./fscontent_install.sh
 . ./fsmeta_install.sh 
 . ./fsname_install.sh
+. ./user_install.sh
 
 
 SCRIPT=`basename $0`
@@ -299,6 +300,15 @@ function env_admin()
             echo "allow port table"
             doaccessPort
             ;;
+        adduser)
+            echo "add user";
+            douser_createuser ${USERNAME} ${USERPWD}
+            ;;
+        mytest)
+            echo "mytest"
+            douser_mytest;
+            ;;
+
         #init)
             #echo "初始化环境,以及相关配置信息";
             #mongodb_admin gencfg 

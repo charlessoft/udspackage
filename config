@@ -13,6 +13,9 @@ CONTENT_SERVER=10.211.55.18
 META_SERVER=10.211.55.21
 NAME_SERVER=10.211.55.22
 
+USERNAME=weblogic1
+USERPWD=abc
+
 #default config 
 IPTABLES_FILE=/etc/sysconfig/iptables
 ID_RSA_PUB=$HOME/.ssh/id_rsa.pub
