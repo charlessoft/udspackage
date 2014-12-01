@@ -140,7 +140,14 @@ function docheckinstalledstatus()
     done 
 
     cd log && \
-        find -name "*.log" -exec 'cat' {} \; > test.tmp;
+        cat /dev/null > contentservercheck.log
+        find ./ -name "*.log" \
+            -not -name "contentservercheck.log" \
+            -not -name "fsname_log.log" \
+            -not -name "fscontent_log.log" \
+            -not -name "fsmeta_log.log" \
+            -not -name "zookcheck.log" \
+            -exec 'cat' {} \; > test.tmp;
     cd ../
 
 
@@ -165,34 +172,11 @@ do
 
 
 done
-    echo "=========="
-    echo "stop iptables??"
+
 exit 1;
 }
 
 
-#function checkjdk()
-#{
-    #HOSTIP=$1
-    #echo "check jdk ${HOSTIP}"
-    #initenv ${HOSTIP}
-    #if [ $? -eq 0 ]; then \
-        #cfont -green 
-        #java -version | tee abccc.log
-        #cfont -reset
-    #fi
-
-    #echo ""
-
-#}
-
-function checkmongodb()
-{
-    HOSTIP=$1
-    echo "check mongodb ${HOSTIP}";
-
-
-}
 
 
 if [ "$1" = checkenv ] 

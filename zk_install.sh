@@ -108,6 +108,37 @@ function dozk_destroy()
     done
 }
 
+function zk_log()
+{
+    HOSTIP=$1
+    echo "${HOSTIP} collect zookeeper log";
+    echo "scp ${HOSTIP}:${UDSPACKAGE_PATH}/${ZOOKEEPER_FILE}/zookeeper.out ./log/";
+    scp ${HOSTIP}:${UDSPACKAGE_PATH}/${ZOOKEEPER_FILE}/zookeeper.out ./log/${HOSTIP}_zookeeper.out 
+
+    if [ $? -eq 0 ]; then \
+        cfont -green "collect zookeeper log success!\n" -reset ;
+else \
+    cfont -red "collecg zookeeper log fail!\n" -reset;
+   fi
+}
+
+function dozk_log()
+{
+    echo "dozk_collect log";
+    for i in ${ZOOKEEPER_NODE_ARR[@]}; do 
+        MYID=`echo $i | awk -F= '{print $1}'| \
+            awk -F\. '{print $2}'`
+        HOSTIP=`echo $i | awk -F= '{print $2}' | \
+            awk -F: '{print $1}'`
+        ssh -p ${SSH_PORT} "${HOSTIP}" \
+            "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh zk_install.sh zk_log ${HOSTIP} \
+            "
+    done
+
+}
+
 function zk_status()
 {
     HOSTIP=$1
@@ -248,4 +279,11 @@ then
     echo "zk_destroy ====="
     HOSTIP=$2
     zk_destroy ${HOSTIP} 
+fi
+
+if [ "$1" = zk_log ]
+then 
+    echo "zk_log====="
+    HOSTIP=$2
+    zk_log ${HOSTIP} 
 fi

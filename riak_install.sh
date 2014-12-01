@@ -34,7 +34,7 @@ function riak_start()
 
     #用riak ping 得不到内容,改用getpid
     pid=`riak getpid | awk '{print $1}'`
-    cfont -green "$1 port:${pid}\n" -reset;
+    cfont -green "$1 pid:${pid}\n" -reset;
     if [ "${pid}" == "Node" ]; then \
         cfont -green "start riak...\n" -reset;
         riak start
@@ -97,7 +97,7 @@ function doriak_status()
 
 function riak_joinring()
 {
-    echo "joinring == $1"
+    echo "$1 joinring ${RIAK_FIRST_NODE}"
     if [ "$1" != "${RIAK_FIRST_NODE}" ]; then \
         echo "$1 joing ${RIAK_FIRST_NODE}"
         echo "riak-admin status | grep member | grep -rin "${RIAK_FIRST_NODE}""
@@ -124,13 +124,13 @@ function doriak_joinring()
         echo "curl http://$i:${RIAK_HTTP_PORT}"
         curl http://$i:${RIAK_HTTP_PORT} &> /dev/null
         res=$?
-        echo "====curl ${res}"
+        #echo "====curl ${res}"
         if [ ${res} -ne 0 ]; then \
             cfont -red "Riak curl network check fail!\n" -reset;
             exit $?;
         fi
 
-        cfont -green "$1 Riak network check success,join the ring\n" -reset; \
+        cfont -green "$i Riak network check success,join the ring\n" -reset; \
             ssh -p ${SSH_PORT} "$i" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
             sh riak_install.sh riak_joinring $i"

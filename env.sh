@@ -10,6 +10,7 @@ export ZOOKEEPER_CHECK_LOG=log/zookcheck.log
 export CONTENT_CHECK_LOG=log/contentservercheck.log
 export NAME_CHECK_LOG=log/nameservercheck.log
 export META_CHECK_LOG=log/metaservercheck.log
+export HOSTARRAY=/tmp/hostarray;
 
 
 function setjdkenv()
@@ -30,6 +31,22 @@ function setjdkenv()
     #java -version
 }
 
+function mergehostarray()
+{
+    cat /dev/null > ${HOSTARRAY};
+    echo "${CONTENT_SERVER}" >> ${HOSTARRAY};
+    echo "${NAME_SERVER}" >> ${HOSTARRAY};
+    echo "${RIAK_RINK[*]}"  | sed 's/\ /\n/g' >> ${HOSTARRAY}
+    
+    echo "${MONGODB_MASTER}" >> ${HOSTARRAY}
+    echo "${MONGODB_SLAVE_ARR[*]}" | sed 's/\ /\n/g' >> ${HOSTARRAY};
+
+    echo "${MONGODB_MASTER}" >> ${HOSTARRAY};
+    echo "${MONGODB_ARBITER}" >> ${HOSTARRAY};
+    echo "${JDK_ARR[*]}" | sed 's/\ /\n/g' >> ${HOSTARRAY};
+    echo "${ZOOKEEPER_NODE_ARR[*]}" | sed 's/\ /\n/g' | awk -F: '{print $1}' | awk -F= '{print $2}' >> ${HOSTARRAY}
+
+}
 function initenv()
 {
     HOSTIP=$1
@@ -54,34 +71,79 @@ function doenv()
 
 function distributepackage()
 {
+    if [ $# -eq 1  ]; then \
+        echo "distribute udspackage to "$1 "${INSTALL_PATH} folder.."
+        ssh -p ${SSH_PORT} "$1" \
+            "mkdir ${INSTALL_PATH} -p";
+        scp -r ../${UDSPACKAGE_FILE} $1:${INSTALL_PATH}; \
+        #临时测试去掉,后期需要还远
+    #if [ $? -eq 1 ]; then \
+        #echo "复制文件失败 $i"; exit 1;
+    #fi
+    #临时测试去掉,后期需要还远
+else 
+
     for i in ${RIAK_RINK[@]}; do
-        echo "复制uds安装包到" $i "${TMP_PATH}目录"
-        scp -r ../${UDSPACKAGE_FILE} $i:${TMP_PATH}
+
+        echo "distribute udspackage to "$i "${INSTALL_PATH} folder.."
+        ssh -p ${SSH_PORT} "$i" \
+            "mkdir ${INSTALL_PATH} -p";
+        scp -r ../${UDSPACKAGE_FILE} $i:${INSTALL_PATH} 
+
+
         #临时测试去掉,后期需要还远
         #if [ $? -eq 1 ]; then \
             #echo "复制文件失败 $i"; exit 1;
         #fi
         #临时测试去掉,后期需要还远
     done 
+fi 
+}
+
+function dochownuser()
+{
+    mergehostarray
+    HOSTARR=`sort ${HOSTARRAY} | uniq`;
+    for i in ${HOSTARR[@]}; do \
+        ssh -p ${SSH_PORT} "$i" \
+        "cd ${UDSPACKAGE_PATH}; \
+        cd ../;\
+        chown ${USERNAME}.${USERNAME} ./udspackage -R;"
+        #"cd ${UDSPACKAGE_PATH}; \
+        #source /etc/profile; \
+        #sh env.sh chownuser $i 
+        #"
+        #useradd ${USERNAME}; \
+        #echo "${USERPWD}" | passwd --stdin ${USERNAME} \
+        #"
+        #sh user_install.sh user_createuser $i"
+    done 
+
 }
 
 
+function configsshlogin()
+{
+   HOSTIP=$1;
+   ssh-copy-id -i $ID_RSA_PUB $USER@$HOSTIP; 
+}
 
 #配置ssh 免密码登陆
-function confiesshlogin()
+function doconfigsshlogin()
 {
-    echo "使用 $USER 进行免密码登陆配置";
+    cfont -green "$USER perform SSH Login Without Password config\n" -reset;
 
     if [ -f ${ID_RSA_PUB} ]; then \
-        echo "本机 $USER id_rsa.pub 存在! ===ok"; \
+        cfont -green "$USER id_rsa.pub exist!\n" -reset; \
     else
-        echo "id_rsa.pub 不存在,请调用ssh-kengen 命令生成id_rsa.pub";
+        cfont -red "id_rsa.pub No such file! please perform [ssh-kengen] command generate id_rsa.pub\n" -reset;
         exit 1; 
     fi
+    
     for i in ${RIAK_RINK[@]}; do \
-        ssh-copy-id -i $ID_RSA_PUB $USER@$i; \
+        configsshlogin $i
         if [ $? -eq 1 ]; then \
-            echo "免密码登陆失败,请检查原因"; exit 1; \
+            echo "login fail!"; exit 1; \
         fi
     done
 }

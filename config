@@ -7,23 +7,24 @@ JDK_FILE=jdk1.6.0_45
 RIAK_FILE=riak-2.0.2-1.el5.x86_64.rpm
 ZOOKEEPER_FILE=zookeeper-3.4.6
 
-TMP_PATH=/home/charles/
 
 CONTENT_SERVER=10.211.55.18
 META_SERVER=10.211.55.21
 NAME_SERVER=10.211.55.22
 
-USERNAME=weblogic1
-USERPWD=abc
+USERNAME=weblogic
+USERPWD=abcdefg
+#TMP_PATH=/home/${USERNAME}/
+INSTALL_PATH=/apps/
 
 #default config 
 IPTABLES_FILE=/etc/sysconfig/iptables
 ID_RSA_PUB=$HOME/.ssh/id_rsa.pub
-LOG_COLLECT=${TMP_PATH}/udslog.log
-LOG=${TMP_PATH}/udsinstall.log
-LOG_MERGE=${TMP_PATH}/udsmerge.log
+LOG_COLLECT=${INSTALL_PATH}/udslog.log
+LOG=${INSTALL_PATH}/udsinstall.log
+LOG_MERGE=${INSTALL_PATH}/udsmerge.log
 UDSPACKAGE_FILE=udspackage
-UDSPACKAGE_PATH=${TMP_PATH}/${UDSPACKAGE_FILE}
+UDSPACKAGE_PATH=${INSTALL_PATH}/${UDSPACKAGE_FILE}
 SUDOERS_PATH=/etc/sudoers
 
 CONTENT_FILE=fs-contentserver
@@ -57,19 +58,20 @@ RIAK_HTTP_PORT=8098
 RIAK_EPMD_PORT=4369
 RIAK_HANDOFF_PORT=8099
 RIAK_DEFPORT=44571
+RIAK_ERLANG_PORT_RANGE=6000-7999
 
 #MONGODB MASTER
 MONGODB_MASTER=10.211.55.18
-MONGODB_MASTER_DBPATH=/home/charles/mongodb/data/master  
-MONGODB_MASTER_LOGPATH=/home/charles/mongodb/log/master.log 
-MONGODB_MASTER_PIDFILEPATH=/home/charles/mongodb/master.pid
+MONGODB_MASTER_DBPATH=/home/${USERNAME}/mongodb/data/master  
+MONGODB_MASTER_LOGPATH=/home/${USERNAME}/mongodb/log/master.log 
+MONGODB_MASTER_PIDFILEPATH=/home/${USERNAME}/mongodb/master.pid
 MONGODB_MASTER_PORT=27017
 
 #MONGODB SLAVE
 MONGODB_SLAVE=10.211.55.21
-MONGODB_SLAVE_DBPATH=/home/charles/mongodb/data/slave
-MONGODB_SLAVE_LOGPATH=/home/charles/mongodb/log/slave.log
-MONGODB_SLAVE_PIDFILEPATH=/home/charles/mongodb/slave.pid
+MONGODB_SLAVE_DBPATH=/home/${USERNAME}/mongodb/data/slave
+MONGODB_SLAVE_LOGPATH=/home/${USERNAME}/mongodb/log/slave.log
+MONGODB_SLAVE_PIDFILEPATH=/home/${USERNAME}/mongodb/slave.pid
 MONGODB_SLAVE_PORT=27017
 
 MONGODB_SLAVE_ARR=( \
@@ -79,9 +81,9 @@ MONGODB_SLAVE_ARR=( \
 
 #MONGODB ARIBTER
 MONGODB_ARBITER=10.211.55.22
-MONGODB_ARBITER_DBPATH=/home/charles/mongodb/data/slave
-MONGODB_ARBITER_LOGPATH=/home/charles/mongodb/log/slave.log
-MONGODB_ARBITER_PIDFILEPATH=/home/charles/mongodb/slave.pid
+MONGODB_ARBITER_DBPATH=/home/${USERNAME}/mongodb/data/slave
+MONGODB_ARBITER_LOGPATH=/home/${USERNAME}/mongodb/log/slave.log
+MONGODB_ARBITER_PIDFILEPATH=/home/${USERNAME}/mongodb/slave.pid
 MONGODB_ARBITER_PORT=27017
 
 
@@ -94,8 +96,8 @@ JDK_ARR=( \
 
 
 #ZOOKEEPER
-ZOOKEEPER_DATADIR=/home/charles/zookeeper/data
-ZOOKEEPER_LOGDIR=/home/charles/zookeeper/data/log
+ZOOKEEPER_DATADIR=/home/${USERNAME}/zookeeper/data
+ZOOKEEPER_LOGDIR=/home/${USERNAME}/zookeeper/data/log
 ZOOKEEPER_NODE_ARR=( \
     server.1=10.211.55.18:2888:3888 \
     server.2=10.211.55.21:2888:3888 \

@@ -6,7 +6,7 @@ function mongodb_status()
 {
     HOSTIP=$1
     PORT=$2
-    echo "check ${HOSTIP}:${PORT} mongodb whether is running";
+    echo "${HOSTIP}:${PORT} check mongodb whether is running";
     curl http://${HOSTIP}:${PORT} &> /dev/null 
     res=$?
     
@@ -24,23 +24,23 @@ function mongodb_status()
 function mongodb_init()
 {
     HOSTIP=$1
-    echo "init ${HOSTIP} mongodb ";
+    echo "${HOSTIP} init mongodb ";
 
     if [ "${HOSTIP}" = "${MONGODB_MASTER}" ]; then \
-        echo "create mongodb master data folder";
+        echo "${HOSTIP} create mongodb master data folder";
         mongodb_mkdir_master
     fi
 
     #if [ "$1" = "${MONGODB_}"]
     echo ${MONGODB_SLAVE_ARR[*]} | grep -E "\<${HOSTIP}\>" 2>&1 > /dev/null 
     if [ $? -eq 0 ]; then \
-        echo "create mongodb slave data folder"; \
+        echo "${HOSTIP} create mongodb slave data folder"; \
         mongodb_mkdir_slave
     fi
 
     if [ "${HOSTIP}" = "${MONGODB_ARBITER}" ]; then \
         #echo "mongodb_mkdir_arbiter";
-        echo "create mongodb arbiter folder"
+        echo "${HOSTIP} create mongodb arbiter folder"
         mongodb_mkdir_arbiter
     fi 
 }
@@ -258,7 +258,7 @@ function domongodb_start()
 
 
     for i in ${MONGODB_SLAVE_ARR[@]}; do
-        echo "start $i slave mongodb";
+        echo "$i start slave mongodb";
 
         ssh -p ${SSH_PORT} "$i" \
             "cd ${UDSPACKAGE_PATH}; \
@@ -348,7 +348,7 @@ fi
 
 if [ "$1" = mongodb_cluster ]
 then 
-    echo "mongodb_cluster ====="
+    echo "mongodb_cluster..."
     HOSTIP=$2
     mongodb_cluster ${HOSTIP}
 fi
@@ -357,7 +357,7 @@ if [ "$1" = mongodb_start ]
 then
     HOSTIP=$2
     #临时增加测试
-    mongodb_init ${HOSTIP}
+    #mongodb_init ${HOSTIP}
     #临时增加测试
     mongodb_start ${HOSTIP}
 fi

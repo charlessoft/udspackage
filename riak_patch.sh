@@ -19,6 +19,8 @@ function deal_sudoers()
 function deal_riakconf()
 {
     echo "IP:$1"
+    MINNUM=`echo ${RIAK_ERLANG_PORT_RANGE}|cut -d- -f 1`;
+    MAXNUM=`echo ${RIAK_ERLANG_PORT_RANGE}|cut -d- -f 2`;
     if [ -f "${RIAK_CONF_BAK}" ]; then \
         cp ${RIAK_CONF_BAK} ${RIAK_CONF}; \
     else
@@ -26,8 +28,15 @@ function deal_riakconf()
     fi
 
     #echo "sed -e 's/nodename\ =\ riak@1.1.1.1/namenode = riak@$1' "riak.conf"  > ${RIAK_CONF}"
-    echo "set riakconf"
-    sed -e 's/nodename\ =\ riak@1.1.1.1/nodename = riak@'$1'/g' "riak.conf"  > ${RIAK_CONF}
+    echo "set riak conf"
+    sed -e 's/nodename\ =\ riak@1.1.1.1/nodename = riak@'$1'/g' "riak.conf" | \
+        sed -e 's/MINNUM/'${MINNUM}'/g' | \
+        sed -e 's/MAXNUM/'${MAXNUM}'/g' \
+        > ${RIAK_CONF};
+
+    if [ $? -ne 0 ]; then \
+        cfont -red "set riak conf fail!\n" -reset;
+    fi
 
 }
 

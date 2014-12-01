@@ -2,13 +2,10 @@
 . ./config 
 function deal_zkconfig()
 {
-    #echo ${ZOOKEEPER_DATADIR};
-    #echo ${ZOOKEEPER_LOGDIR};
-    
     HOSTIP=$1
-    echo "生成${HOSTIP} zoo.cfg"
+    echo "zookeeper generate ${HOSTIP} zoo.cfg"
     if [ ! -n "${HOSTIP}" ]; then \
-        echo "需要输入HOSTIP地址";  \
+        cfont -red "need HOSTIP address\n" -reset;  \
         exit 1;
     fi
 
@@ -18,8 +15,8 @@ function deal_zkconfig()
     for i in ${ZOOKEEPER_NODE_ARR[@]};do 
         echo "$i" >> zoo_${HOSTIP}.cfg
     done
-    if [ $? -eq 0 ]; then \
-        echo "ok";
+    if [ $? -ne 0 ]; then \
+        cfont -red "generate ${HOSTIP} fail!\n" -reset; exit 1;
     fi
 }
 

@@ -25,7 +25,7 @@ cfont  -red
     echo "\
 Usage: ${SCRIPT} <command>
 where <command> is one of the following:
-        { env | riak | mongodb | zookeeper | jdk | fscontent | fsname | fsmeta }
+        { env | riak | mongodb | zookeeper | jdk | fscontent | fsname | fsmeta | runall }
     "   
 cfont -reset
 
@@ -37,7 +37,7 @@ cfont  -red
     echo "\
 Usage: ${SCRIPT} env <command>
 where <command> is one of the following:
-    { nopwd | checkenv | setenv | distribute } "
+    { nopwd | checkenv | distribute | initcfg | checkinstalledstatus } "
 cfont -reset
 }
 
@@ -122,7 +122,7 @@ function run()
     #echo ${RIAK_FIRST_NODE}
     #exit 1;
     #generateShell
-    confiesshlogin
+    configsshlogin
 
     distributepackage
     docheck
@@ -276,8 +276,12 @@ function env_admin()
 {
     case "$1" in 
         nopwd)
-            echo "免密码登陆配置"
-            confiesshlogin
+            shift 
+            if [ $# -eq 1 ] ; then \
+                configsshlogin $1
+            else
+                doconfigsshlogin
+            fi
             ;;
         checkenv)
             echo "环境检测并且收集"
@@ -289,30 +293,28 @@ function env_admin()
             echo "check installed status...";
             docheckinstalledstatus;
             ;;
-        setenv)
-            echo "设置环境变量"
-            ;;
         distribute)
-            echo "分发到各台机器"
-            distributepackage
+            cfont -green "distribute udspackage...\n" -reset;
+            shift
+            distributepackage "$@"
             ;;
         iptables)
             echo "allow port table"
             doaccessPort
             ;;
-        adduser)
-            echo "add user";
+        createuser)
+            echo "create user";
             douser_createuser ${USERNAME} ${USERPWD}
             ;;
-        mytest)
-            echo "mytest"
-            douser_mytest;
+        chownuser)
+            echo "chownuser";
+            dochownuser;
             ;;
-
-        #init)
-            #echo "初始化环境,以及相关配置信息";
-            #mongodb_admin gencfg 
-            #zookeeper_admin gencfg
+        initcfg)
+            echo "init mongodb zookeeper config";
+            mongodb_admin gencfg;
+            zookeeper_admin gencfg;
+            ;;
         *)
             env_help;
             ;;
@@ -339,7 +341,7 @@ function zookeeper_admin()
             dozk_status
             ;;
         gencfg)
-            echo "zk gencfg..."
+            echo "zk generate gencfg..."
             for i in ${ZOOKEEPER_NODE_ARR[@]}; do
                 HOSTIP=`echo $i | \
                     awk -F= '{print $2}' | \
@@ -348,8 +350,12 @@ function zookeeper_admin()
             done 
             ;;
         destroy)
-            echo "删除zookeeper"
-            dozk_destroy
+            echo "删除zookeeper";
+            dozk_destroy;
+            ;;
+        log)
+            echo "collect zookeeper log";
+            dozk_log;
             ;;
 
         *)
@@ -387,7 +393,7 @@ function mongodb_admin()
             domongodb_install
             ;;
         gencfg)
-            echo "mongodb generate cfg"
+            echo "mongodb generate cfg..."
             deal_mongody_patch  ${MONGODB_MASTER}
             deal_mongody_patch  ${MONGODB_ARBITER}
             for i in ${MONGODB_SLAVE_ARR[@]}; do
@@ -423,24 +429,34 @@ function mongodb_admin()
 }
 
 
-
 function runall()
 {
-   
-    zookeeper_admin gencfg 
-    mongodb_admin gencfg 
+    
+      if [ `whoami` = "root" ];then
+          #zookeeper_admin gencfg 
+          #mongodb_admin gencfg 
 
+          env_admin nopwd
+          env_admin iptables
+
+          riak_admin install 
+          riak_admin start 
+          riak_admin join 
+          riak_admin commit 
+          env_admin createuser 
+          env_admin chownuser
+          chown ${USERNAME}.${USERNAME} ../udspackage -R
+          cfont -yellow "\
+please perform cmd switch ${USERNAME} login to perform same cmd to continue\n" -reset;
+
+          cfont -green "su - ${USERNAME};\n" -reset;
+          cfont -green "cd ${UDSPACKAGE_PATH};\n" -reset;
+          cfont -green "sh runsh.sh runall;\n" -reset;
+          exit 1;
+else \
+
+    
     env_admin nopwd
-    env_admin distribute
-
-    sudo sh runsh.sh env nopwd
-    sudo sh runsh.sh env iptables
-
-    sudo sh runsh.sh riak install 
-    sudo sh runsh.sh riak start 
-    sudo sh runsh.sh riak join 
-    sudo sh runsh.sh riak commit 
-   
     jdk_admin install 
     zookeeper_admin install 
     zookeeper_admin start
@@ -449,6 +465,16 @@ function runall()
     mongodb_admin install
     mongodb_admin start
     mongodb_admin cluster 
+
+    fscontent_admin start
+    fsname_admin start 
+    fsmeta_admin start
+
+    echo "==========check installed status ==========";
+    env_admin checkinstalledstatus
+    
+fi
+   
 
     #mongodb_admin stop
     #mongodb_admin install 
@@ -497,6 +523,11 @@ case "$1" in
         shift
         echo "runall";
         runall "$@";
+        ;;
+    runall1)
+        shift
+        echo "runall1";
+        runall1 "$@";
         ;;
     #fsjetty)
         #shfit

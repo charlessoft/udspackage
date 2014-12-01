@@ -19,6 +19,7 @@ function initporttable()
     echo ${RIAK_EPMD_PORT} >> ${PORTTMP}
     echo ${RIAK_HANDOFF_PORT} >> ${PORTTMP}
     echo ${RIAK_DEFPORT} >> ${PORTTMP}
+    echo ${RIAK_ERLANG_PORT_RANGE/-/:} >> ${PORTTMP}
 
     echo ${MONGODB_MASTER_PORT}  >> ${PORTTMP}
     echo ${MONGODB_SLAVE_PORT}  >> ${PORTTMP}
@@ -50,7 +51,7 @@ function accessPortArr()
 
     fi
     done
-    service iptables stop 
+    service iptables start
     return 0
 }
 
