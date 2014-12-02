@@ -1,6 +1,15 @@
 #!/bin/bash 
 source ./config
-function deal_mongody_patch()
+
+
+
+#------------------------------
+# deal_mongodb_patch
+# description: 修改mongodb 配置文件
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
+function deal_mongodb_patch()
 {
     #echo ${MONGODB_MASTER}
     if [ "$1" = "${MONGODB_MASTER}" ]; then \
@@ -24,13 +33,19 @@ function deal_mongody_patch()
 
 }
 
+#------------------------------
+# deal_mongodb_cluster_js_patch
+# description: 修改mongodb_cluster.js 集群配置文件
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
 function deal_mongodb_cluster_js_patch()
 {
-    MONGODB_CLUSTER_JS=mongodb_cluster.js
-    rm -fr ./${MONGODB_CLUSTER_JS}
+    MONGODB_CLUSTER_JS=mongodb_cluster.js;
+    rm -fr ./${MONGODB_CLUSTER_JS};
     
-    nIndex=0
-    MAXPRIORITY=100
+    nIndex=0;
+    MAXPRIORITY=100;
     #生成mongodb js 脚本
     echo "var db = connect('${MONGODB_MASTER}:${MONGODB_MASTER_PORT}/admin');" >> ${MONGODB_CLUSTER_JS};
     echo "var cfg={
@@ -80,12 +95,15 @@ function deal_mongodb_cluster_js_patch()
 
 }
 
-#echo ${MONGODB_MASTER}
-#deal_mongody_patch  10.211.55.21
 
+
+
+#-------------------------------
+#根据传递的参数执行命令
+#-------------------------------
 if [ "$1" = deal_mongodb_cluster_js_patch ]
 then 
-    HOSTIP=$2
-    echo "deal_mongodb_cluster_js_patch====="
-    deal_mongodb_cluster_js_patch ${HOSTIP}
+    HOSTIP=$2;
+    echo "deal_mongodb_cluster_js_patch ...";
+    deal_mongodb_cluster_js_patch ${HOSTIP};
 fi

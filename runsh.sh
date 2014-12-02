@@ -277,11 +277,7 @@ function env_admin()
     case "$1" in 
         nopwd)
             shift 
-            if [ $# -eq 1 ] ; then \
-                configsshlogin $1
-            else
-                doconfigsshlogin
-            fi
+            doconfigsshlogin "$@";
             ;;
         checkenv)
             echo "环境检测并且收集"
@@ -291,7 +287,7 @@ function env_admin()
             ;;
         checkinstalledstatus)
             echo "check installed status...";
-            docheckinstalledstatus;
+            docheckinstalledstatus "$@";
             ;;
         distribute)
             cfont -green "distribute udspackage...\n" -reset;
@@ -394,10 +390,10 @@ function mongodb_admin()
             ;;
         gencfg)
             echo "mongodb generate cfg..."
-            deal_mongody_patch  ${MONGODB_MASTER}
-            deal_mongody_patch  ${MONGODB_ARBITER}
+            deal_mongodb_patch  ${MONGODB_MASTER}
+            deal_mongodb_patch  ${MONGODB_ARBITER}
             for i in ${MONGODB_SLAVE_ARR[@]}; do
-                deal_mongody_patch  $i
+                deal_mongodb_patch  $i
             done 
             deal_mongodb_cluster_js_patch 
             ;;

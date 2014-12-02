@@ -1,13 +1,21 @@
 #!/bin/bash 
 . ./config 
 . ./env.sh
+
+
+#------------------------------
+# user_createuser
+# description: 创建用户
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
 function user_createuser()
 {
-    HOSTIP=$1
-    
-    `id ${USERNAME} &>/dev/null`
-    if [ $? -eq 0 ]; then \
-        cfont -red "user exist!!\n" -reset;  \
+    HOSTIP=$1;
+    `id ${USERNAME} &>/dev/null`;
+    if [ $? -eq 0 ] 
+    then 
+        cfont -red "user exist!!\n" -reset;  
     else 
         cfont -green "add user ${USERNAME}\n" -reset;
 
@@ -16,27 +24,32 @@ function user_createuser()
     fi
 
     grep -n "${USERNAME}.*ALL" /etc/sudoers >/dev/null 2>&1;
-    if [ $? -ne 0 ]; then \
+    if [ $? -ne 0 ] 
+    then 
         #没写入到sudo表中
 
-    LINE=`grep -n "root.*ALL" /etc/sudoers | awk -F: '{print $1}'`;
-    if [ x${LINE} = x"" ]; then \
-        echo "not found root from /etc/sudoers"; \
-    else \
-        sed -i ''${LINE}'a'${USERNAME}'    ALL=(ALL)   ALL' /etc/sudoers \
+        LINE=`grep -n "root.*ALL" /etc/sudoers | awk -F: '{print $1}'`;
+        if [ x${LINE} = x"" ] 
+        then 
+            echo "not found root from /etc/sudoers"; 
+        else 
+            sed -i ''${LINE}'a'${USERNAME}'    ALL=(ALL)   ALL' /etc/sudoers 
 
-    fi
-fi 
+        fi
+    fi 
 
 }
 
 
 
+#------------------------------
+# douser_createuser
+# description: 使用ssh 命令登陆到指定服务器 调用user_createuser创建用户
+# return success 0, fail 1
+#------------------------------
 function douser_createuser()
 {
     echo "create user";
-    #useradd ${USERNAME};
-    #echo "${USERNAME}" | passwd --stdin ${USERNAME}; 
     mergehostarray
 
     HOSTARR=`sort ${HOSTARRAY} | uniq`;

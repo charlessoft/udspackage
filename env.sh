@@ -13,6 +13,15 @@ export META_CHECK_LOG=log/metaservercheck.log
 export HOSTARRAY=/tmp/hostarray;
 
 
+function initenv()
+{
+    HOSTIP=$1
+    echo "${HOSTIP} initenv...";
+    rm -fr envbashrc
+    setjdkenv
+    return $?;
+}
+
 function setjdkenv()
 {
     export CURPWD=$(cd `dirname $0`; pwd)
@@ -47,34 +56,15 @@ function mergehostarray()
     echo "${ZOOKEEPER_NODE_ARR[*]}" | sed 's/\ /\n/g' | awk -F: '{print $1}' | awk -F= '{print $2}' >> ${HOSTARRAY}
 
 }
-function initenv()
-{
-    HOSTIP=$1
-    echo "${HOSTIP} initenv...";
-    rm -fr envbashrc
-    setjdkenv
-    return $?;
-}
 
-
-function doenv()
-{
-    echo "doenv"
-    #for i in ${RIAK_RINK[@]}; do 
-        #ssh -p ${SSH_PORT} "$i" \
-            #"cd ${UDSPACKAGE_PATH}; \
-            #source /etc/profile; \
-            #sh env.sh"
-    #done 
-}
 
 
 function distributepackage()
 {
-    if [ $# -eq 1  ]; then \
-        echo "distribute udspackage to "$1 "${INSTALL_PATH} folder.."
-        ssh -p ${SSH_PORT} "$1" \
-            "mkdir ${INSTALL_PATH} -p";
+    if [ $# -eq 1  ] 
+    then 
+        echo "distribute udspackage to "$1 "${INSTALL_PATH} folder..";
+"mkdir ${INSTALL_PATH} -p";
         scp -r ../${UDSPACKAGE_FILE} $1:${INSTALL_PATH}; \
         #临时测试去掉,后期需要还远
     #if [ $? -eq 1 ]; then \
@@ -84,8 +74,7 @@ function distributepackage()
 else 
 
     for i in ${RIAK_RINK[@]}; do
-
-        echo "distribute udspackage to "$i "${INSTALL_PATH} folder.."
+        echo "distribute udspackage to "$i "${INSTALL_PATH} folder..";
         ssh -p ${SSH_PORT} "$i" \
             "mkdir ${INSTALL_PATH} -p";
         scp -r ../${UDSPACKAGE_FILE} $i:${INSTALL_PATH} 
@@ -133,19 +122,33 @@ function doconfigsshlogin()
 {
     cfont -green "$USER perform SSH Login Without Password config\n" -reset;
 
-    if [ -f ${ID_RSA_PUB} ]; then \
+    if [ -f ${ID_RSA_PUB} ] 
+    then 
         cfont -green "$USER id_rsa.pub exist!\n" -reset; \
     else
         cfont -red "id_rsa.pub No such file! please perform [ssh-kengen] command generate id_rsa.pub\n" -reset;
         exit 1; 
     fi
     
-    for i in ${RIAK_RINK[@]}; do \
-        configsshlogin $i
-        if [ $? -eq 1 ]; then \
-            echo "login fail!"; exit 1; \
+    if [ $# -eq 1 ] 
+    then
+        configsshlogin $1
+        if [ $? -eq 1 ] 
+        then 
+            echo "login fail!"; exit 1; 
         fi
-    done
+    else 
+        for i in ${RIAK_RINK[@]}; do \
+
+            configsshlogin $i
+
+            if [ $? -eq 1 ] 
+            then 
+                echo "login fail!"; exit 1; 
+            fi
+        done
+
+    fi
 }
 
 cfont()

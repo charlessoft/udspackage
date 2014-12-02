@@ -3,6 +3,7 @@
 . ./env.sh
 
 export META_FILE=bin/${META_FILE}
+
 function fsmeta_status()
 {
     HOSTIP=$1

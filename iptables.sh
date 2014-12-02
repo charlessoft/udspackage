@@ -2,30 +2,44 @@
 
 . ./config
 
-PORTTMP=/tmp/porttmp; 
+export PORTTMP=/tmp/porttmp; 
+
+
+#------------------------------
+# initporttable
+# description: 初始化iptables端口信息,整理运行的端口列表 
+# return success 0, fail 1
+#------------------------------
 function initporttable()
 {
-    rm -fr ${PORTTMP}
+    cat /dev/null > ${PORTTMP};
     for i in ${ZOOKEEPER_NODE_ARR[*]}; do 
-        echo $i | awk -F: '{ printf("%s\n%s\n", $2,$3) }' >> ${PORTTMP}
+        echo $i | awk -F: '{ printf("%s\n%s\n", $2,$3) }' >> ${PORTTMP};
     done 
 
     for i in ${IPTABLES_ACCESS_PORT[*]}; do 
-        echo $i >> ${PORTTMP}
+        echo $i >> ${PORTTMP};
     done 
 
-    echo ${RIAK_HTTP_PORT} >> ${PORTTMP} 
-    echo ${RIAK_HTTP_PORT} >> ${PORTTMP}
-    echo ${RIAK_EPMD_PORT} >> ${PORTTMP}
-    echo ${RIAK_HANDOFF_PORT} >> ${PORTTMP}
-    echo ${RIAK_DEFPORT} >> ${PORTTMP}
-    echo ${RIAK_ERLANG_PORT_RANGE/-/:} >> ${PORTTMP}
+    echo ${RIAK_HTTP_PORT} >> ${PORTTMP};
+    echo ${RIAK_HTTP_PORT} >> ${PORTTMP};
+    echo ${RIAK_EPMD_PORT} >> ${PORTTMP};
+    echo ${RIAK_HANDOFF_PORT} >> ${PORTTMP};
+    echo ${RIAK_DEFPORT} >> ${PORTTMP};
+    echo ${RIAK_ERLANG_PORT_RANGE/-/:} >> ${PORTTMP};
 
-    echo ${MONGODB_MASTER_PORT}  >> ${PORTTMP}
-    echo ${MONGODB_SLAVE_PORT}  >> ${PORTTMP}
-    echo ${MONGODB_ARBITER_PORT}  >> ${PORTTMP}
+    echo ${MONGODB_MASTER_PORT}  >> ${PORTTMP};
+    echo ${MONGODB_SLAVE_PORT}  >> ${PORTTMP};
+    echo ${MONGODB_ARBITER_PORT}  >> ${PORTTMP};
 }
 
+
+#------------------------------
+# accessPortArr
+# description: 设置允许访问的端口
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
 function accessPortArr()
 {
 
@@ -39,7 +53,8 @@ function accessPortArr()
 
     #判断端口号是否已经存在iptables中
     grep "$i\>" ${IPTABLES_FILE} > /dev/null 
-    if [ $? -ne 0 ]; then \
+    if [ $? -ne 0 ] 
+    then 
         grep -n "22\>" ${IPTABLES_FILE} | awk -F: 'NR==1 \
             { \
                 sub(/22/,"'$i'",$2); printf("%s\n%s",$1,$2); \
@@ -56,27 +71,39 @@ function accessPortArr()
 }
 
 
+
+#------------------------------
+# doaccessPort
+# description:  使用ssh命令登陆到指定服务器,调用accessPort设置允许端口
+# return success 0, fail 1
+#------------------------------
 function doaccessPort()
 {
 
+    #需要修改.需要指定全部的ip
     for i in ${RIAK_RINK[@]}; do 
-            ssh -p ${SSH_PORT} "$i" \
-                "cd ${UDSPACKAGE_PATH}; \
+        ssh -p ${SSH_PORT} "$i" \
+            "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
-            sh iptables.sh accessPort $i "
+            sh iptables.sh accessPort $i \
+            "
 
-        res=$?
-        if [ ${res} -ne 0 ]; then \
+        res=$?;
+        if [ ${res} -ne 0 ] 
+        then 
             exit ${res};
         fi
-        
+
     done
 }
 
 
+#-------------------------------
+#根据传递的参数执行命令
+#-------------------------------
 if [ "$1" = accessPort ]
 then 
-    echo "accessPort ====="
-    HOSTIP=$2
-    accessPortArr ${HOSTIP}
+    echo "accessPort ..."; 
+    HOSTIP=$2;
+    accessPortArr ${HOSTIP};
 fi

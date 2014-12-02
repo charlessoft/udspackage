@@ -3,6 +3,14 @@
 . ./env.sh
 export ZOOKEEPER_FILE=bin/${ZOOKEEPER_FILE}
 
+
+#------------------------------
+# zk_install
+# description: 解压zookeeper
+# params HOSTIP - ip address 
+# params MYID - zookeeper pid
+# return success 0, fail 1
+#------------------------------
 function zk_install()
 {
 
@@ -10,39 +18,48 @@ function zk_install()
     MYID=$2
     echo "${HOSTIP}:${MYID} zk_install...";
 
-    if [  ! -d ${ZOOKEEPER_FILE} ] && [ -f ${ZOOKEEPER_FILE}.tar.gz  ]; then \
+    if [  ! -d ${ZOOKEEPER_FILE} ] && [ -f ${ZOOKEEPER_FILE}.tar.gz  ] 
+    then 
         tar zxvf ${ZOOKEEPER_FILE}.tar.gz -C ./bin 2>&1 >/dev/null;
-        if [ $? -ne 0 ]; then \
-            cfont -red "zookeeper install fail!\n" -reset; \
+        if [ $? -ne 0 ] 
+        then 
+            cfont -red "zookeeper install fail!\n" -reset; 
         else 
             cfont -green "zookeeper install success!\n" -reset;
         fi 
-    else \
+    else 
         cfont -green "zookeeper already installed!\n" -reset;
     fi
 
     #echo "cp ./zoo_${HOSTIP}.cfg  ./${ZOOKEEPER_FILE}/conf/zoo.cfg";
-    if [ ! -f ./zoo_${HOSTIP}.cfg ]; then \
+    if [ ! -f ./zoo_${HOSTIP}.cfg ] 
+    then 
         cfont -red "zoo_${HOSTIP}.cfg No such file!\n" --reset; exit 1;
     fi
 
     cp ./zoo_${HOSTIP}.cfg  ./${ZOOKEEPER_FILE}/conf/zoo.cfg;
-    mkdir ${ZOOKEEPER_DATADIR} -p
-    mkdir ${ZOOKEEPER_LOGDIR} -p
-    echo "${MYID}" > ${ZOOKEEPER_DATADIR}/myid
+    mkdir ${ZOOKEEPER_DATADIR} -p;
+    mkdir ${ZOOKEEPER_LOGDIR} -p;
+    echo "${MYID}" > ${ZOOKEEPER_DATADIR}/myid;
 
 }
 
 
 
-
+#------------------------------
+# zk_start
+# description: 启动zookeeper
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
 function zk_start()
 {
     HOSTIP=$1
     echo "${HOSTIP} zk_start...";
     
     initenv ${HOSTIP}
-    if [ $? -ne 0 ]; then \
+    if [ $? -ne 0 ]
+    then 
         return 1;
     fi
 
@@ -56,6 +73,12 @@ function zk_start()
 
 }
 
+#------------------------------
+# zk_stop
+# description: 停止zookeeper
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
 function zk_stop()
 {
     HOSTIP=$1
@@ -68,15 +91,23 @@ function zk_stop()
         echo `cat tmp.log`; 
         cfont -reset;
 
-    cd ../../
+    cd ../../;
 }
 
+
+#------------------------------
+# zk_destroy
+# description: 删除zookeeper
+# params HOSTIP - ip address 
+# return success 0, fail 1
+# node: 可能不用
+#------------------------------
 function zk_destroy()
 {
-    echo "$1 zk_destroy";
+    HOSTIP=$1
+    echo "${HOSTIP} zk_destroy";
 
     zk_stop 
-    echo $1
     echo ${PWD}
     echo "rm -fr ${ZOOKEEPER_DATADIR}"
     echo "rm -fr ${ZOOKEEPER_LOGDIR}"
@@ -91,6 +122,13 @@ function zk_destroy()
     echo "RESSS=$?"
 }
 
+
+#------------------------------
+# dozk_destroy
+# description: 使用ssh 命令登陆到指定服务器删除zookeeper
+# return success 0, fail 1
+# node: 可能不用
+#------------------------------
 function dozk_destroy()
 {
 
@@ -108,6 +146,13 @@ function dozk_destroy()
     done
 }
 
+
+#------------------------------
+# zk_log
+# description: 收集zookeeper.out 日志
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
 function zk_log()
 {
     HOSTIP=$1
@@ -115,13 +160,20 @@ function zk_log()
     echo "scp ${HOSTIP}:${UDSPACKAGE_PATH}/${ZOOKEEPER_FILE}/zookeeper.out ./log/";
     scp ${HOSTIP}:${UDSPACKAGE_PATH}/${ZOOKEEPER_FILE}/zookeeper.out ./log/${HOSTIP}_zookeeper.out 
 
-    if [ $? -eq 0 ]; then \
+    if [ $? -eq 0 ] 
+    then 
         cfont -green "collect zookeeper log success!\n" -reset ;
-else \
+else 
     cfont -red "collecg zookeeper log fail!\n" -reset;
    fi
 }
 
+
+#------------------------------
+# dozk_log
+# description:  使用ssh 命令登陆到指定服务器收集log
+# return success 0, fail 1
+#------------------------------
 function dozk_log()
 {
     echo "dozk_collect log";
@@ -139,48 +191,60 @@ function dozk_log()
 
 }
 
+
+#------------------------------
+# zk_status
+# description: 获取zookeeper运行状态
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
 function zk_status()
 {
     HOSTIP=$1
-    echo "${HOSTIP} zk_status..."
-    initenv ${HOSTIP}
+    echo "${HOSTIP} zk_status...";
+    initenv ${HOSTIP};
 
-    if [ -d ${ZOOKEEPER_FILE}/bin ]; then \
+    if [ -d ${ZOOKEEPER_FILE}/bin ] 
+    then 
         cd ${ZOOKEEPER_FILE}/bin && \
-        sh ./zkServer.sh status > /tmp/tmp.log
+        sh ./zkServer.sh status > /tmp/tmp.log;
         sleep 2s;
         grep -rin "error" /tmp/tmp.log 2>&1 >/dev/null;
-        if [ $? -eq 0 ]; then \
+
+        if [ $? -eq 0 ] 
+        then 
             cfont -red
             echo `cat /tmp/tmp.log`
             cfont -reset
-        else \
+        else 
             cfont -green 
             echo `cat /tmp/tmp.log`
             cfont -reset
         fi
         cd ../../../;
-        sed -e 's/\(.*\)/'${HOSTIP}' zookeeper \1/g' /tmp/tmp.log > ${ZOOKEEPER_CHECK_LOG}
+        sed -e 's/\(.*\)/'${HOSTIP}' zookeeper \1/g' /tmp/tmp.log > ${ZOOKEEPER_CHECK_LOG};
     else 
-        echo "${HOSTIP} zookeeper check fail!" > ${ZOOKEEPER_CHECK_LOG}
+        echo "${HOSTIP} zookeeper check fail!" > ${ZOOKEEPER_CHECK_LOG};
     fi
 }
 
 
-function zk_collectlog()
-{
-    echo "zk_collectionlog";
-}
 
 
+#------------------------------
+# dozk_install
+# description: 使用ssh 命令登陆到指定服务器调用zk_install 解压zookeeper
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
 function dozk_install()
 {
     echo "dozk_install..."
     for i in ${ZOOKEEPER_NODE_ARR[@]};do 
         MYID=`echo $i | awk -F= '{print $1}'| \
-            awk -F\. '{print $2}'`
+            awk -F\. '{print $2}'`;
         HOSTIP=`echo $i | awk -F= '{print $2}' | \
-            awk -F: '{print $1}'`
+            awk -F: '{print $1}'`;
 
         ssh -p ${SSH_PORT} "${HOSTIP}" \
             "cd ${UDSPACKAGE_PATH}; \
@@ -190,33 +254,47 @@ function dozk_install()
     done
 }
 
+
+#------------------------------
+# dozk_start
+# description: 使用ssh 命令登陆到指定服务器调用 zk_start 启动zookeeper
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
 function dozk_start()
 {
     for i in ${ZOOKEEPER_NODE_ARR[@]};do 
         MYID=`echo $i | awk -F= '{print $1}'| \
-            awk -F\. '{print $2}'`
+            awk -F\. '{print $2}'`;
         HOSTIP=`echo $i | awk -F= '{print $2}' | \
-            awk -F: '{print $1}'`
+            awk -F: '{print $1}'`;
 
         ssh -p ${SSH_PORT} "${HOSTIP}" \
             "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
             sh zk_install.sh zk_start ${HOSTIP} \
             "
-        if [ $? -ne 0 ]; then \
+        if [ $? -ne 0 ]
+        then 
             exit 1;
         fi
     done
 }
 
 
+#------------------------------
+# dozk_stop 
+# description: 使用ssh 命令登陆到指定服务器 嗲用zk_stop停止zookeeper
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
 function dozk_stop()
 {
     for i in ${ZOOKEEPER_NODE_ARR[@]};do 
         MYID=`echo $i | awk -F= '{print $1}'| \
-            awk -F\. '{print $2}'`
+            awk -F\. '{print $2}'`;
         HOSTIP=`echo $i | awk -F= '{print $2}' | \
-            awk -F: '{print $1}'`
+            awk -F: '{print $1}'`;
 
         ssh -p ${SSH_PORT} "${HOSTIP}" \
             "cd ${UDSPACKAGE_PATH}; \
@@ -227,13 +305,20 @@ function dozk_stop()
 }
 
 
+
+#------------------------------
+# dozk_status
+# description: 使用ssh 命令登陆到指定服务器 调用zk_status 查询zookeeper 运行状态
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
 function dozk_status()
 {
     for i in ${ZOOKEEPER_NODE_ARR[@]};do 
         MYID=`echo $i | awk -F= '{print $1}'| \
-            awk -F\. '{print $2}'`
+            awk -F\. '{print $2}'`;
         HOSTIP=`echo $i | awk -F= '{print $2}' | \
-            awk -F: '{print $1}'`
+            awk -F: '{print $1}'`;
 
         ssh -p ${SSH_PORT} "${HOSTIP}" \
             "cd ${UDSPACKAGE_PATH}; \
@@ -245,6 +330,9 @@ function dozk_status()
 
 
 
+#-------------------------------
+#根据传递的参数执行命令
+#-------------------------------
 if [ "$1" = zk_install ]
 then 
     HOSTIP=$2
