@@ -70,7 +70,18 @@ function collectenvres()
 function docheckinstalledstatus()
 {
 
-    rm -fr log/checktmp.log;
+    #rm -fr log/checktmp.log;
+    cat /dev/null > log/checktmp.log
+
+    #构造数组
+    #inithostarray;
+    #if [ $# -ge 1 ] 
+    #then 
+        #HOSTARR=$*
+    #else
+        #HOSTARR=`sort ${HOSTARRAY_FILE} | uniq`;
+    #fi
+
     for i in ${RIAK_RINK[@]}; do 
         echo $i
         curl http://${i}:${RIAK_HTTP_PORT} >/dev/null 2>&1;
@@ -120,20 +131,20 @@ function docheckinstalledstatus()
         ./log/${META_SERVER}_metaservercheck.log
 
 
-    echo "riak--copy"
+    cfont -green "collect riak log...\n" -reset;
     for i in ${RIAK_RINK[@]}; do 
         scp $i:${UDSPACKAGE_PATH}/log/riakcheck.log \
             ./log/${i}_riakcheck.log
     done 
 
-    echo "copy----jdk"
+    cfont -green "collect jdk log...\n" -reset;
     for i in ${JDK_ARR[@]}; do 
         scp $i:${UDSPACKAGE_PATH}/log/jdkcheck.log \
             ./log/${i}_jdkcheck.log
     done 
 
 
-    echo "copy---zookeeper"
+    cfont -green "collect zookeeper log...\n" -reset;
     for i in ${ZOOKEEPER_NODE_ARR[@]}; do 
         ZOOKEEPER_HOSTIP=`echo $i | awk -F= '{print $2}' | awk -F: '{print $1}'`
         scp ${ZOOKEEPER_HOSTIP}:${UDSPACKAGE_PATH}/log/zookcheck.log ./log/${ZOOKEEPER_HOSTIP}_zookcheck.log

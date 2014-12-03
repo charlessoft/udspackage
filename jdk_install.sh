@@ -67,7 +67,14 @@ function jdk_status()
 #------------------------------
 function dojdk_install()
 {
-    for i in ${JDK_ARR[@]};do 
+    if [ $# -ge 1 ] 
+    then 
+        JDK_HOSTARR=$*
+    else
+        JDK_HOSTARR=${JDK_ARR[@]}
+    fi
+
+    for i in ${JDK_HOSTARR[@]};do 
         ssh -p "${SSH_PORT}" "$i" \
             "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
@@ -84,7 +91,15 @@ function dojdk_install()
 #------------------------------
 function dojdk_status()
 {
-    for i in ${JDK_ARR[@]}; do 
+
+    if [ $# -ge 1 ] 
+    then 
+        JDK_HOSTARR=$*
+    else
+        JDK_HOSTARR=${JDK_ARR[@]}
+    fi
+
+    for i in ${JDK_HOSTARR[@]}; do 
         ssh -p ${SSH_PORT} "$i" \
             "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \

@@ -2,8 +2,39 @@
 . ./config 
 . ./env.sh
 export ZOOKEEPER_FILE=bin/${ZOOKEEPER_FILE}
+export ZOOKEEPER_TMPLOG=${UDSPACKAGE_PATH}/tmp/zktmp.log
 
+#------------------------------
+# zk_init
+# description: 构造zookeeper数组
+# return success 0, fail 1
+#------------------------------
+function zk_init()
+{
+    #构造需要执行zookeper命令的HOST 数组
+    if [ $# -ge 1 ] 
+    then 
+        ZKHOST=$*
+        nindex=0;
+        #端口号 需要zookeeper 数组中查找到对应的ip
+        for i in ${ZKHOST[@]} 
+        do 
+            for j in ${ZOOKEEPER_NODE_ARR[@]}
+            do
+                echo $j | grep -rin "$i"  >/dev/null 2>&1;
+                if [ $? -eq 0 ] 
+                then 
+                    ZOOKEEPER_HOSTARR[$nindex]=$j;
+                    let nindex=$nindex+1;
+                fi
+            done 
+        done 
 
+    else
+        ZOOKEEPER_HOSTARR=${ZOOKEEPER_NODE_ARR[@]};
+    fi
+    export ZOOKEEPER_HOSTARR
+}
 #------------------------------
 # zk_install
 # description: 解压zookeeper
@@ -18,15 +49,22 @@ function zk_install()
     MYID=$2
     echo "${HOSTIP}:${MYID} zk_install...";
 
-    if [  ! -d ${ZOOKEEPER_FILE} ] && [ -f ${ZOOKEEPER_FILE}.tar.gz  ] 
+    if [  ! -d ${ZOOKEEPER_FILE} ] 
+       
     then 
-        tar zxvf ${ZOOKEEPER_FILE}.tar.gz -C ./bin 2>&1 >/dev/null;
-        if [ $? -ne 0 ] 
-        then 
-            cfont -red "zookeeper install fail!\n" -reset; 
-        else 
-            cfont -green "zookeeper install success!\n" -reset;
-        fi 
+        if [ -f ${ZOOKEEPER_FILE}.tar.gz  ] 
+        then
+            tar zxvf ${ZOOKEEPER_FILE}.tar.gz -C ./bin 2>&1 >/dev/null;
+            if [ $? -ne 0 ] 
+            then 
+                cfont -red "zookeeper install fail!\n" -reset; 
+            else 
+                cfont -green "zookeeper install success!\n" -reset;
+            fi 
+        else
+            cfont -red "${ZOOKEEPER_FILE} No such file!\n" -reset;  
+            exit 1;
+        fi
     else 
         cfont -green "zookeeper already installed!\n" -reset;
     fi
@@ -177,7 +215,9 @@ else
 function dozk_log()
 {
     echo "dozk_collect log";
-    for i in ${ZOOKEEPER_NODE_ARR[@]}; do 
+    
+    zk_init $@
+    for i in ${ZOOKEEPER_HOSTARR[@]}; do 
         MYID=`echo $i | awk -F= '{print $1}'| \
             awk -F\. '{print $2}'`
         HOSTIP=`echo $i | awk -F= '{print $2}' | \
@@ -207,27 +247,26 @@ function zk_status()
     if [ -d ${ZOOKEEPER_FILE}/bin ] 
     then 
         cd ${ZOOKEEPER_FILE}/bin && \
-        sh ./zkServer.sh status > /tmp/tmp.log;
+        sh ./zkServer.sh status > ${ZOOKEEPER_TMPLOG}
         sleep 2s;
-        grep -rin "error" /tmp/tmp.log 2>&1 >/dev/null;
+        grep -rin "error" ${ZOOKEEPER_TMPLOG} 2>&1 >/dev/null;
 
         if [ $? -eq 0 ] 
         then 
             cfont -red
-            echo `cat /tmp/tmp.log`
+            echo `cat ${ZOOKEEPER_TMPLOG}`
             cfont -reset
         else 
             cfont -green 
-            echo `cat /tmp/tmp.log`
+            echo `cat ${ZOOKEEPER_TMPLOG}`
             cfont -reset
         fi
         cd ../../../;
-        sed -e 's/\(.*\)/'${HOSTIP}' zookeeper \1/g' /tmp/tmp.log > ${ZOOKEEPER_CHECK_LOG};
+        sed -e 's/\(.*\)/'${HOSTIP}' zookeeper \1/g' ${ZOOKEEPER_TMPLOG} > ${ZOOKEEPER_CHECK_LOG};
     else 
         echo "${HOSTIP} zookeeper check fail!" > ${ZOOKEEPER_CHECK_LOG};
     fi
 }
-
 
 
 
@@ -240,7 +279,10 @@ function zk_status()
 function dozk_install()
 {
     echo "dozk_install..."
-    for i in ${ZOOKEEPER_NODE_ARR[@]};do 
+    
+    zk_init $@
+    #解压zookeeper 
+    for i in ${ZOOKEEPER_HOSTARR[@]};do 
         MYID=`echo $i | awk -F= '{print $1}'| \
             awk -F\. '{print $2}'`;
         HOSTIP=`echo $i | awk -F= '{print $2}' | \
@@ -263,7 +305,9 @@ function dozk_install()
 #------------------------------
 function dozk_start()
 {
-    for i in ${ZOOKEEPER_NODE_ARR[@]};do 
+    
+    zk_init $@
+    for i in ${ZOOKEEPER_HOSTARR[@]};do 
         MYID=`echo $i | awk -F= '{print $1}'| \
             awk -F\. '{print $2}'`;
         HOSTIP=`echo $i | awk -F= '{print $2}' | \
@@ -290,7 +334,9 @@ function dozk_start()
 #------------------------------
 function dozk_stop()
 {
-    for i in ${ZOOKEEPER_NODE_ARR[@]};do 
+
+    zk_init $@
+    for i in ${ZOOKEEPER_HOSTARR[@]};do 
         MYID=`echo $i | awk -F= '{print $1}'| \
             awk -F\. '{print $2}'`;
         HOSTIP=`echo $i | awk -F= '{print $2}' | \
@@ -314,7 +360,9 @@ function dozk_stop()
 #------------------------------
 function dozk_status()
 {
-    for i in ${ZOOKEEPER_NODE_ARR[@]};do 
+
+    zk_init $@
+    for i in ${ZOOKEEPER_HOSTARR[@]};do 
         MYID=`echo $i | awk -F= '{print $1}'| \
             awk -F\. '{print $2}'`;
         HOSTIP=`echo $i | awk -F= '{print $2}' | \

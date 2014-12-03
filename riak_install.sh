@@ -225,7 +225,15 @@ function riak_rink_status()
 #------------------------------
 function doriak_install()
 {
-    for i in ${RIAK_RINK[@]}; do
+
+    if [ $# -ge 1 ] 
+    then 
+        RIAK_HOSTARR=$*
+    else
+        RIAK_HOSTARR=${RIAK_RINK[@]}
+    fi
+
+    for i in ${RIAK_HOSTARR[@]}; do
         echo "$i install Riak";
 
         ssh -p ${SSH_PORT} "$i" "cd ${UDSPACKAGE_PATH}; \
@@ -248,7 +256,15 @@ function doriak_install()
 #------------------------------
 function doriak_unstall()
 {
-    for i in ${RIAK_RINK[@]}; do
+
+    if [ $# -ge 1 ] 
+    then 
+        RIAK_HOSTARR=$*
+    else
+        RIAK_HOSTARR=${RIAK_RINK[@]}
+    fi
+
+    for i in ${RIAK_HOSTARR[@]}; do
         ssh -p ${SSH_PORT} "$i" \
             "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
@@ -264,7 +280,14 @@ function doriak_unstall()
 function doriak_start()
 {
     echo "start Riak"
-    for i in ${RIAK_RINK[@]}; do 
+    if [ $# -ge 1 ] 
+    then 
+        RIAK_HOSTARR=$*
+    else
+        RIAK_HOSTARR=${RIAK_RINK[@]}
+    fi
+
+    for i in ${RIAK_HOSTARR[@]}; do 
         ssh -p ${SSH_PORT} "$i" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
             sh riak_install.sh riak_start $i \
@@ -288,7 +311,14 @@ function doriak_start()
 #------------------------------
 function doriak_stop()
 {
-    for i in ${RIAK_RINK[@]}; do 
+
+    if [ $# -ge 1 ] 
+    then 
+        RIAK_HOSTARR=$*
+    else
+        RIAK_HOSTARR=${RIAK_RINK[@]}
+    fi
+    for i in ${RIAK_HOSTARR[@]}; do 
         ssh -p ${SSH_PORT} "$i" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
             sh riak_install.sh riak_stop $i \
@@ -308,7 +338,14 @@ function doriak_stop()
 function doriak_status()
 {
     echo "Riak status";
-    for i in ${RIAK_RINK[@]}; do 
+
+    if [ $# -ge 1 ] 
+    then 
+        RIAK_HOSTARR=$*
+    else
+        RIAK_HOSTARR=${RIAK_RINK[@]}
+    fi
+    for i in ${RIAK_HOSTARR[@]}; do 
         ssh -p ${SSH_PORT} "$i" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
             sh riak_install.sh riak_status $i \
@@ -329,7 +366,14 @@ function doriak_status()
 #------------------------------
 function doriak_joinring()
 {
-    for i in ${RIAK_RINK[@]}; do 
+
+    if [ $# -ge 1 ] 
+    then 
+        RIAK_HOSTARR=$*
+    else
+        RIAK_HOSTARR=${RIAK_RINK[@]}
+    fi
+    for i in ${RIAK_HOSTARR[@]}; do 
         echo $i
         echo "curl http://$i:${RIAK_HTTP_PORT}";
         curl http://$i:${RIAK_HTTP_PORT} &> /dev/null;

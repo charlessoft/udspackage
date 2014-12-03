@@ -30,6 +30,7 @@ function fsname_start()
     cd ${NAME_FILE}/target && \
         java -jar -server ${NAME_SERVER_PARAMS} fs-nameserver-1.0-SNAPSHOT.jar
     cd ../../
+    sleep 5s;
 }
 
 

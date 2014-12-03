@@ -32,6 +32,7 @@ function fscontent_start()
     cd ${CONTENT_FILE}/target && \
         java -jar -server ${CONTENT_SERVER_PARAMS} fs-contentserver-1.0-SNAPSHOT.jar
     cd ../../
+    sleep 5s;
 }
 
 

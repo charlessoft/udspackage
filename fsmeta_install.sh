@@ -42,6 +42,7 @@ function fsmeta_start()
     cd ${META_FILE}/target && \
         java -jar -server ${META_SERVER_PARAMS} fs-metaserver-1.0-SNAPSHOT.jar
     cd ../../
+    sleep 5s;
 }
 
 

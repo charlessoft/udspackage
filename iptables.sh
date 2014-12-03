@@ -1,7 +1,7 @@
 #!/bin/bash 
 
 . ./config
-
+. ./env.sh
 export PORTTMP=/tmp/porttmp; 
 
 
@@ -46,7 +46,8 @@ function accessPortArr()
     HOSTIP=$1
     initporttable    
     unset IPTABLES_ACCESS_PORT
-    IPTABLES_ACCESS_PORT=`cat ${PORTTMP} | sort | uniq`;
+    
+        IPTABLES_ACCESS_PORT=`cat ${PORTTMP} | sort | uniq`;
 
     for i in ${IPTABLES_ACCESS_PORT[@]}; do 
     echo "set ${HOSTIP} allow port: $i"
@@ -80,8 +81,17 @@ function accessPortArr()
 function doaccessPort()
 {
 
+    #构造数组
+    inithostarray;
+    if [ $# -ge 1 ] 
+    then 
+        HOSTARR=$*
+    else
+        HOSTARR=`sort ${HOSTARRAY_FILE} | uniq`;
+    fi
+
     #需要修改.需要指定全部的ip
-    for i in ${RIAK_RINK[@]}; do 
+    for i in ${HOSTARR[@]}; do 
         ssh -p ${SSH_PORT} "$i" \
             "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
@@ -102,7 +112,7 @@ function doaccessPort()
 #根据传递的参数执行命令
 #-------------------------------
 if [ "$1" = accessPort ]
-then 
+then
     echo "accessPort ..."; 
     HOSTIP=$2;
     accessPortArr ${HOSTIP};

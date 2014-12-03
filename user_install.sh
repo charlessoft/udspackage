@@ -15,9 +15,9 @@ function user_createuser()
     `id ${USERNAME} &>/dev/null`;
     if [ $? -eq 0 ] 
     then 
-        cfont -red "user exist!!\n" -reset;  
+        cfont -red "${HOSTIP} ${USERNAME}  user exist!!\n" -reset;  
     else 
-        cfont -green "add user ${USERNAME}\n" -reset;
+        cfont -green "${HOSTIP} ${USERNAME} add user ${USERNAME}\n" -reset;
 
         useradd ${USERNAME} -G root;
         echo "${USERPWD}" | passwd --stdin ${USERNAME};
@@ -49,10 +49,15 @@ function user_createuser()
 #------------------------------
 function douser_createuser()
 {
-    echo "create user";
-    mergehostarray
+    #构造数组
+    inithostarray;
+    if [ $# -ge 1 ] 
+    then 
+        HOSTARR=$*
+    else
+        HOSTARR=`sort ${HOSTARRAY_FILE} | uniq`;
+    fi
 
-    HOSTARR=`sort ${HOSTARRAY} | uniq`;
     for i in ${HOSTARR[@]}; do \
         ssh -p ${SSH_PORT} "$i" \
         "cd ${UDSPACKAGE_PATH}; \
@@ -63,18 +68,10 @@ function douser_createuser()
 
 }
 
-function douser_mytest()
-{
-    
-    HOSTARR=`sort ${HOSTARRAY} | uniq`;
-    for i in ${HOSTARR[@]}; do \
-        ssh -p ${SSH_PORT} -l ${USERNAME} "$i" \
-        "cd ${UDSPACKAGE_PATH}; \
-        source /etc/profile; \
-        sh user_install.sh mytest $i"
-    done 
-}
 
+#-------------------------------
+#根据传递的参数执行命令
+#-------------------------------
 if [ "$1" = user_createuser ]
 then 
     HOSTIP=$2
@@ -82,14 +79,6 @@ then
     user_createuser ${HOSTIP}
 fi
 
-if [ "$1" = mytest ]
-then 
-    HOSTIP=$2
-    #echo "user_createuser ====="
-    #user_createuser ${HOSTIP}
-    touch /tmp/mytest
-fi
-#user_createuser 10.211.55.18
 
 
 

@@ -95,6 +95,16 @@ function deal_mongodb_cluster_js_patch()
 
 }
 
+function deal_mongodb_cluster_status_js_patch()
+{
+
+    MONGODB_CLUSTER_STATUS_JS=mongodb_cluster_status.js;
+    rm -fr ./${MONGODB_CLUSTER_STATUS_JS};
+
+    echo "var db = connect('${MONGODB_MASTER}:${MONGODB_MASTER_PORT}/admin');" >> ${MONGODB_CLUSTER_STATUS_JS};
+    echo "printjson(rs.status());" >> ${MONGODB_CLUSTER_STATUS_JS};
+
+}
 
 
 
@@ -106,4 +116,12 @@ then
     HOSTIP=$2;
     echo "deal_mongodb_cluster_js_patch ...";
     deal_mongodb_cluster_js_patch ${HOSTIP};
+fi
+
+
+if [ "$1" = deal_mongodb_cluster_status_js_patch ]
+then 
+    HOSTIP=$2;
+    echo "deal_mongodb_cluster_status_js_patch...";
+    deal_mongodb_cluster_status_js_patch ${HOSTIP};
 fi

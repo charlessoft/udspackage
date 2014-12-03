@@ -1,5 +1,5 @@
 #!/bin/bash 
-source ./config 
+. ./config 
 
 
 
@@ -12,7 +12,7 @@ function deal_sudoers()
 {
     if [ -f "${SUDOERS_PATH}_bak" ] 
     then 
-        echo "存在sudoers "; 
+        echo "exist sudoers"; 
         cp ${SUDOERS_PATH}_bak ${SUDOERS_PATH}; 
     else 
         cp ${SUDOERS_PATH} ${SUDOERS_PATH}_bak;
@@ -58,7 +58,9 @@ function deal_riakconf()
 
 if [ "$1" = "" ] 
 then 
-    echo "需要指定修改的ip地址"; exit 1;
+    cfont -red "params need ip address!\n"; exit 1;
 fi
+
+HOSTIP=$1
 deal_sudoers
-deal_riakconf $1
+deal_riakconf ${HOSTIP}

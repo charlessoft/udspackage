@@ -37,10 +37,21 @@ cfont  -red
     echo "\
 Usage: ${SCRIPT} env <command>
 where <command> is one of the following:
-    { nopwd | checkenv | distribute | initcfg | checkinstalledstatus } "
+    { nopwd | checkenv | distribute | initcfg | checkinstalledstatus | createuser | chownuser } "
 cfont -reset
 }
 
+
+
+function jdk_help()
+{
+cfont  -red 
+    echo "\
+Usage: ${SCRIPT} jdk <command>
+where <command> is one of the following:
+    { install | status } "
+cfont -reset
+}
 
 function riak_help()
 {
@@ -233,23 +244,28 @@ function riak_admin()
     case "$1" in
         start)
             echo "riak start...";
-            doriak_start;
+            shift
+            doriak_start "$@";
             ;;
         stop)
             echo "riak stop...";
-            doriak_stop;
+            shift
+            doriak_stop "$@";
             ;;
         status)
             echo "riak status...";
-            doriak_status;
+            shift 
+            doriak_status "$@";
             ;;
         rink_status)
             echo "riak rink status...";
-            doriak_rink_status;
+            shift 
+            doriak_rink_status "$@";
             ;;
         join)
             echo "join...";
-            doriak_joinring;
+            shift
+            doriak_joinring "$@";
             ;;
         commit)
             echo "commit...";
@@ -257,11 +273,13 @@ function riak_admin()
             ;;
         install)
             echo "riak install..";
-            doriak_install;
+            shift
+            doriak_install "$@";
             ;;
         unstall)
             echo "riak unstall...";
-            doriak_unstall;
+            shift
+            doriak_unstall "$@";
             ;;
         all)
             echo "riak all...";
@@ -275,7 +293,7 @@ function riak_admin()
 function env_admin()
 {
     case "$1" in 
-        nopwd)
+        nopwd)#--ok
             shift 
             doconfigsshlogin "$@";
             ;;
@@ -287,26 +305,31 @@ function env_admin()
             ;;
         checkinstalledstatus)
             echo "check installed status...";
+            shift
             docheckinstalledstatus "$@";
             ;;
-        distribute)
+        distribute) #--ok
             cfont -green "distribute udspackage...\n" -reset;
             shift
-            distributepackage "$@"
+            distributepackage "$@";
             ;;
-        iptables)
+        iptables) #--ok
             echo "allow port table"
-            doaccessPort
+            shift
+            doaccessPort "$@";
             ;;
-        createuser)
+        createuser) #--ok
             echo "create user";
-            douser_createuser ${USERNAME} ${USERPWD}
+            shift
+            douser_createuser "$@";
+            #douser_createuser ${USERNAME} ${USERPWD}
             ;;
-        chownuser)
+        chownuser) #--ok
             echo "chownuser";
-            dochownuser;
+            shift
+            dochownuser "$@";
             ;;
-        initcfg)
+        initcfg) 
             echo "init mongodb zookeeper config";
             mongodb_admin gencfg;
             zookeeper_admin gencfg;
@@ -320,21 +343,25 @@ function env_admin()
 function zookeeper_admin()
 {
     case "$1" in
-        install)
+        install) #--ok
             echo "zk install..."
-            dozk_install
+            shift
+            dozk_install "$@";
             ;;
-        start)
+        start)  #--ok
             echo "zk start..."
-            dozk_start
+            shift
+            dozk_start "$@";
             ;;
-        stop)
+        stop) #--ok
             echo "zk stop..."
-            dozk_stop
+            shift
+            dozk_stop "$@";
             ;;
-        status)
+        status) #--ok
             echo "zk status..."
-            dozk_status
+            shift
+            dozk_status "$@";
             ;;
         gencfg)
             echo "zk generate gencfg..."
@@ -345,13 +372,14 @@ function zookeeper_admin()
                 deal_zkconfig ${HOSTIP}
             done 
             ;;
-        destroy)
-            echo "删除zookeeper";
-            dozk_destroy;
-            ;;
+        #destroy)
+            #echo "删除zookeeper";
+            #dozk_destroy;
+            #;;
         log)
             echo "collect zookeeper log";
-            dozk_log;
+            shift
+            dozk_log "$@";
             ;;
 
         *)
@@ -363,16 +391,18 @@ function zookeeper_admin()
 function jdk_admin()
 {
     case "$1" in
-        install)
+        install) #--ok
             echo "jdk install";
-            dojdk_install 
+            shift
+            dojdk_install "$@";
             ;;
-        status)
+        status) #--ok
             echo "jdk status";
-            dojdk_status;
+            shift
+            dojdk_status "$@";
             ;;
         *)
-            echo "jdk install ";
+            jdk_help;
             ;;
     esac
 
@@ -380,13 +410,15 @@ function jdk_admin()
 function mongodb_admin()
 {
     case "$1" in 
-        start)
+        start) #--ok
             echo "mongodb start"
-            domongodb_start
+            shift
+            domongodb_start "$@"
             ;;
         install)
             echo "mongodb install"
-            domongodb_install
+            shift
+            domongodb_install "$@"
             ;;
         gencfg)
             echo "mongodb generate cfg..."
@@ -396,10 +428,12 @@ function mongodb_admin()
                 deal_mongodb_patch  $i
             done 
             deal_mongodb_cluster_js_patch 
+            deal_mongodb_cluster_status_js_patch
             ;;
-        status)
+        status) 
             echo "mongodb status";
-            domongodb_status;
+            shift
+            domongodb_status "$@"
             ;;
         cluster)
             echo "mongodb cluster";
@@ -525,11 +559,6 @@ case "$1" in
         echo "runall1";
         runall1 "$@";
         ;;
-    #fsjetty)
-        #shfit
-        #echo "fs-jetty";
-        #fsjetty_admin "$@";
-        #;;
     *)
         usage;
         ;;

@@ -2,6 +2,7 @@
 . ./config 
 . ./env.sh
 export MONGODB_FILE=bin/${MONGODB_FILE}
+export MONGODB_TMPLOG=${UDSPACKAGE_PATH}/tmp/mongodbtmp.log
 
 
 #------------------------------
@@ -113,17 +114,25 @@ function mongodb_start()
 {
     HOSTIP=$1
     echo "${HOSTIP} start mongodb ";
-
-    mongodb_status ${HOSTIP}
+    PORT=$2
+    mongodb_status ${HOSTIP} ${PORT}
     if [ $? -ne 0 ] 
     then 
         if [ -d ${MONGODB_FILE} ] 
         then 
             cd ${MONGODB_FILE}/bin; 
-            ./mongod -f ../../../mongodb_${HOSTIP}.conf > tmp.log;  
-            cfont -green ""
-            echo `cat tmp.log`; 
-            cfont -reset; 
+            ./mongod -f ../../../mongodb_${HOSTIP}.conf > ${MONGODB_TMPLOG}
+            grep -rin "ERROR" ${MONGODB_TMPLOG} >/dev/null 2>&1;
+            if [ $? -eq 0 ] 
+            then 
+                cfont -red ""
+                echo `cat ${MONGODB_TMPLOG}`; 
+                cfont -reset; 
+            else 
+                cfont -green ""
+                echo `cat ${MONGODB_TMPLOG}`; 
+                cfont -reset; 
+            fi
             cd ../../../;
         else 
             cfont -red "mongodb ${MONGODB_FILE} No such file!\n" -reset ;
@@ -173,6 +182,11 @@ function mongodb_stop()
 #------------------------------
 function mongodb_status()
 {
+    if [ $# -lt 2 ]
+    then 
+        cfont -red "check mongodb whether is running ,need two params, ipaddress and port!\n" -reset;
+        exit 1;
+    fi
     HOSTIP=$1
     PORT=$2
     echo "${HOSTIP}:${PORT} check mongodb whether is running";
@@ -181,11 +195,11 @@ function mongodb_status()
     
     if [ ${res} -ne 0 ] 
     then 
-        cfont -red "mongodb curl network check fail! res=${res}\n" -reset;
+        cfont -red "mongodb ${HOSTIP}:${PORT} curl network check fail! res=${res}\n" -reset;
         echo "${HOSTIP} mongodb check fail!" >> ${MONGODB_CHECK_LOG}
         return ${res}; 
     else 
-        cfont -green "mongodb curl network check success,mongodb is running! res=${res}\n" -reset;
+        cfont -green "mongodb ${HOSTIP}:${PORT} curl network check success,mongodb is running! res=${res}\n" -reset;
         echo "${HOSTIP} mongodb check success!" >> ${MONGODB_CHECK_LOG}
     fi
 
@@ -234,12 +248,11 @@ function mongodb_cluster_status()
 
 
 #------------------------------
-# domongodb_install
-# description: 调用ssh命令 登陆指定服务器安装mongodb
-# params HOSTIP - ip address 
+# domongodb_master_install
+# description: 调用ssh命令 登陆服务器安装mongodb
 # return success 0, fail 1
 #------------------------------
-function domongodb_install()
+function domongodb_master_install()
 {
     #安装 master
     ssh -p ${SSH_PORT} "${MONGODB_MASTER}" \
@@ -252,6 +265,16 @@ function domongodb_install()
     then 
         exit ${res}; 
     fi
+}
+
+
+#------------------------------
+# domongodb_slave_install
+# description: 调用ssh命令 登陆slave服务器安装mongodb
+# return success 0, fail 1
+#------------------------------
+function domongodb_slave_install()
+{
 
     #安装slave
     for i in ${MONGODB_SLAVE_ARR[@]}; do
@@ -268,6 +291,16 @@ function domongodb_install()
             exit ${res};
         fi
     done
+}
+
+
+#------------------------------
+# domongodb_arbiter_install
+# description: 调用ssh命令 登陆arbiter服务器安装mongodb
+# return success 0, fail 1
+#------------------------------
+function domongodb_arbiter_install()
+{
 
     #echo "${MONGODB_ARBITER} 安装 arbiter mongodb"
     ssh -p ${SSH_PORT} "${MONGODB_ARBITER}" \
@@ -283,15 +316,64 @@ function domongodb_install()
 }
 
 #------------------------------
-# domongodb_start
-# description: 调用ssh命令 登陆指定服务器启动mongodb
-# params HOSTIP - ip address 
+# domongodb_install
+# description: 根据ip地址 调用domongodb_master_install, domongodb_slave_install,domongodb_arbiter_install
 # return success 0, fail 1
 #------------------------------
-function domongodb_start()
+function domongodb_install()
 {
+    if [ $# -ge 1 ]
+    then
+        #允许传入多个ip 地址
+        until [ $# -eq 0 ]
+        do 
+            if [ x"$1" = x"${MONGODB_MASTER}" ]
+            then
+                domongodb_master_install
+                shift
+                continue
+            elif [ x"$1" = x"${MONGODB_ARBITER}" ]
+            then
+                domongodb_arbiter_install
+                shift
+                continue
+            else 
+                #判断是否需要启动slave 
+                for i in ${MONGODB_SLAVE_ARR[@]} 
+                do 
+                    if [ x"$1" = x"$i" ]
+                    then 
+                        domongodb_slave_install
+                        shift
+                        continue
+                    fi
+                done
+                
+            fi
+            shift 
+        done
+
+    else 
+        domongodb_master_install
+        domongodb_slave_install
+        domongodb_arbiter_install
+    fi
+
+
+
+}
+
+
+#------------------------------
+# domongodb_master_start
+# description: 调用ssh命令 登陆master服务器启动mongodb
+# return success 0, fail 1
+#------------------------------
+function domongodb_master_start()
+{
+
     echo "start master mongodb ";
-    #echo "hello world" | cut -d " "
+
     ssh -p ${SSH_PORT} "${MONGODB_MASTER}" \
         " \
         cd ${UDSPACKAGE_PATH}; \
@@ -304,8 +386,24 @@ function domongodb_start()
         exit ${res}; 
     fi
 
+}
 
-    for i in ${MONGODB_SLAVE_ARR[@]}; do
+#------------------------------
+# domongodb_slave_start
+# description: 调用ssh命令 登陆slave服务器启动mongodb
+# return success 0, fail 1
+#------------------------------
+function domongodb_slave_start()
+{
+
+    if [ $# -ge 1 ]
+    then 
+        SLAVE_HOSTARR=$*
+    else 
+        SLAVE_HOSTARR=${MONGODB_SLAVE_ARR[@]}
+    fi
+
+    for i in ${SLAVE_HOSTARR[@]}; do
         echo "$i start slave mongodb";
 
         ssh -p ${SSH_PORT} "$i" \
@@ -318,7 +416,16 @@ function domongodb_start()
             exit ${res};
         fi
     done
+} 
 
+
+#------------------------------
+# domongodb_arbiter_start
+# description: 调用ssh命令 登陆arbiter服务器启动mongodb
+# return success 0, fail 1
+#------------------------------
+function domongodb_arbiter_start()
+{
 
     echo "start ${MONGODB_ARBITER} arbiter mongodb"
 
@@ -332,17 +439,60 @@ function domongodb_start()
     then 
         exit ${res}; 
     fi
+}
+
+#------------------------------
+# domongodb_start
+# description: 根据传入的ip地址,调用domongodb_master_start,domongodb_slave_start,domongodb_arbiter_start
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
+function domongodb_start()
+{
+    if [ $# -ge 1 ]
+    then
+
+        #允许传入多个ip 地址
+        until [ $# -eq 0 ]
+        do 
+            if [ x"$1" = x"${MONGODB_MASTER}" ]
+            then
+                domongodb_master_start 
+                shift
+                continue
+            elif [ x"$1" = x"${MONGODB_ARBITER}" ]
+            then
+                domongodb_arbiter_start
+                shift
+                continue
+            else 
+                #判断是否需要启动slave 
+                for i in ${MONGODB_SLAVE_ARR[@]} 
+                do 
+                    if [ x"$1" = x"$i" ]
+                    then 
+                        domongodb_slave_start
+                        shift
+                        continue
+                    fi
+                done
+                
+            fi
+
+            shift 
+        done
+
+
+    else 
+        domongodb_master_start 
+        domongodb_slave_start 
+        domongodb_arbiter_start
+    fi
 
 }
 
 
-#------------------------------
-# domongodb_stop
-# description: 调用ssh命令 登陆指定服务停止mongodb
-# params HOSTIP - ip address 
-# return success 0, fail 1
-#------------------------------
-function domongodb_stop()
+function domongodb_master_stop()
 {
 
     echo "stop ${MONGODB_MASTER} master mongodb ";
@@ -358,6 +508,10 @@ function domongodb_stop()
     then 
         exit ${res}; 
     fi
+}
+
+function domongodb_slave_stop()
+{
 
 
     for i in ${MONGODB_SLAVE_ARR[@]}; do
@@ -374,7 +528,10 @@ function domongodb_stop()
             exit ${res};
         fi
     done
+}
 
+function domongodb_arbiter_stop()
+{
 
     echo "stop ${MONGODB_ARBITER} arbiter mongodb";
 
@@ -388,6 +545,55 @@ function domongodb_stop()
     then 
         exit ${res}; \
     fi
+}
+
+#------------------------------
+# domongodb_stop
+# description: 调用ssh命令 登陆指定服务停止mongodb
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
+function domongodb_stop()
+{
+
+    if [ $# -ge 1 ]
+    then
+        #允许传入多个ip 地址
+        until [ $# -eq 0 ]
+        do 
+            if [ x"$1" = x"${MONGODB_MASTER}" ]
+            then
+                domongodb_master_stop
+                shift
+                continue
+            elif [ x"$1" = x"${MONGODB_ARBITER}" ]
+            then
+                domongodb_arbiter_stop
+                shift
+                continue
+            else 
+                #判断是否需要启动slave 
+                for i in ${MONGODB_SLAVE_ARR[@]} 
+                do 
+                    if [ x"$1" = x"$i" ]
+                    then 
+                        domongodb_slave_stop
+                        shift
+                        continue
+                    fi
+                done
+                
+            fi
+            shift 
+        done
+
+
+    else 
+        domongodb_master_stop
+        domongodb_slave_stop 
+        domongodb_arbiter_stop
+    fi
+
 }
 
 
@@ -426,6 +632,26 @@ function domongodb_cluster_status()
 }
 
 
+function domongodb_master_status()
+{
+    mongodb_status ${MONGODB_MASTER} ${MONGODB_MASTER_PORT}
+}
+
+function domongodb_slave_status()
+{
+
+    for i in ${MONGODB_SLAVE_ARR[@]}; do
+        mongodb_status $i ${MONGODB_SLAVE_PORT}
+        echo ""
+    done
+}
+
+function domongodb_arbiter_status()
+{
+
+    mongodb_status ${MONGODB_ARBITER} ${MONGODB_ARBITER_PORT}
+}
+
 #------------------------------
 # domongodb_status
 # description: 查询mongodb运行状态
@@ -433,17 +659,45 @@ function domongodb_cluster_status()
 #------------------------------
 function domongodb_status()
 {
-    rm -fr ${MONGODB_CHECK_LOG}
-    mongodb_status ${MONGODB_MASTER} ${MONGODB_MASTER_PORT}
-    echo ""
-    for i in ${MONGODB_SLAVE_ARR[@]}; do
-        mongodb_status $i ${MONGODB_SLAVE_PORT}
-        echo ""
-    done
-    echo "" 
+    #rm -fr ${MONGODB_CHECK_LOG}
+    cat /dev/null > ${MONGODB_CHECK_LOG}
 
-    mongodb_status ${MONGODB_ARBITER} ${MONGODB_ARBITER_PORT}
-    echo ""
+    if [ $# -ge 1 ]
+    then
+        #允许传入多个ip 地址
+        until [ $# -eq 0 ]
+        do 
+            if [ x"$1" = x"${MONGODB_MASTER}" ]
+            then
+                domongodb_master_status
+                shift
+                continue
+            elif [ x"$1" = x"${MONGODB_ARBITER}" ]
+            then
+                domongodb_arbiter_status
+                shift
+                continue
+            else 
+                #判断是否需要启动slave 
+                for i in ${MONGODB_SLAVE_ARR[@]} 
+                do 
+                    if [ x"$1" = x"$i" ]
+                    then 
+                        domongodb_slave_status
+                        shift
+                        continue
+                    fi
+                done
+                
+            fi
+            shift 
+        done
+
+    else 
+        domongodb_master_status
+        domongodb_slave_status
+        domongodb_arbiter_status
+    fi
 }
 
 
@@ -473,7 +727,8 @@ then
     #临时增加测试
     #mongodb_init ${HOSTIP}
     #临时增加测试
-    mongodb_start ${HOSTIP}
+    PORT=$3
+    mongodb_start ${HOSTIP} ${PORT}
 fi
 
 if [ "$1" = mongodb_status ]
