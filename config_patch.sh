@@ -8,7 +8,10 @@ function deal_zookeeper_config()
         #awk -F\. '{print $2}'`
     ZOOKEEPER_HOSTIP=`echo ${ZOOKEEPER_NODE_ARR} | awk -F= '{print $2}' | \
         awk -F: '{print $1}'`
-    echo "zookeeper connect=${ZOOKEEPER_HOSTIP}:${ZOOKEEPER_PORT} user=${ZOOKEEPER_USER} password=${ZOOKEEPER_PASSWORD} ${ZOOKEEPER_CONFIG_NAME}=${UDSPACKAGE_PATH}/configuration.json"  > ${UDS_ZOOKEEPER_CONFIG}
+    echo "zookeeper connect=${ZOOKEEPER_HOSTIP}:${ZOOKEEPER_PORT} \
+        user=${ZOOKEEPER_USER} \
+        password=${ZOOKEEPER_PASSWORD} \
+        ${ZOOKEEPER_CONFIG_NAME}=${UDSPACKAGE_PATH}/configuration.json"  > ${UDS_ZOOKEEPER_CONFIG}
 
 }
 
@@ -46,6 +49,6 @@ function deal_configuration()
 
 }
 
-#deal_zookeeper_config
-#deal_mongodb_config
+deal_zookeeper_config
+deal_mongodb_config
 deal_configuration

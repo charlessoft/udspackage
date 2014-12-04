@@ -120,6 +120,23 @@ where <command> is one of the following:
 
 
 #------------------------------
+# fsdeploy_admin
+# description: zookeeper_使用帮助
+#------------------------------
+function fsdeploy_help()
+{
+    cfont  -red 
+    echo " 
+Usage: ${SCRIPT} fsdeploy <command>
+where <command> is one of the following:  
+\
+    { refreshzookeeper | refreshmongodb }
+    "
+    cfont  -reset
+
+}
+
+#------------------------------
 # fsname_help 
 # description: fsname_使用帮助
 #------------------------------
@@ -373,9 +390,31 @@ function env_admin()
             cfont -green "init mongodb zookeeper config\n" -reset;
             mongodb_admin gencfg;
             zookeeper_admin gencfg;
+            sh config_patch.sh
+             
             ;;
         *)
             env_help;
+            ;;
+    esac
+}
+
+function fsdeploy_admin()
+{
+    case "$1" in 
+        refreshzookeeper)
+            echo "refresh zookeeper config...";
+            shift 
+            dofsdeplpoy_refresh_zookeeper_cfg;
+            ;;
+        refreshmongodb)
+            echo "refresh mongodb config...";
+            shift
+            dofsdeplpoy_refresh_mongodb_cfg;
+            ;;
+        *)
+            echo "deploy_admin"
+            fsdeploy_help
             ;;
     esac
 }
@@ -420,6 +459,7 @@ function zookeeper_admin()
 
         *)
             echo "zookeeper"
+            zookeeper_help         
             ;;
     esac
 }
@@ -527,6 +567,7 @@ else \
     mongodb_admin install
     mongodb_admin start
     mongodb_admin cluster 
+    sleep 5s;
 
     fscontent_admin start
     fsname_admin start 
