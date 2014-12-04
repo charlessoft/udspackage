@@ -22,9 +22,9 @@ function deal_mongodb_config()
     echo "addUser riakcon=${RIAKHOSTIP}:${RIAK_PROTOBUF_PORT} \
         riakbuk=userBucket \
         mongocon=${MONGODB_MASTER}:${MONGODB_MASTER_PORT} \
-        mongousr=${MONGODB_USER} \
-        mongopwd=${MONGODB_PASSWORD} \
-        mongodbn=uds_fs \
+        mongousr=${MONGODB_DBUSER} \
+        mongopwd=${MONGODB_DBPASSWORD} \
+        mongodbn=${MONGODB_DBNAME} \
         mongocol=${MONGODB_COL} \
         username=${MONGODB_ADDUSERNAME} \
         password=${MONGODB_ADDPASSWORD} buckets=uds" > ${UDS_MONGODB_CONFIG}

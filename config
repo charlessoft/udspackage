@@ -121,7 +121,7 @@ ZOOKEEPER_CONFIG_NAME=/udsfstest/config
 ZOOKEEPER_CONFIG_PATH=configuration.json
 
 #------mongodb_config-----
-MONGODB_USER=uds_fs
+MONGODB_DBUSER=uds_fs
 MONGODB_DBPASSWORD=pa44w0rd
 MONGODB_DBNAME=uds_fs
 MONGODB_COL=user 

@@ -47,3 +47,6 @@ sh runsh.sh env distribute
 2.jdk
 3.zookeeper
 4.mongodb 
+use uds_fs
+
+db.user.find()

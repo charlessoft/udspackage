@@ -44,7 +44,7 @@ function deal_riakconf()
 
     #echo "sed -e 's/nodename\ =\ riak@1.1.1.1/namenode = riak@$1' "riak.conf"  > ${RIAK_CONF}"
     echo "set riak conf";
-    sed -e 's/nodename\ =\ riak@1.1.1.1/nodename = riak@'$1'/g' "riak.conf" | \
+    sed -e 's/nodename\ =\ riak@1.1.1.1/nodename = riak@'$1'/g' "conf/riak.conf" | \
         sed -e 's/MINNUM/'${MINNUM}'/g' | \
         sed -e 's/MAXNUM/'${MAXNUM}'/g' \
         > ${RIAK_CONF};

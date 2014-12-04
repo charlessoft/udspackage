@@ -158,6 +158,8 @@ function docheckinstalledstatus()
             -not -name "fscontent_log.log" \
             -not -name "fsmeta_log.log" \
             -not -name "zookcheck.log" \
+            -not -name "fsdeploy_mongodb_log.log" \
+            -not -name "fsdeploy_zk_log.log" \
             -exec 'cat' {} \; > test.tmp;
     cd ../
 

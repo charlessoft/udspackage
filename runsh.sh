@@ -14,6 +14,7 @@
 . ./fsmeta_install.sh 
 . ./fsname_install.sh
 . ./user_install.sh
+. ./fsdeploy_install.sh
 
 
 SCRIPT=`basename $0`
@@ -30,7 +31,7 @@ function usage()
     echo "\
 Usage: ${SCRIPT} <command>
 where <command> is one of the following:
-        { env | riak | mongodb | zookeeper | jdk | fscontent | fsname | fsmeta | runall }
+        { env | riak | mongodb | zookeeper | jdk | fscontent | fsname | fsmeta | fsdeploy | runall }
     "   
     cfont -reset
 
@@ -130,7 +131,7 @@ function fsdeploy_help()
 Usage: ${SCRIPT} fsdeploy <command>
 where <command> is one of the following:  
 \
-    { refreshzookeeper | refreshmongodb }
+    { refreshzookeeper | refreshmongodb | zookeeperlog | mongodblog }
     "
     cfont  -reset
 
@@ -186,43 +187,6 @@ where <command> is one of the following:
     cfont -reset
 
 }
-
-
-function run()
-{
-    #1.生成脚本
-    #2.ssh 免密码
-    #3.环境检测并且收集
-    #echo ${RIAK_FIRST_NODE}
-    #exit 1;
-    #generateShell
-    configsshlogin
-
-    distributepackage
-    docheck
-    docollectres
-    ##parseres
-    generateEnvrpt
-
-    #---parseok----
-    doaccessPort   
-    echo "sss";
-    doinstall
-    #dealres $?
-    #if [ $? -ne 0 ]; then \
-        #echo "安装失败"; \
-    #fi
-        
-    dostart
-    
-    dojoinring
-    #checkenv
-    #collectenvres
-    echo "exitttt";
-    exit 1;
-}
-
-#run
 
 
 
@@ -405,12 +369,22 @@ function fsdeploy_admin()
         refreshzookeeper)
             echo "refresh zookeeper config...";
             shift 
-            dofsdeplpoy_refresh_zookeeper_cfg;
+            dofsdeploy_refresh_zookeeper_cfg;
             ;;
         refreshmongodb)
             echo "refresh mongodb config...";
             shift
-            dofsdeplpoy_refresh_mongodb_cfg;
+            dofsdeploy_refresh_mongodb_cfg;
+            ;;
+        zookeeperlog)
+            echo "collect deploy zookeeper config log...";
+            shift 
+            dofsdeploy_zookeeper_log;
+            ;;
+        mongodblog)
+            echo "collect deploy mongodb config log...";
+            shift
+            dofsdeploy_mongodb_log;
             ;;
         *)
             echo "deploy_admin"
@@ -483,6 +457,7 @@ function jdk_admin()
     esac
 
 }
+
 function mongodb_admin()
 {
     case "$1" in 
@@ -567,12 +542,14 @@ else \
     mongodb_admin install
     mongodb_admin start
     mongodb_admin cluster 
-    sleep 5s;
+    fsdeploy_admin refreshzookeeper 
+    fsdeploy_admin refreshmongodb
 
     fscontent_admin start
     fsname_admin start 
     fsmeta_admin start
 
+    sleep 5s;
     echo "==========check installed status ==========";
     env_admin checkinstalledstatus
     
@@ -586,6 +563,7 @@ fi
 
     
 }
+
 case "$1" in 
     env)
         shift
@@ -622,15 +600,15 @@ case "$1" in
         echo "fs-meta";
         fsmeta_admin "$@";
         ;;
+    fsdeploy)
+        shift 
+        echo "fs-deploy";
+        fsdeploy_admin "$@";
+        ;;
     runall)
         shift
         echo "runall";
         runall "$@";
-        ;;
-    runall1)
-        shift
-        echo "runall1";
-        runall1 "$@";
         ;;
     *)
         usage;
