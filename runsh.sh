@@ -101,6 +101,10 @@ where <command> is one of the following:
     cfont  -reset
 }
 
+#------------------------------
+# zookeeper_help
+# description: zookeeper_使用帮助
+#------------------------------
 function zookeeper_help()
 {
     cfont  -red 
@@ -114,7 +118,12 @@ where <command> is one of the following:
 
 }
 
-function  fsname_help()
+
+#------------------------------
+# fsname_help 
+# description: fsname_使用帮助
+#------------------------------
+function fsname_help()
 {
     cfont -red
     echo "\
@@ -126,6 +135,11 @@ where <command> is one of the following:
     cfont -reset
 }
 
+
+#------------------------------
+# fscontent_help 
+# description: fscontent_使用帮助
+#------------------------------
 function fscontent_help()
 {
     cfont -red
@@ -139,6 +153,10 @@ where <command> is one of the following:
 
 }
 
+#------------------------------
+# fsmeta_help 
+# description: fsmeta_使用帮助
+#------------------------------
 function fsmeta_help()
 {
     cfont -red
@@ -215,6 +233,8 @@ function fsname_admin()
             ;;
     esac
 }
+
+
 
 function fsmeta_admin()
 {
@@ -323,7 +343,7 @@ function env_admin()
             doconfigsshlogin "$@";
             ;;
         checkenv)
-            echo "环境检测并且收集"
+            echo "check env..."
             docheck
             docollectres
             generateEnvrpt
@@ -344,7 +364,7 @@ function env_admin()
             doaccessPort "$@";
             ;;
         createuser) #--ok
-            echo "create user";
+            cfont -greed "create user\n" -reset;
             shift
             douser_createuser "$@";
             #douser_createuser ${USERNAME} ${USERPWD}
@@ -355,7 +375,7 @@ function env_admin()
             dochownuser "$@";
             ;;
         initcfg) 
-            echo "init mongodb zookeeper config";
+            cfont -greed "init mongodb zookeeper config\n" -reset;
             mongodb_admin gencfg;
             zookeeper_admin gencfg;
             ;;
@@ -397,10 +417,6 @@ function zookeeper_admin()
                 deal_zkconfig ${HOSTIP}
             done 
             ;;
-        #destroy)
-            #echo "删除zookeeper";
-            #dozk_destroy;
-            #;;
         log)
             echo "collect zookeeper log";
             shift
