@@ -30,17 +30,6 @@ function riak_install()
 
 }
 
-#------------------------------
-# riak unstall
-# description: 卸载riak
-# return default
-#------------------------------
-function riak_unstall()
-{
-    echo "$1 卸载riak";
-    riak stop;
-    rpm -e `rpm -q riak | awk 'NR==1'`;
-}
 
 #------------------------------
 # riak start
@@ -249,28 +238,6 @@ function doriak_install()
     done
 }
 
-#------------------------------
-# riak doriak_uninstall
-# description: 通过ssh命令进入指定riak服务器,卸载riak
-# return success 0 ,fail 1
-#------------------------------
-function doriak_uninstall()
-{
-
-    if [ $# -ge 1 ] 
-    then 
-        RIAK_HOSTARR=$*
-    else
-        RIAK_HOSTARR=${RIAK_RINK[@]}
-    fi
-
-    for i in ${RIAK_HOSTARR[@]}; do
-        ssh -p ${SSH_PORT} "$i" \
-            "cd ${UDSPACKAGE_PATH}; \
-            source /etc/profile; \
-            sh riak_install.sh riak_unstall $i"
-    done
-}
 
 #------------------------------
 # riak doriak_start
@@ -467,12 +434,6 @@ then
     riak_commit ${HOSTIP};
 fi
 
-if [ "$1" = riak_unstall ]
-then 
-    HOSTIP=$2;
-    echo "riak_unstall..."; 
-    riak_unstall ${HOSTIP};
-fi
 
 
 if [ "$1" = riak_status ]

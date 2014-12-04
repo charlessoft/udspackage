@@ -324,11 +324,6 @@ function riak_admin()
             shift
             doriak_install "$@";
             ;;
-        #uninstall)
-            #echo "riak uninstall...";
-            #shift
-            #doriak_uninstall "$@";
-            #;;
         *)
             riak_help
             ;;
