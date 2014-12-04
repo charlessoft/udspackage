@@ -13,11 +13,13 @@ export PORTTMP=/tmp/porttmp;
 function initporttable()
 {
     cat /dev/null > ${PORTTMP};
-    for i in ${ZOOKEEPER_NODE_ARR[*]}; do 
+    for i in ${ZOOKEEPER_NODE_ARR[*]} 
+    do 
         echo $i | awk -F: '{ printf("%s\n%s\n", $2,$3) }' >> ${PORTTMP};
     done 
 
-    for i in ${IPTABLES_ACCESS_PORT[*]}; do 
+    for i in ${IPTABLES_ACCESS_PORT[*]} 
+    do 
         echo $i >> ${PORTTMP};
     done 
 
@@ -50,23 +52,24 @@ function accessPortArr()
     
         IPTABLES_ACCESS_PORT=`cat ${PORTTMP} | sort | uniq`;
 
-    for i in ${IPTABLES_ACCESS_PORT[@]}; do 
-    echo "set ${HOSTIP} allow port: $i"
+    for i in ${IPTABLES_ACCESS_PORT[@]} 
+    do 
+        echo "set ${HOSTIP} allow port: $i"
 
-    #判断端口号是否已经存在iptables中
-    grep "$i\>" ${IPTABLES_FILE} > /dev/null 
-    if [ $? -ne 0 ] 
-    then 
-        grep -n "22\>" ${IPTABLES_FILE} | awk -F: 'NR==1 \
-            { \
-                sub(/22/,"'$i'",$2); printf("%s\n%s",$1,$2); \
-            }' > ${PORTTMP}
+        #判断端口号是否已经存在iptables中
+        grep "$i\>" ${IPTABLES_FILE} > /dev/null 
+        if [ $? -ne 0 ] 
+        then 
+            grep -n "22\>" ${IPTABLES_FILE} | awk -F: 'NR==1 \
+                { \
+                    sub(/22/,"'$i'",$2); printf("%s\n%s",$1,$2); \
+                }' > ${PORTTMP}
 
-        LINE=`sed -n '1p' ${PORTTMP}`
-        CONTENT=`sed -n '2p' ${PORTTMP}`
-        sed -i "${LINE} a ${CONTENT}" ${IPTABLES_FILE}
+            LINE=`sed -n '1p' ${PORTTMP}`
+            CONTENT=`sed -n '2p' ${PORTTMP}`
+            sed -i "${LINE} a ${CONTENT}" ${IPTABLES_FILE}
 
-    fi
+        fi
     done
     service iptables start
     return 0
@@ -92,7 +95,8 @@ function doaccessPort()
     fi
 
     #需要修改.需要指定全部的ip
-    for i in ${HOSTARR[@]}; do 
+    for i in ${HOSTARR[@]} 
+    do 
         ssh -p ${SSH_PORT} "$i" \
             "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \

@@ -21,7 +21,8 @@ function deal_zkconfig()
     sed -e 's#TEMP_ZKDATADIR#'${ZOOKEEPER_DATADIR}'#g' "conf/zoo_bak.cfg" | \
         sed -e 's#TEMP_ZKDATALOGDIR#'${ZOOKEEPER_LOGDIR}'#g' > zoo_${HOSTIP}.cfg;
     
-    for i in ${ZOOKEEPER_NODE_ARR[@]};do 
+    for i in ${ZOOKEEPER_NODE_ARR[@]}
+    do 
         echo "$i" >> zoo_${HOSTIP}.cfg;
     done
     if [ $? -ne 0 ] 

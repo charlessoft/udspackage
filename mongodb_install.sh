@@ -277,7 +277,8 @@ function domongodb_slave_install()
 {
 
     #安装slave
-    for i in ${MONGODB_SLAVE_ARR[@]}; do
+    for i in ${MONGODB_SLAVE_ARR[@]}
+    do
         #echo "$i安装 slave mongodb"
 
         ssh -p ${SSH_PORT} "$i" \
@@ -403,7 +404,8 @@ function domongodb_slave_start()
         SLAVE_HOSTARR=${MONGODB_SLAVE_ARR[@]}
     fi
 
-    for i in ${SLAVE_HOSTARR[@]}; do
+    for i in ${SLAVE_HOSTARR[@]}
+    do
         echo "$i start slave mongodb";
 
         ssh -p ${SSH_PORT} "$i" \
@@ -514,7 +516,8 @@ function domongodb_slave_stop()
 {
 
 
-    for i in ${MONGODB_SLAVE_ARR[@]}; do
+    for i in ${MONGODB_SLAVE_ARR[@]}
+    do
         echo "stop $i slave mongodb";
         echo ""
         ssh -p ${SSH_PORT} "`echo $i|cut -d: -f 1`" \
@@ -640,7 +643,8 @@ function domongodb_master_status()
 function domongodb_slave_status()
 {
 
-    for i in ${MONGODB_SLAVE_ARR[@]}; do
+    for i in ${MONGODB_SLAVE_ARR[@]} 
+    do
         mongodb_status $i ${MONGODB_SLAVE_PORT}
         echo ""
     done

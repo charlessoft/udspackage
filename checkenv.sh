@@ -10,7 +10,8 @@ function checkenv()
     echo '检测安装环境:'$1 > ${LOG};
     echo ${checkfile[@]}
     date "+%Y-%m-%d %X" >> ${LOG};
-    for i in ${checkfile[@]}; do
+    for i in ${checkfile[@]} 
+    do
         queryInfo="`which $i`"
         #res=`echo $?`
         #if [ "${res}" == "0" ]; then \
@@ -29,7 +30,8 @@ function checkenv()
 
 function docheck()
 {
-    for i in ${RIAK_RINK[@]}; do
+    for i in ${RIAK_RINK[@]} 
+    do
         ssh -p "${SSH_PORT}" "$i" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
             sh checkenv.sh checkenv $i; \
@@ -40,7 +42,8 @@ function docheck()
 function docollectres()
 {
     echo "收集检测环境结果"
-    for i in ${RIAK_RINK[@]}; do
+    for i in ${RIAK_RINK[@]} 
+    do
         echo "scp -r $i:${LOG} ${LOG_COLLECT}$i"
         scp -r $i:${LOG} ${LOG_COLLECT}$i
         if [ $? -eq 1 ]; then \
@@ -53,7 +56,8 @@ function docollectres()
 function collectenvres()
 {
     echo "收集检测环境结果:"$1
-    for i in ${checkfile[@]}; do
+    for i in ${checkfile[@]} 
+    do
         queryInfo="`which $i`"
         #res=`echo $?`
         #if [ "${res}" == "0" ]; then \
@@ -82,7 +86,8 @@ function docheckinstalledstatus()
         #HOSTARR=`sort ${HOSTARRAY_FILE} | uniq`;
     #fi
 
-    for i in ${RIAK_RINK[@]}; do 
+    for i in ${RIAK_RINK[@]} 
+    do 
         echo $i
         curl http://${i}:${RIAK_HTTP_PORT} >/dev/null 2>&1;
         if [ $? -eq 0 ]; then \
@@ -132,20 +137,23 @@ function docheckinstalledstatus()
 
 
     cfont -green "collect riak log...\n" -reset;
-    for i in ${RIAK_RINK[@]}; do 
+    for i in ${RIAK_RINK[@]} 
+    do 
         scp $i:${UDSPACKAGE_PATH}/log/riakcheck.log \
             ./log/${i}_riakcheck.log
     done 
 
     cfont -green "collect jdk log...\n" -reset;
-    for i in ${JDK_ARR[@]}; do 
+    for i in ${JDK_ARR[@]} 
+    do 
         scp $i:${UDSPACKAGE_PATH}/log/jdkcheck.log \
             ./log/${i}_jdkcheck.log
     done 
 
 
     cfont -green "collect zookeeper log...\n" -reset;
-    for i in ${ZOOKEEPER_NODE_ARR[@]}; do 
+    for i in ${ZOOKEEPER_NODE_ARR[@]} 
+    do 
         ZOOKEEPER_HOSTIP=`echo $i | awk -F= '{print $2}' | awk -F: '{print $1}'`
         scp ${ZOOKEEPER_HOSTIP}:${UDSPACKAGE_PATH}/log/zookcheck.log ./log/${ZOOKEEPER_HOSTIP}_zookcheck.log
     done 

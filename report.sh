@@ -7,7 +7,8 @@ function generateEnvrpt()
     echo -e "        分析检测环境结果"
     echo "================================="
     cat /dev/null > ${LOG_MERGE};
-    for i in ${RIAK_RINK[@]}; do
+    for i in ${RIAK_RINK[@]} 
+    do
         #echo "cat ${LOG_COLLECT}$i >> ${LOG_MERGE}"
         cat ${LOG_COLLECT}$i >> ${LOG_MERGE};
         echo "-----------------------------------------" >> ${LOG_MERGE};

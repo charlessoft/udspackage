@@ -231,7 +231,8 @@ function dozk_install()
     
     zk_init $@
     #解压zookeeper 
-    for i in ${ZOOKEEPER_HOSTARR[@]};do 
+    for i in ${ZOOKEEPER_HOSTARR[@]}
+    do 
         MYID=`echo $i | awk -F= '{print $1}'| \
             awk -F\. '{print $2}'`;
         HOSTIP=`echo $i | awk -F= '{print $2}' | \
@@ -256,7 +257,8 @@ function dozk_start()
 {
     
     zk_init $@
-    for i in ${ZOOKEEPER_HOSTARR[@]};do 
+    for i in ${ZOOKEEPER_HOSTARR[@]}
+    do 
         MYID=`echo $i | awk -F= '{print $1}'| \
             awk -F\. '{print $2}'`;
         HOSTIP=`echo $i | awk -F= '{print $2}' | \
@@ -285,7 +287,8 @@ function dozk_stop()
 {
 
     zk_init $@
-    for i in ${ZOOKEEPER_HOSTARR[@]};do 
+    for i in ${ZOOKEEPER_HOSTARR[@]}
+    do 
         MYID=`echo $i | awk -F= '{print $1}'| \
             awk -F\. '{print $2}'`;
         HOSTIP=`echo $i | awk -F= '{print $2}' | \
@@ -311,7 +314,8 @@ function dozk_status()
 {
 
     zk_init $@
-    for i in ${ZOOKEEPER_HOSTARR[@]};do 
+    for i in ${ZOOKEEPER_HOSTARR[@]}
+    do 
         MYID=`echo $i | awk -F= '{print $1}'| \
             awk -F\. '{print $2}'`;
         HOSTIP=`echo $i | awk -F= '{print $2}' | \

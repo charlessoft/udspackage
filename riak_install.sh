@@ -182,7 +182,8 @@ function riak_rink_status()
     RINKMEMBER=`riak-admin status | grep member`;
     res=0;
     #判断riak 节点是否再 查询状态中
-    for i in ${RIAK_RINK[@]}; do 
+    for i in ${RIAK_RINK[@]} 
+    do 
         echo $RINKMEMBER | grep -rin "$i" >/dev/null 2>&1;
         if [ $? -ne 0 ]; then \
             res=1
@@ -222,7 +223,8 @@ function doriak_install()
         RIAK_HOSTARR=${RIAK_RINK[@]}
     fi
 
-    for i in ${RIAK_HOSTARR[@]}; do
+    for i in ${RIAK_HOSTARR[@]} 
+    do
         echo "$i install Riak";
 
         ssh -p ${SSH_PORT} "$i" "cd ${UDSPACKAGE_PATH}; \
@@ -254,7 +256,8 @@ function doriak_start()
         RIAK_HOSTARR=${RIAK_RINK[@]}
     fi
 
-    for i in ${RIAK_HOSTARR[@]}; do 
+    for i in ${RIAK_HOSTARR[@]} 
+    do 
         ssh -p ${SSH_PORT} "$i" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
             sh riak_install.sh riak_start $i \
@@ -285,7 +288,8 @@ function doriak_stop()
     else
         RIAK_HOSTARR=${RIAK_RINK[@]}
     fi
-    for i in ${RIAK_HOSTARR[@]}; do 
+    for i in ${RIAK_HOSTARR[@]} 
+    do 
         ssh -p ${SSH_PORT} "$i" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
             sh riak_install.sh riak_stop $i \
@@ -312,7 +316,8 @@ function doriak_status()
     else
         RIAK_HOSTARR=${RIAK_RINK[@]}
     fi
-    for i in ${RIAK_HOSTARR[@]}; do 
+    for i in ${RIAK_HOSTARR[@]} 
+    do 
         ssh -p ${SSH_PORT} "$i" "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
             sh riak_install.sh riak_status $i \
@@ -340,7 +345,9 @@ function doriak_joinring()
     else
         RIAK_HOSTARR=${RIAK_RINK[@]}
     fi
-    for i in ${RIAK_HOSTARR[@]}; do 
+
+    for i in ${RIAK_HOSTARR[@]} 
+    do 
         echo $i
         echo "curl http://$i:${RIAK_HTTP_PORT}";
         curl http://$i:${RIAK_HTTP_PORT} &> /dev/null;

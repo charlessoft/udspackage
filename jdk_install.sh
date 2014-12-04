@@ -75,7 +75,8 @@ function dojdk_install()
         JDK_HOSTARR=${JDK_ARR[@]}
     fi
 
-    for i in ${JDK_HOSTARR[@]};do 
+    for i in ${JDK_HOSTARR[@]} 
+    do 
         ssh -p "${SSH_PORT}" "$i" \
             "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
@@ -101,7 +102,8 @@ function dojdk_status()
         JDK_HOSTARR=${JDK_ARR[@]}
     fi
 
-    for i in ${JDK_HOSTARR[@]}; do 
+    for i in ${JDK_HOSTARR[@]} 
+    do 
         ssh -p ${SSH_PORT} "$i" \
             "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \

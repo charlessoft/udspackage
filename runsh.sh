@@ -418,7 +418,8 @@ function zookeeper_admin()
             ;;
         gencfg)
             echo "zk generate gencfg..."
-            for i in ${ZOOKEEPER_NODE_ARR[@]}; do
+            for i in ${ZOOKEEPER_NODE_ARR[@]} 
+            do
                 HOSTIP=`echo $i | \
                     awk -F= '{print $2}' | \
                     awk -F: '{print $1}'`
@@ -475,7 +476,8 @@ function mongodb_admin()
             echo "mongodb generate cfg..."
             deal_mongodb_patch  ${MONGODB_MASTER}
             deal_mongodb_patch  ${MONGODB_ARBITER}
-            for i in ${MONGODB_SLAVE_ARR[@]}; do
+            for i in ${MONGODB_SLAVE_ARR[@]} 
+            do
                 deal_mongodb_patch  $i
             done 
             deal_mongodb_cluster_js_patch 
