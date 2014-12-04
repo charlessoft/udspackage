@@ -21,71 +21,74 @@ export CURPWD=$(cd `dirname $0`; pwd)
 
 function usage()
 {
-cfont  -red 
+    cfont  -red 
     echo "\
 Usage: ${SCRIPT} <command>
 where <command> is one of the following:
         { env | riak | mongodb | zookeeper | jdk | fscontent | fsname | fsmeta | runall }
     "   
-cfont -reset
+    cfont -reset
 
 }
 
 function env_help()
 {
-cfont  -red 
+    cfont  -red 
     echo "\
 Usage: ${SCRIPT} env <command>
 where <command> is one of the following:
-    { nopwd | checkenv | distribute | initcfg | checkinstalledstatus | createuser | chownuser } "
-cfont -reset
+    { nopwd | checkenv | distribute | initcfg | checkinstalledstatus | createuser | chownuser } 
+    "
+    cfont -reset
 }
 
 
 
 function jdk_help()
 {
-cfont  -red 
+    cfont  -red 
     echo "\
 Usage: ${SCRIPT} jdk <command>
 where <command> is one of the following:
-    { install | status } "
-cfont -reset
+    { install | status } 
+    "
+    cfont -reset
 }
 
 function riak_help()
 {
-cfont  -red 
+    cfont  -red 
     echo "
 Usage: ${SCRIPT} riak <command>
 where <command> is one of the following:  
 \
-    { install | uninstall | start | stop | status | join | commit }"
-cfont -reset
+    { install | uninstall | start | stop | status | join | commit }
+    "
+    cfont -reset
 }
 
 function mongodb_help()
 {
-cfont  -red 
+    cfont  -red 
     echo " 
 Usage: ${SCRIPT} riak <command>
 where <command> is one of the following:  
 \
     { start | install | gencfg | status | cluster | destroy }
     "
-cfont  -reset
+    cfont  -reset
 }
 
 function zookeeper_help()
 {
-cfont  -red 
+    cfont  -red 
     echo " 
 Usage: ${SCRIPT} zookeeper <command>
 where <command> is one of the following:  
 \
     { install | start | stop | status | gencfg | destroy  }
     "
-cfont  -reset
+    cfont  -reset
 
 }
 
@@ -96,31 +99,34 @@ function  fsname_help()
 Usage: ${SCRIPT} fsname <command>
 where <command> is one of the following:  
 \
-    { start | stop | status }"
-cfont -reset
+    { start | stop | status }
+    "
+    cfont -reset
 }
 
 function fscontent_help()
 {
-cfont -red
+    cfont -red
     echo "\
 Usage: ${SCRIPT} fscontent <command>
 where <command> is one of the following:  
 \
-    { start | stop | status }"
-cfont -reset
+    { start | stop | status }
+    "
+    cfont -reset
 
 }
 
 function fsmeta_help()
 {
-cfont -red
+    cfont -red
     echo "\
 Usage: ${SCRIPT} fsmeta <command>
 where <command> is one of the following:  
 \
-    { start | stop | status }"
-cfont -reset
+    { start | stop | status }
+    "
+    cfont -reset
 
 }
 
