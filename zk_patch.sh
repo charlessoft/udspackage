@@ -18,7 +18,7 @@ function deal_zkconfig()
         exit 1;
     fi
 
-    sed -e 's#TEMP_ZKDATADIR#'${ZOOKEEPER_DATADIR}'#g' "zoo_bak.cfg" | \
+    sed -e 's#TEMP_ZKDATADIR#'${ZOOKEEPER_DATADIR}'#g' "conf/zoo_bak.cfg" | \
         sed -e 's#TEMP_ZKDATALOGDIR#'${ZOOKEEPER_LOGDIR}'#g' > zoo_${HOSTIP}.cfg;
     
     for i in ${ZOOKEEPER_NODE_ARR[@]};do 

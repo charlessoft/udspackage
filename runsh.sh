@@ -359,7 +359,7 @@ function env_admin()
             doaccessPort "$@";
             ;;
         createuser) #--ok
-            cfont -greed "create user\n" -reset;
+            cfont -green "create user\n" -reset;
             shift
             douser_createuser "$@";
             #douser_createuser ${USERNAME} ${USERPWD}
@@ -370,7 +370,7 @@ function env_admin()
             dochownuser "$@";
             ;;
         initcfg) 
-            cfont -greed "init mongodb zookeeper config\n" -reset;
+            cfont -green "init mongodb zookeeper config\n" -reset;
             mongodb_admin gencfg;
             zookeeper_admin gencfg;
             ;;
