@@ -437,11 +437,6 @@ function jdk_admin()
             shift
             dojdk_status "$@";
             ;;
-        uninstall)
-            echo "jdk uninstall";
-            shift
-            dojdk_uninstall "$@"
-            ;;
         *)
             jdk_help;
             ;;
