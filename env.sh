@@ -15,6 +15,10 @@ export HOSTARRAY_FILE=tmp/hostarray;
 export RIAK_CONF_BAK=/etc/riak/riak.conf_bak
 export RIAK_CONF=/etc/riak/riak.conf
 
+export UDS_ZOOKEEPER_CONFIG=udszookeeper.cfg
+export UDS_MONGODB_CONFIG=udsmongodb.cfg
+export CONFIGURATION=configuration.json
+
 
 function initenv()
 {
