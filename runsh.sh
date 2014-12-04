@@ -63,7 +63,7 @@ function jdk_help()
     echo "\
 Usage: ${SCRIPT} jdk <command>
 where <command> is one of the following:
-    { install | status | destroy } 
+    { install | status } 
     "
     cfont -reset
 }
@@ -79,7 +79,7 @@ function riak_help()
 Usage: ${SCRIPT} riak <command>
 where <command> is one of the following:  
 \
-    { install | uninstall | start | stop | status | join | commit }
+    { install | start | stop | status | join | commit }
     "
     cfont -reset
 }
@@ -112,7 +112,7 @@ function zookeeper_help()
 Usage: ${SCRIPT} zookeeper <command>
 where <command> is one of the following:  
 \
-    { install | start | stop | status | gencfg | destroy  }
+    { install | start | stop | status | gencfg }
     "
     cfont  -reset
 
@@ -324,11 +324,11 @@ function riak_admin()
             shift
             doriak_install "$@";
             ;;
-        uninstall)
-            echo "riak uninstall...";
-            shift
-            doriak_uninstall "$@";
-            ;;
+        #uninstall)
+            #echo "riak uninstall...";
+            #shift
+            #doriak_uninstall "$@";
+            #;;
         *)
             riak_help
             ;;

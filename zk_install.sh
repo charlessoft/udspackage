@@ -133,57 +133,6 @@ function zk_stop()
 }
 
 
-#------------------------------
-# zk_destroy
-# description: 删除zookeeper
-# params HOSTIP - ip address 
-# return success 0, fail 1
-# node: 可能不用
-#------------------------------
-function zk_destroy()
-{
-    HOSTIP=$1
-    echo "${HOSTIP} zk_destroy";
-
-    zk_stop 
-    echo ${PWD}
-    echo "rm -fr ${ZOOKEEPER_DATADIR}"
-    echo "rm -fr ${ZOOKEEPER_LOGDIR}"
-    echo "rm -fr ${ZOOKEEPER_FILE}"
-    rm -fr ${ZOOKEEPER_DATADIR};
-    echo "RESSS=$?"
-
-    rm -fr ${ZOOKEEPER_LOGDIR}
-    echo "RESSS=$?"
-
-    rm -fr ${ZOOKEEPER_FILE}
-    echo "RESSS=$?"
-}
-
-
-#------------------------------
-# dozk_destroy
-# description: 使用ssh 命令登陆到指定服务器删除zookeeper
-# return success 0, fail 1
-# node: 可能不用
-#------------------------------
-function dozk_destroy()
-{
-
-    echo "dozk_destroy..."
-    for i in ${ZOOKEEPER_NODE_ARR[@]};do 
-        MYID=`echo $i | awk -F= '{print $1}'| \
-            awk -F\. '{print $2}'`
-        HOSTIP=`echo $i | awk -F= '{print $2}' | \
-            awk -F: '{print $1}'`
-        ssh -p ${SSH_PORT} "${HOSTIP}" \
-            "cd ${UDSPACKAGE_PATH}; \
-            source /etc/profile; \
-            sh zk_install.sh zk_destroy ${HOSTIP} ${MYID} \
-            "
-    done
-}
-
 
 #------------------------------
 # zk_log
@@ -410,12 +359,6 @@ then
 fi
 
 
-if [ "$1" = zk_destroy ]
-then 
-    echo "zk_destroy ====="
-    HOSTIP=$2
-    zk_destroy ${HOSTIP} 
-fi
 
 if [ "$1" = zk_log ]
 then 
