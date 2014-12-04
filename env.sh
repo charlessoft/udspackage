@@ -12,6 +12,9 @@ export NAME_CHECK_LOG=log/nameservercheck.log
 export META_CHECK_LOG=log/metaservercheck.log
 export HOSTARRAY_FILE=tmp/hostarray;
 
+export RIAK_CONF_BAK=/etc/riak/riak.conf_bak
+export RIAK_CONF=/etc/riak/riak.conf
+
 
 function initenv()
 {

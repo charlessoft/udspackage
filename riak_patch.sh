@@ -18,7 +18,7 @@ function deal_sudoers()
         cp ${SUDOERS_PATH} ${SUDOERS_PATH}_bak;
     fi
     #echo "sed -e 's/Defaults\ \ \ \ requiretty/#Defaults    requiretty' ${SUDOERS_PATH}_bak > ${SUDOERS_PATH}"
-    echo "set sudo allow term can run riak";
+    #echo "设置终端可运行"
     sed -e 's/Defaults\ \ \ \ requiretty/#Defaults    requiretty/g' ${SUDOERS_PATH}_bak > ${SUDOERS_PATH};
 }
 
@@ -52,6 +52,8 @@ function deal_riakconf()
     if [ $? -ne 0 ] 
     then 
         cfont -red "set riak conf fail!\n" -reset;
+    else
+        cfont -green "set riak conf success!\n" -reset;
     fi
 
 }

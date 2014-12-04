@@ -34,6 +34,27 @@ function jdk_install()
     fi
 }
 
+#------------------------------
+# jdk_uninstall 
+# description: 卸载jdk
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
+function jdk_uninstall()
+{
+    HOSTIP=$1
+    echo "$1 jdk_uninstall...";
+
+    #echo ${JDK_FILE};
+    test -d ${JDK_FILE} && rm -fr ${JDK_FILE}
+    if [ $? -eq 0 ]
+    then 
+        cfont -green "uninstall success!\n" -reset;
+    else
+        cfont -red "uninstall fail!\n" -reset;
+    fi
+}
+
 
 #------------------------------
 # jdk_status
@@ -83,6 +104,29 @@ function dojdk_install()
     done
 }
 
+#------------------------------
+# dojdk_uninstall
+# description: 使用ssh命令登陆服务器,调用jdk_install 删除jdk
+# return success 0, fail 1
+#------------------------------
+function dojdk_uninstall()
+{
+    if [ $# -ge 1 ]
+    then 
+        JDK_HOSTARR=$*
+    else 
+        JDK_HOSTARR=${JDK_ARR[@]}
+    fi
+
+    for i in ${JDK_HOSTARR[@]};do 
+        ssh -p "${SSH_PORT}" "$i" \
+            "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh jdk_install.sh jdk_uninstall $i \
+            "
+    done
+}
+
 
 #------------------------------
 # dojdk_status
@@ -125,6 +169,12 @@ if [ "$1" = jdk_status ]
 then 
     HOSTIP=$2
     jdk_status ${HOSTIP}
+fi
+
+if [ "$1" = jdk_uninstall ]
+then 
+    HOSTIP=$2
+    jdk_uninstall ${HOSTIP}
 fi
 
 

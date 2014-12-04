@@ -51,8 +51,6 @@ RIAK_RINK=( \
 
 RIAK_FIRST_NODE=${RIAK_RINK[0]}
 #2.0.2
-RIAK_CONF_BAK=/etc/riak/riak.conf_bak
-RIAK_CONF=/etc/riak/riak.conf
 RIAK_HTTP_PORT=8098
 #node链接端口
 RIAK_EPMD_PORT=4369

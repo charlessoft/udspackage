@@ -19,6 +19,11 @@
 SCRIPT=`basename $0`
 export CURPWD=$(cd `dirname $0`; pwd)
 
+
+#------------------------------
+# usage
+# description: 使用帮助
+#------------------------------
 function usage()
 {
     cfont  -red 
@@ -31,6 +36,10 @@ where <command> is one of the following:
 
 }
 
+#------------------------------
+# env_help 
+# description: env_使用帮助
+#------------------------------
 function env_help()
 {
     cfont  -red 
@@ -44,17 +53,25 @@ where <command> is one of the following:
 
 
 
+#------------------------------
+# jdk_help 
+# description: jdk_使用帮助
+#------------------------------
 function jdk_help()
 {
     cfont  -red 
     echo "\
 Usage: ${SCRIPT} jdk <command>
 where <command> is one of the following:
-    { install | status } 
+    { install | status | destroy } 
     "
     cfont -reset
 }
 
+#------------------------------
+# riak_help 
+# description: riak_使用帮助
+#------------------------------
 function riak_help()
 {
     cfont  -red 
@@ -67,6 +84,11 @@ where <command> is one of the following:
     cfont -reset
 }
 
+
+#------------------------------
+# mongodb_help 
+# description: mongodb_使用帮助
+#------------------------------
 function mongodb_help()
 {
     cfont  -red 
@@ -74,7 +96,7 @@ function mongodb_help()
 Usage: ${SCRIPT} riak <command>
 where <command> is one of the following:  
 \
-    { start | install | gencfg | status | cluster | destroy }
+    { start | install | gencfg | status | cluster | cluster_status | stop }
     "
     cfont  -reset
 }
@@ -282,13 +304,10 @@ function riak_admin()
             shift
             doriak_install "$@";
             ;;
-        unstall)
-            echo "riak unstall...";
+        uninstall)
+            echo "riak uninstall...";
             shift
-            doriak_unstall "$@";
-            ;;
-        all)
-            echo "riak all...";
+            doriak_uninstall "$@";
             ;;
         *)
             riak_help
@@ -407,6 +426,11 @@ function jdk_admin()
             shift
             dojdk_status "$@";
             ;;
+        uninstall)
+            echo "jdk uninstall";
+            shift
+            dojdk_uninstall "$@"
+            ;;
         *)
             jdk_help;
             ;;
@@ -448,10 +472,6 @@ function mongodb_admin()
         cluster_status)
             echo "mongodb cluster_status";
             domongodb_cluster_status;
-            ;;
-        destroy)
-            echo "mongodb destroy";
-            domongodb_destroy;
             ;;
         stop)
             echo "=====mongodb stop=====";

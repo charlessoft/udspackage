@@ -250,11 +250,11 @@ function doriak_install()
 }
 
 #------------------------------
-# riak doriak_unstall
+# riak doriak_uninstall
 # description: 通过ssh命令进入指定riak服务器,卸载riak
 # return success 0 ,fail 1
 #------------------------------
-function doriak_unstall()
+function doriak_uninstall()
 {
 
     if [ $# -ge 1 ] 
