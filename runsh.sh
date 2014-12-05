@@ -523,9 +523,10 @@ function clean()
     rm -fr *.cfg 
     rm -fr *.conf 
     rm -fr log/*
-    rm -fr /tmp/*
+    rm -fr tmp/*
     rm -fr cluster 
     rm -fr *.js
+    rm -fr configuration.json
 }
 function runall()
 {

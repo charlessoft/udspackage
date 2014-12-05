@@ -2,12 +2,12 @@
 . ./config
 . ./env.sh
 . ./mongodb_install.sh
+. ./report.sh
 
 function checkenv()
 {
     res=0
-    echo "检测安装环境"
-    echo '检测安装环境:'$1 > ${LOG};
+    echo 'check env :'$1 > ${LOG};
     echo ${checkfile[@]}
     date "+%Y-%m-%d %X" >> ${LOG};
     for i in ${checkfile[@]} 
@@ -16,9 +16,9 @@ function checkenv()
         #res=`echo $?`
         #if [ "${res}" == "0" ]; then \
         if [ $? -eq 0 ]; then \
-            echo "$i 安装" >> ${LOG}; \
+            echo "$i installed " >> ${LOG}; \
         else
-            echo "$i 未安装" >> ${LOG};
+            echo "$i No such file!" >> ${LOG};
             echo "=====FAIL=====" >> ${LOG};
             let res=$res+1;
         fi
@@ -41,13 +41,13 @@ function docheck()
 
 function docollectres()
 {
-    echo "收集检测环境结果"
+    echo "collect check env result"
     for i in ${RIAK_RINK[@]} 
     do
         echo "scp -r $i:${LOG} ${LOG_COLLECT}$i"
         scp -r $i:${LOG} ${LOG_COLLECT}$i
         if [ $? -eq 1 ]; then \
-            echo "收集$1 环境失败"; exit 1; \
+            echo "collect $1 env result fail!"; exit 1; \
         fi
     done 
 }
@@ -55,16 +55,15 @@ function docollectres()
 
 function collectenvres()
 {
-    echo "收集检测环境结果:"$1
     for i in ${checkfile[@]} 
     do
         queryInfo="`which $i`"
         #res=`echo $?`
         #if [ "${res}" == "0" ]; then \
         if [ $? -eq 0 ]; then \
-            echo "$i 安装" >> ${LOG}; \
+            echo "$i installed " >> ${LOG}; \
         else
-            echo "$i 未安装" >> ${LOG};
+            echo "$i No such file!" >> ${LOG};
             echo "=====FAIL=====" >> ${LOG};
         fi
     done
@@ -167,28 +166,9 @@ function docheckinstalledstatus()
             -exec 'cat' {} \; > test.tmp;
     cd ../
 
+    generateinstalledRpt
 
 
-    echo "解析结果"
-    sort log/test.tmp | while read line
-do
-    CURSERIP=`echo $line | awk '{print $1}' | awk -F: '{print $1}'`
-    if [ x"$CURSERIP" != x"$PRESERIP" ]; then \
-        PRESERIP=$CURSERIP 
-    echo "-----${PRESERIP}-----";
-
-    fi
-
-    echo "$line" | grep -rinE "success|leader|follower" 2>&1 >/dev/null;
-    if [ $? -eq 0 ]; then \
-        cfont -green "$line\n" -reset; \
-    else  
-        cfont -red "$line\n" -reset;
-    fi
-
-
-
-done
 
 exit 1;
 }

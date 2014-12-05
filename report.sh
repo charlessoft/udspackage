@@ -1,5 +1,5 @@
 #!/bin/bash 
-source ./config
+. ./config
 
 function generateEnvrpt()
 {
@@ -25,5 +25,33 @@ function generateEnvrpt()
     if [ ${failcount} -gt 0 ]; then \
         exit 1;
     fi
+
+}
+
+
+function generateinstalledRpt()
+{
+    echo -e "        installed status"
+    sort log/test.tmp | while read line
+do
+    CURSERIP=`echo $line | awk '{print $1}' | awk -F: '{print $1}'`
+    if [ x"$CURSERIP" != x"$PRESERIP" ] 
+    then 
+        PRESERIP=$CURSERIP 
+        echo "-----${PRESERIP}-----";
+
+    fi
+
+    echo "$line" | grep -rinE "success|leader|follower" 2>&1 >/dev/null;
+    if [ $? -eq 0 ] 
+    then 
+        cfont -green "$line\n" -reset; 
+    else  
+        cfont -red "$line\n" -reset;
+    fi
+
+
+
+done
 
 }
