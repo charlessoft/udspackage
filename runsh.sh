@@ -31,7 +31,7 @@ function usage()
     echo "\
 Usage: ${SCRIPT} <command>
 where <command> is one of the following:
-        { env | riak | mongodb | zookeeper | jdk | fscontent | fsname | fsmeta | fsdeploy | runall }
+        { env | riak | mongodb | zookeeper | jdk | fscontent | fsname | fsmeta | fsdeploy | runall | clean }
     "   
     cfont -reset
 
