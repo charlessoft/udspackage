@@ -100,7 +100,9 @@ function docheckinstalledstatus()
     ###检测zookeeper 端口
     sh runsh.sh zookeeper status 
 
+
     ###检测riak
+    cfont --yellow "check riak status ,please input the ${USER} password\n" --reset;
     sudo sh runsh.sh riak status
 
     sudo sh runsh.sh riak rink_status
@@ -160,6 +162,7 @@ function docheckinstalledstatus()
             -not -name "fsdeploy_mongodb_log.log" \
             -not -name "fsdeploy_zk_log.log" \
             -not -name "fsdeploy_zk_cluster_log.log" \
+            -not -name "riakcheck.log" \
             -exec 'cat' {} \; > test.tmp;
     cd ../
 

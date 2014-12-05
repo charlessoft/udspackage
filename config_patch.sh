@@ -9,8 +9,7 @@
 #------------------------------
 function deal_zookeeper_config()
 {
-    #MYID=`echo $i | awk -F= '{print $1}'| \
-        #awk -F\. '{print $2}'`
+    echo "generate zookeeper config...";
     ZOOKEEPER_HOSTIP=`echo ${ZOOKEEPER_NODE_ARR} | awk -F= '{print $2}' | \
         awk -F: '{print $1}'`
     echo "zookeeper connect=${ZOOKEEPER_HOSTIP}:${ZOOKEEPER_PORT} \
@@ -29,6 +28,7 @@ function deal_zookeeper_config()
 function deal_zookeeper_cluster_config()
 {
 
+    echo "generate zookeeper cluster config...";
     ZOOKEEPER_HOSTIP=`echo ${ZOOKEEPER_NODE_ARR} | awk -F= '{print $2}' | \
         awk -F: '{print $1}'`
     echo "zookeeper connect=${ZOOKEEPER_HOSTIP}:${ZOOKEEPER_PORT} \
@@ -46,6 +46,8 @@ function deal_zookeeper_cluster_config()
 #------------------------------
 function deal_mongodb_config()
 {
+
+    echo "generate mongodb config...";
     RIAKHOSTIP=${RIAK_RINK}
 
     echo "addUser riakcon=${RIAKHOSTIP}:${RIAK_PROTOBUF_PORT} \
@@ -68,6 +70,8 @@ function deal_mongodb_config()
 #------------------------------
 function deal_configuration()
 {
+
+    echo "generate configration...";
     RIAK_RINK_LIST=`echo ${RIAK_RINK[@]}`;
     #echo ${RIAK_RINK_LIST//\ /,}
     sed -e 's/META_SERVER/'${META_SERVER}'/g' ./conf/configuration.json | \

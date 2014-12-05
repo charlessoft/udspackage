@@ -133,8 +133,6 @@ else
 #------------------------------
 function dofsdeploy_refresh_zookeeper_cluster_cfg()
 {
-    echo "dofsdeply_refresh zookeeper cluster cfg";
-    echo ${DEPLOY_LOG_ZOOKEEPER_CLUSTER_FILE};
     ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
@@ -168,7 +166,6 @@ function dofsdeploy_refresh_zookeeper_cfg()
 #------------------------------
 function dofsdeploy_refresh_mongodb_cfg()
 {
-    echo "dofsdeply_refresh mongodb cfg";
     ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \

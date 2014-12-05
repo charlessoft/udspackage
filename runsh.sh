@@ -518,6 +518,15 @@ function mongodb_admin()
 }
 
 
+function clean()
+{
+    rm -fr *.cfg 
+    rm -fr *.conf 
+    rm -fr log/*
+    rm -fr /tmp/*
+    rm -fr cluster 
+    rm -fr *.js
+}
 function runall()
 {
     
@@ -622,6 +631,11 @@ case "$1" in
         shift
         echo "runall";
         runall "$@";
+        ;;
+    clean)
+        shift 
+        echo "clean all config, tmp file";
+        clean 
         ;;
     *)
         usage;
