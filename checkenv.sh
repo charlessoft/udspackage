@@ -101,7 +101,7 @@ function docheckinstalledstatus()
 
 
     ###检测riak
-    cfont --yellow "check riak status ,please input the ${USER} password\n" --reset;
+    cfont -yellow "check riak status ,please input the ${USER} password\n" -reset;
     sudo sh runsh.sh riak status
 
     sudo sh runsh.sh riak rink_status
