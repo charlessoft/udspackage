@@ -31,7 +31,9 @@ function generateEnvrpt()
 
 function generateinstalledRpt()
 {
+    echo "================================="
     echo -e "        installed status"
+    echo "================================="
     sort log/test.tmp | while read line
 do
     CURSERIP=`echo $line | awk '{print $1}' | awk -F: '{print $1}'`

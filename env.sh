@@ -2,6 +2,14 @@
 . ./config
 export JDK_FILE=bin/${JDK_FILE}
 
+export UDSPACKAGE_FILE=udspackage
+export UDSPACKAGE_PATH=${INSTALL_PATH}/${UDSPACKAGE_FILE}
+export SUDOERS_PATH=/etc/sudoers
+
+export ENVBASHRC=envbashrc
+export LOG_COLLECT=${INSTALL_PATH}/udslog.log
+export LOG=${INSTALL_PATH}/udsinstall.log
+export LOG_MERGE=${INSTALL_PATH}/udsmerge.log
 #内部使用,不需要放在config中
 export MONGODB_CHECK_LOG=log/mongodbcheck.log 
 export JDK_CHECK_LOG=log/jdkcheck.log
