@@ -16,6 +16,7 @@ export RIAK_CONF_BAK=/etc/riak/riak.conf_bak
 export RIAK_CONF=/etc/riak/riak.conf
 
 export UDS_ZOOKEEPER_CONFIG=udszookeeper.cfg
+export UDS_ZOOKEEPER_CLUSTER_CONFIG=udscluster.cfg
 export UDS_MONGODB_CONFIG=udsmongodb.cfg
 export CONFIGURATION=configuration.json
 export DEPLOY_FILE=uds-deploy

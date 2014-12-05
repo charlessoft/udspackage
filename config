@@ -36,6 +36,7 @@ NAME_LOG_FILE=fsname_log.log
 META_LOG_FILE=fsmeta_log.log
 DEPLOY_LOG_ZOOKEEPER_FILE=fsdeploy_zk_log.log
 DEPLOY_LOG_MONGODB_FILE=fsdeploy_mongodb_log.log
+DEPLOY_LOG_ZOOKEEPER_CLUSTER_FILE=fsdeploy_zk_cluster_log.log
 
 META_SERVER_PARAMS="-Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M"
 NAME_SERVER_PARAMS="-Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M"
@@ -117,8 +118,10 @@ IPTABLES_ACCESS_PORT=( \
 #-----zookeeper_config-----
 ZOOKEEPER_USER=admin
 ZOOKEEPER_PASSWORD=pa44w0rd
-ZOOKEEPER_CONFIG_NAME=/udsfstest/config
+ZOOKEEPER_CONFIG_NAME=/udsfs/configuration
 ZOOKEEPER_CONFIG_PATH=configuration.json
+ZOOKEEPER_CLUSTER_NAME=/udsfs/cluster
+ZOOKEEPER_CLUSTER_PATH=cluster
 
 #------mongodb_config-----
 MONGODB_DBUSER=uds_fs

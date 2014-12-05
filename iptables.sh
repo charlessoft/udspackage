@@ -23,6 +23,7 @@ function initporttable()
         echo $i >> ${PORTTMP};
     done 
 
+    echo ${ZOOKEEPER_PORT} >> ${PORTTMP};
     echo ${RIAK_HTTP_PORT} >> ${PORTTMP};
     echo ${RIAK_HTTP_PORT} >> ${PORTTMP};
     echo ${RIAK_EPMD_PORT} >> ${PORTTMP};

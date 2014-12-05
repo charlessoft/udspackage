@@ -2,6 +2,11 @@
 . ./config 
 . ./env.sh 
 
+#------------------------------
+# deal_zookeeper_config
+# description: 刷zookeeper配置文件
+# return success 0 ,fail 1
+#------------------------------
 function deal_zookeeper_config()
 {
     #MYID=`echo $i | awk -F= '{print $1}'| \
@@ -15,6 +20,30 @@ function deal_zookeeper_config()
 
 }
 
+
+#------------------------------
+# deal_zookeeper_cluster_config
+# description: 刷zookeeper cluster配置文件
+# return success 0 ,fail 1
+#------------------------------
+function deal_zookeeper_cluster_config()
+{
+
+    ZOOKEEPER_HOSTIP=`echo ${ZOOKEEPER_NODE_ARR} | awk -F= '{print $2}' | \
+        awk -F: '{print $1}'`
+    echo "zookeeper connect=${ZOOKEEPER_HOSTIP}:${ZOOKEEPER_PORT} \
+        user=${ZOOKEEPER_USER} \
+        password=${ZOOKEEPER_PASSWORD} \
+        ${ZOOKEEPER_CLUSTER_NAME}=${UDSPACKAGE_PATH}/cluster"  > ${UDS_ZOOKEEPER_CLUSTER_CONFIG}
+    echo "cluster" > cluster
+    
+}
+
+#------------------------------
+# deal_mongodb_config
+# description: 刷mongodb 配置文件
+# return success 0 ,fail 1
+#------------------------------
 function deal_mongodb_config()
 {
     RIAKHOSTIP=${RIAK_RINK}
@@ -31,6 +60,12 @@ function deal_mongodb_config()
 
 }
 
+
+#------------------------------
+# deal_configuration
+# description: 修改configure.json模板
+# return success 0 ,fail 1
+#------------------------------
 function deal_configuration()
 {
     RIAK_RINK_LIST=`echo ${RIAK_RINK[@]}`;
@@ -52,3 +87,4 @@ function deal_configuration()
 deal_zookeeper_config
 deal_mongodb_config
 deal_configuration
+deal_zookeeper_cluster_config

@@ -77,15 +77,6 @@ function docheckinstalledstatus()
     #rm -fr log/checktmp.log;
     cat /dev/null > log/checktmp.log
 
-    #构造数组
-    #inithostarray;
-    #if [ $# -ge 1 ] 
-    #then 
-        #HOSTARR=$*
-    #else
-        #HOSTARR=`sort ${HOSTARRAY_FILE} | uniq`;
-    #fi
-
     for i in ${RIAK_RINK[@]} 
     do 
         echo $i
@@ -168,6 +159,7 @@ function docheckinstalledstatus()
             -not -name "zookcheck.log" \
             -not -name "fsdeploy_mongodb_log.log" \
             -not -name "fsdeploy_zk_log.log" \
+            -not -name "fsdeploy_zk_cluster_log.log" \
             -exec 'cat' {} \; > test.tmp;
     cd ../
 
