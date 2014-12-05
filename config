@@ -17,19 +17,6 @@ USERPWD=abcdefg
 INSTALL_PATH=/apps/
 
 #default config 
-IPTABLES_FILE=/etc/sysconfig/iptables
-ID_RSA_PUB=$HOME/.ssh/id_rsa.pub
-
-CONTENT_FILE=fs-contentserver
-NAME_FILE=fs-nameserver
-META_FILE=fs-metaserver
-
-CONTENT_LOG_FILE=fscontent_log.log
-NAME_LOG_FILE=fsname_log.log
-META_LOG_FILE=fsmeta_log.log
-DEPLOY_LOG_ZOOKEEPER_FILE=fsdeploy_zk_log.log
-DEPLOY_LOG_MONGODB_FILE=fsdeploy_mongodb_log.log
-DEPLOY_LOG_ZOOKEEPER_CLUSTER_FILE=fsdeploy_zk_cluster_log.log
 
 META_SERVER_PARAMS="-Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M"
 NAME_SERVER_PARAMS="-Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M"
@@ -78,7 +65,7 @@ MONGODB_ARBITER=10.211.55.22
 MONGODB_ARBITER_DBPATH=/home/${USERNAME}/mongodb/data/slave
 MONGODB_ARBITER_LOGPATH=/home/${USERNAME}/mongodb/log/slave.log
 MONGODB_ARBITER_PIDFILEPATH=/home/${USERNAME}/mongodb/slave.pid
-MONGODB_ARBITER_PORT=27017
+MONGODB_ARBITER_PORT=1111
 
 
 #JAVA

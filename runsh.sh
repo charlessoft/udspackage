@@ -330,6 +330,12 @@ function env_admin()
             docheckinstalledstatus "$@";
             ;;
         distribute) #--ok
+            if [ ! -f install.lock ] 
+            then 
+                cfont -red "please perform initcfg cmd first!\n" -reset;
+                exit 1;
+            fi
+            exit 1;
             cfont -green "distribute udspackage...\n" -reset;
             shift
             distributepackage "$@";
@@ -355,7 +361,7 @@ function env_admin()
             mongodb_admin gencfg;
             zookeeper_admin gencfg;
             sh config_patch.sh
-             
+            touch install.lock
             ;;
         *)
             env_help;

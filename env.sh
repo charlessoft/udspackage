@@ -10,6 +10,7 @@ export ENVBASHRC=envbashrc
 export LOG_COLLECT=${INSTALL_PATH}/udslog.log
 export LOG=${INSTALL_PATH}/udsinstall.log
 export LOG_MERGE=${INSTALL_PATH}/udsmerge.log
+
 #内部使用,不需要放在config中
 export MONGODB_CHECK_LOG=log/mongodbcheck.log 
 export JDK_CHECK_LOG=log/jdkcheck.log
@@ -28,6 +29,21 @@ export UDS_ZOOKEEPER_CLUSTER_CONFIG=udscluster.cfg
 export UDS_MONGODB_CONFIG=udsmongodb.cfg
 export CONFIGURATION=configuration.json
 export DEPLOY_FILE=uds-deploy
+
+
+export CONTENT_FILE=fs-contentserver
+export NAME_FILE=fs-nameserver
+export META_FILE=fs-metaserver
+
+export CONTENT_LOG_FILE=fscontent_log.log
+export NAME_LOG_FILE=fsname_log.log
+export META_LOG_FILE=fsmeta_log.log
+export DEPLOY_LOG_ZOOKEEPER_FILE=fsdeploy_zk_log.log
+export DEPLOY_LOG_MONGODB_FILE=fsdeploy_mongodb_log.log
+export DEPLOY_LOG_ZOOKEEPER_CLUSTER_FILE=fsdeploy_zk_cluster_log.log
+
+export ID_RSA_PUB=$HOME/.ssh/id_rsa.pub
+export IPTABLES_FILE=/etc/sysconfig/iptables
 
 
 

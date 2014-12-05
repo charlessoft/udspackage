@@ -16,18 +16,21 @@ function deal_mongodb_patch()
         echo "master: $1"; \
         sed -e 's#TEMP_DBPATH#'${MONGODB_MASTER_DBPATH}'#g' "conf/mongodb_bak.conf" | \
         sed -e 's#TEMP_MONGODBLOG#'${MONGODB_MASTER_LOGPATH}'#g' | \
+        sed -e 's/port\ =\ 27017/port\ =\ '${MONGODB_MASTER_PORT}'/g' | \
         sed -e 's#TEMP_PIDFILEPATH#'${MONGODB_MASTER_PIDFILEPATH}'#g'  > mongodb_$1.conf
 
     elif [ "$1" = "${MONGODB_ARBITER}" ]; then \
         echo "arbiter: $1"; \
         sed -e 's#TEMP_DBPATH#'${MONGODB_ARBITER_DBPATH}'#g' "conf/mongodb_bak.conf" | \
         sed -e 's#TEMP_MONGODBLOG#'${MONGODB_ARBITER_LOGPATH}'#g' | \
+        sed -e 's/port\ =\ 27017/port\ =\ '${MONGODB_ARBITER_PORT}'/g' | \
         sed -e 's#TEMP_PIDFILEPATH#'${MONGODB_ARBITER_PIDFILEPATH}'#g'  > mongodb_$1.conf  
     else 
         echo "slave: $1"; \
         #可能需要判断下.是否就是slave
         sed -e 's#TEMP_DBPATH#'${MONGODB_SLAVE_DBPATH}'#g' "conf/mongodb_bak.conf" | \
         sed -e 's#TEMP_MONGODBLOG#'${MONGODB_SLAVE_LOGPATH}'#g' | \
+        sed -e 's/port\ =\ 27017/port\ =\ '${MONGODB_SLAVE_PORT}'/g' | \
         sed -e 's#TEMP_PIDFILEPATH#'${MONGODB_SLAVE_PIDFILEPATH}'#g'  > mongodb_$1.conf 
     fi
 
