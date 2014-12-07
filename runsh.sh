@@ -532,6 +532,7 @@ function clean()
     rm -fr cluster 
     rm -fr *.js
     rm -fr configuration.json
+    rm -fr install.lock
 }
 function runall()
 {
