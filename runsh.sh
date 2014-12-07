@@ -335,7 +335,6 @@ function env_admin()
                 cfont -red "please perform initcfg cmd first!\n" -reset;
                 exit 1;
             fi
-            exit 1;
             cfont -green "distribute udspackage...\n" -reset;
             shift
             distributepackage "$@";

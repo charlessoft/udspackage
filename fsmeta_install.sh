@@ -10,12 +10,13 @@ function fsmeta_status()
     echo "${HOSTIP} meta status";
     ps -ef | grep "fs-metaserver" | grep -v "grep" 
     res=$?
-    if [ ${res} -eq 0 ]; then \
-        cfont -green "${HOSTIP} fs-metaserver is running\n" -reset; \
-        echo "${HOSTIP} fs-metaserver check success!" > ${META_CHECK_LOG}; \
+    if [ ${res} -eq 0 ] 
+    then 
+        cfont -green "${HOSTIP} fs-metaserver is running\n" -reset; 
+        echo "${HOSTIP} fs-metaserver check success!" > ${META_CHECK_LOG}; 
     else
-        cfont -red "${HOSTIP} fs-metaserver is probably not running\n" -reset; \
-        echo "${HOSTIP} fs-metaserver check fail!" > ${META_CHECK_LOG}; \
+        cfont -red "${HOSTIP} fs-metaserver is probably not running\n" -reset; 
+        echo "${HOSTIP} fs-metaserver check fail!" > ${META_CHECK_LOG}; 
     fi
     return ${res}
 }
@@ -30,11 +31,13 @@ function fsmeta_start()
 {
     HOSTIP=$1
     initenv
-    if [ $? -ne 0 ]; then \
+    if [ $? -ne 0 ] 
+    then 
         cfont -red "jdk environment error! fsmeta-server start fail!\n" -reset; exit 1;
     fi
     fsmeta_status
-    if [ $? -eq 0 ]; then \
+    if [ $? -eq 0 ] 
+    then 
         cfont -green "${HOSTIP} fs-metaserver is running\n" -reset; exit 0;
     fi
 
@@ -52,11 +55,13 @@ function fsmate_stop()
     echo "${HOSTIP} meta stop";
 
     fsmeta_status
-    if [ $? -eq 0 ]; then \
+    if [ $? -eq 0 ] 
+    then 
         #kill 
-        kill `ps -ef |grep "fs-metaserver" |grep -v "grep" | awk '{print $2}'`; \
-            if [ $? -eq 0 ]; then \
-                cfont -green "${HOSTIP} fsmetaserver stop success\n" -reset; \
+        kill `ps -ef |grep "fs-metaserver" |grep -v "grep" | awk '{print $2}'`; 
+            if [ $? -eq 0 ] 
+            then 
+                cfont -green "${HOSTIP} fsmetaserver stop success\n" -reset; 
             else 
                 cfont -green "${HOSTIP} fsmetaserver stoped!\n" -reset;
             fi
@@ -76,9 +81,10 @@ function fsmeta_log()
    echo "scp ${META_SERVER}:${UDSPACKAGE_PATH}/log/${META_LOG_FILE} ./log/";
    scp ${META_SERVER}:${UDSPACKAGE_PATH}/log/${META_LOG_FILE} ./log/
 
-   if [ $? -eq 0 ]; then \
+   if [ $? -eq 0 ]
+   then 
        cfont -green "collect ${META_LOG_FILE} log success!\n" -reset ;
-   else \
+   else 
        cfont -red "collecg ${META_LOG_FILE} log fail!\n" -reset;
    fi
 }

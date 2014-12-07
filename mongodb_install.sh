@@ -3,6 +3,7 @@
 . ./env.sh
 export MONGODB_FILE=bin/${MONGODB_FILE}
 export MONGODB_TMPLOG=${UDSPACKAGE_PATH}/tmp/mongodbtmp.log
+export MONGODB_CLUSTER_TMPLOG=${UDSPACKAGE_PATH}/tmp/mongodbclustertmp.log
 
 
 #------------------------------
@@ -218,8 +219,21 @@ function mongodb_cluster()
     echo "${HOSTIP} cluster"
     if [ -d ${MONGODB_FILE} ] 
     then 
-        cd ${MONGODB_FILE}/bin; 
-        ./mongo ../../../mongodb_cluster.js; 
+        cd ${MONGODB_FILE}/bin && \
+            ./mongo ${MONGODB_ARBITER}:${MONGODB_ARBITER_PORT} ../../../mongodb_cluster.js > ${MONGODB_CLUSTER_TMPLOG}
+        cd ../../../
+        grep -rin "\"ok\"\ :\ 1" ${MONGODB_CLUSTER_TMPLOG} >/dev/null 2>&1;
+        if [ $? -eq 0 ]
+        then 
+            cfont -green 
+            cat ${MONGODB_CLUSTER_TMPLOG}
+            cfont -reset
+        else 
+            cfont -red
+            cat ${MONGODB_CLUSTER_TMPLOG}
+            cfont -reset
+        fi
+        exit 1;
     else 
         cfont -red "mongodb ${MONGODB_FILE} No such file!\n" -reset;
         exit 1;

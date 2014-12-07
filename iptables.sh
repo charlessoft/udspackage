@@ -72,7 +72,7 @@ function accessPortArr()
 
         fi
     done
-    service iptables start
+    service iptables restart
     return 0
 }
 

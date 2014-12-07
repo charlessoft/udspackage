@@ -163,6 +163,7 @@ function docheckinstalledstatus()
             -not -name "fsdeploy_zk_cluster_log.log" \
             -not -name "riakcheck.log" \
             -not -name "jdkcheck.log" \
+            -not -name "mongodbclustertmp.log" \
             -exec 'cat' {} \; > test.tmp;
     cd ../
 
