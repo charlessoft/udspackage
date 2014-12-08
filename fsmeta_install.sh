@@ -4,29 +4,13 @@
 
 export META_FILE=bin/${META_FILE}
 
-function fsmeta_status()
-{
-    HOSTIP=$1
-    echo "${HOSTIP} meta status";
-    ps -ef | grep "fs-metaserver" | grep -v "grep" 
-    res=$?
-    if [ ${res} -eq 0 ] 
-    then 
-        cfont -green "${HOSTIP} fs-metaserver is running\n" -reset; 
-        echo "${HOSTIP} fs-metaserver check success!" > ${META_CHECK_LOG}; 
-    else
-        cfont -red "${HOSTIP} fs-metaserver is probably not running\n" -reset; 
-        echo "${HOSTIP} fs-metaserver check fail!" > ${META_CHECK_LOG}; 
-    fi
-    return ${res}
-}
 
-function fsmeta_install()
-{
-    HOSTIP=$1
-    echo "${HOSTIP} meta install";
-}
-
+#------------------------------
+# fsmeta_start
+# description:启动fsmeta
+# params HOSTIP- ip address 
+# return success 0, fail 1
+#------------------------------
 function fsmeta_start()
 {
     HOSTIP=$1
@@ -48,7 +32,36 @@ function fsmeta_start()
     sleep 5s;
 }
 
+#------------------------------
+# fsmeta_status
+# description: 获取meta运行状态
+# params HOSTIP- ip address 
+# return success 0, fail 1
+#------------------------------
+function fsmeta_status()
+{
+    HOSTIP=$1
+    echo "${HOSTIP} meta status";
+    ps -ef | grep "fs-metaserver" | grep -v "grep" 
+    res=$?
+    if [ ${res} -eq 0 ] 
+    then 
+        cfont -green "${HOSTIP} fs-metaserver is running\n" -reset; 
+        echo "${HOSTIP} fs-metaserver check success!" > ${META_CHECK_LOG}; 
+    else
+        cfont -red "${HOSTIP} fs-metaserver is probably not running\n" -reset; 
+        echo "${HOSTIP} fs-metaserver check fail!" > ${META_CHECK_LOG}; 
+    fi
+    return ${res}
+}
 
+
+#------------------------------
+# fsmeta_stop
+# description:停止fsmeta
+# params HOSTIP- ip address 
+# return success 0, fail 1
+#------------------------------
 function fsmate_stop()
 {
     HOSTIP=$1
@@ -69,11 +82,11 @@ function fsmate_stop()
 }
 
 
-function dofsmeta_install()
-{
-    echo "dofsmeta_install";
-}
-
+#------------------------------
+# fsmeta_log
+# description:收集fsmeta 日志
+# return success 0, fail 1
+#------------------------------
 function fsmeta_log()
 {
 
@@ -89,6 +102,12 @@ function fsmeta_log()
    fi
 }
 
+
+#------------------------------
+# dofsmeta_start
+# description:调用ssh命令 登陆指定服务器运行fsmeta
+# return success 0, fail 1
+#------------------------------
 function dofsmeta_start()
 {
     echo "dofsmeta_start";
@@ -99,6 +118,13 @@ function dofsmeta_start()
         > log/${META_LOG_FILE} 2>&1 &"
 }
 
+
+
+#------------------------------
+# dofsmeta_stop
+# description:调用ssh命令 登陆指定服务器停止fsmeta
+# return success 0, fail 1
+#------------------------------
 function dofsmeta_stop()
 {
     echo "dofsmeta_stop";
@@ -109,6 +135,11 @@ function dofsmeta_stop()
 }
 
 
+#------------------------------
+# dofsmeta_status
+# description:调用ssh命令 登陆指定服务器获取fsmeta状态
+# return success 0, fail 1
+#------------------------------
 function dofsmeta_status()
 {
     echo "fsdometa_status";
@@ -120,18 +151,9 @@ function dofsmeta_status()
 
 }
 
-#================
-#main
-
-if [ "$1" = fsmeta_install ]
-then 
-    HOSTIP=$2
-    echo "fsmeta_install ====="
-    fsmeta_install ${HOSTIP}
-fi
-
-
-
+#-------------------------------
+#根据传递的参数执行命令
+#-------------------------------
 if [ "$1" = fsmeta_start ]
 then 
     HOSTIP=$2
@@ -139,14 +161,12 @@ then
     fsmeta_start ${HOSTIP}
 fi
 
-
 if [ "$1" = fsmate_stop ]
 then 
     HOSTIP=$2
     echo "fsmate_stop ====="
     fsmate_stop ${HOSTIP}
 fi
-
 
 if [ "$1" = fsmeta_status ]
 then 

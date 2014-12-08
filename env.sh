@@ -1,49 +1,49 @@
 #!/bin/bash 
 . ./config
-export JDK_FILE=bin/${JDK_FILE}
+JDK_FILE=bin/${JDK_FILE}
 
-export UDSPACKAGE_FILE=udspackage
-export UDSPACKAGE_PATH=${INSTALL_PATH}/${UDSPACKAGE_FILE}
-export SUDOERS_PATH=/etc/sudoers
+UDSPACKAGE_FILE=udspackage
+UDSPACKAGE_PATH=${INSTALL_PATH}/${UDSPACKAGE_FILE}
+SUDOERS_PATH=/etc/sudoers
 
-export ENVBASHRC=envbashrc
-export LOG_COLLECT=${INSTALL_PATH}/udslog.log
-export LOG=${INSTALL_PATH}/udsinstall.log
-export LOG_MERGE=${INSTALL_PATH}/udsmerge.log
+ENVBASHRC=envbashrc
+LOG_COLLECT=${INSTALL_PATH}/udslog.log
+LOG=${INSTALL_PATH}/udsinstall.log
+LOG_MERGE=${INSTALL_PATH}/udsmerge.log
 
 #内部使用,不需要放在config中
-export MONGODB_CHECK_LOG=log/mongodbcheck.log 
-export JDK_CHECK_LOG=log/jdkcheck.log
-export RIAK_CHECK_LOG=log/riakcheck.log
-export ZOOKEEPER_CHECK_LOG=log/zookcheck.log 
-export CONTENT_CHECK_LOG=log/contentservercheck.log
-export NAME_CHECK_LOG=log/nameservercheck.log
-export META_CHECK_LOG=log/metaservercheck.log
-export HOSTARRAY_FILE=tmp/hostarray;
+MONGODB_CHECK_LOG=log/mongodbcheck.log 
+JDK_CHECK_LOG=log/jdkcheck.log
+RIAK_CHECK_LOG=log/riakcheck.log
+ZOOKEEPER_CHECK_LOG=log/zookcheck.log 
+CONTENT_CHECK_LOG=log/contentservercheck.log
+NAME_CHECK_LOG=log/nameservercheck.log
+META_CHECK_LOG=log/metaservercheck.log
+HOSTARRAY_FILE=tmp/hostarray;
 
-export RIAK_CONF_BAK=/etc/riak/riak.conf_bak
-export RIAK_CONF=/etc/riak/riak.conf
+RIAK_CONF_BAK=/etc/riak/riak.conf_bak
+RIAK_CONF=/etc/riak/riak.conf
 
-export UDS_ZOOKEEPER_CONFIG=udszookeeper.cfg
-export UDS_ZOOKEEPER_CLUSTER_CONFIG=udscluster.cfg
-export UDS_MONGODB_CONFIG=udsmongodb.cfg
-export CONFIGURATION=configuration.json
-export DEPLOY_FILE=uds-deploy
+UDS_ZOOKEEPER_CONFIG=udszookeeper.cfg
+UDS_ZOOKEEPER_CLUSTER_CONFIG=udscluster.cfg
+UDS_MONGODB_CONFIG=udsmongodb.cfg
+CONFIGURATION=configuration.json
+DEPLOY_FILE=uds-deploy
 
 
-export CONTENT_FILE=fs-contentserver
-export NAME_FILE=fs-nameserver
-export META_FILE=fs-metaserver
+CONTENT_FILE=fs-contentserver
+NAME_FILE=fs-nameserver
+META_FILE=fs-metaserver
 
-export CONTENT_LOG_FILE=fscontent_log.log
-export NAME_LOG_FILE=fsname_log.log
-export META_LOG_FILE=fsmeta_log.log
-export DEPLOY_LOG_ZOOKEEPER_FILE=fsdeploy_zk_log.log
-export DEPLOY_LOG_MONGODB_FILE=fsdeploy_mongodb_log.log
-export DEPLOY_LOG_ZOOKEEPER_CLUSTER_FILE=fsdeploy_zk_cluster_log.log
+CONTENT_LOG_FILE=fscontent_log.log
+NAME_LOG_FILE=fsname_log.log
+META_LOG_FILE=fsmeta_log.log
+DEPLOY_LOG_ZOOKEEPER_FILE=fsdeploy_zk_log.log
+DEPLOY_LOG_MONGODB_FILE=fsdeploy_mongodb_log.log
+DEPLOY_LOG_ZOOKEEPER_CLUSTER_FILE=fsdeploy_zk_cluster_log.log
 
-export ID_RSA_PUB=$HOME/.ssh/id_rsa.pub
-export IPTABLES_FILE=/etc/sysconfig/iptables
+ID_RSA_PUB=$HOME/.ssh/id_rsa.pub
+IPTABLES_FILE=/etc/sysconfig/iptables
 
 
 

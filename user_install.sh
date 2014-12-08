@@ -27,18 +27,8 @@ function user_createuser()
     if [ $? -ne 0 ] 
     then 
         #没写入到sudo表中
-
-        #echo "sed -i '/root.*ALL/a'${USERNAME}'    ALL=(ALL)   ALL' /etc/sudoers"
         sed -i '/root.*ALL/a'${USERNAME}'    ALL=(ALL)   ALL' /etc/sudoers
-        echo $?
-        #LINE=`grep -n "root.*ALL" /etc/sudoers | awk -F: '{print $1}'`;
-        #if [ x${LINE} = x"" ] 
-        #then 
-            #echo "not found root from /etc/sudoers"; 
-        #else 
-            #sed -i ''${LINE}'a'${USERNAME}'    ALL=(ALL)   ALL' /etc/sudoers 
 
-        #fi
     fi 
 
 }

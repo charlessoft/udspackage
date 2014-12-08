@@ -62,21 +62,7 @@ function riak_start()
             res=1;
         fi
     else 
-        echo "already running.....restart riak...";
-
-        riak stop
-        riak start
-        if [ $? -eq 0 ]
-        then 
-            pid=`riak getpid | awk '{print $1}'`;
-            echo "Riak pid: ${pid}"; 
-            cfont -green "restart success!\n" -reset; 
-        else
-            cfont -red "${HOSTIP} riak restart fail!\n" -reset; 
-            res=1;
-        fi
-
-        #riak-admin cluster join riak@
+        cfont -green "already running.....restart riak...\n" -reset;
 
     fi
 
@@ -95,6 +81,8 @@ function riak_stop()
     if [ ${res} -ne 0 ] 
     then 
         cfont -red "${HOSTIP} riak stop fail!\n" -reset;  
+    else 
+        cfont -green "${HOSTIP} riak stop success!\n" -reset;
     fi
     return ${res};
 }
@@ -201,11 +189,6 @@ function riak_rink_status()
     fi
 
 } 
-
-
-
-
-
 
 
 #------------------------------

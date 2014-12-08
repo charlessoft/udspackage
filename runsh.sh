@@ -148,7 +148,7 @@ function fsname_help()
 Usage: ${SCRIPT} fsname <command>
 where <command> is one of the following:  
 \
-    { start | stop | status }
+    { start | stop | status | log }
     "
     cfont -reset
 }
@@ -165,7 +165,7 @@ function fscontent_help()
 Usage: ${SCRIPT} fscontent <command>
 where <command> is one of the following:  
 \
-    { start | stop | status }
+    { start | stop | status | log }
     "
     cfont -reset
 
@@ -182,7 +182,7 @@ function fsmeta_help()
 Usage: ${SCRIPT} fsmeta <command>
 where <command> is one of the following:  
 \
-    { start | stop | status }
+    { start | stop | status | log }
     "
     cfont -reset
 
@@ -332,7 +332,7 @@ function env_admin()
         distribute) #--ok
             if [ ! -f install.lock ] 
             then 
-                cfont -red "please perform initcfg cmd first!\n" -reset;
+                cfont -red "please perform [sh runsh.sh env initcfg] cmd first!\n" -reset;
                 exit 1;
             fi
             cfont -green "distribute udspackage...\n" -reset;
@@ -551,8 +551,9 @@ function runall()
           env_admin createuser 
           env_admin chownuser
           chown ${USERNAME}.${USERNAME} ../udspackage -R
-          cfont -yellow "\
-please perform cmd switch ${USERNAME} login to perform same cmd to continue\n" -reset;
+          #cfont -yellow "\
+#please perform cmd switch ${USERNAME} login to perform same cmd to continue\n" -reset;
+          cfont -yellow "please switch ${USERNAME} user to perfrom same cmd\n" -reset;
 
           cfont -green "su - ${USERNAME};\n" -reset;
           cfont -green "cd ${UDSPACKAGE_PATH};\n" -reset;
