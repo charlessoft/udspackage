@@ -4,6 +4,8 @@
 
 export NAME_FILE=bin/${NAME_FILE}
 
+NAME_ZK_PROPERTIES_BAK=${NAME_FILE}/zookeeper.properties_bak
+NAME_ZK_PROPERTIES=${NAME_FILE}/zookeeper.properties
 
 #------------------------------
 # fsname_start

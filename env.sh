@@ -35,6 +35,7 @@ CONTENT_FILE=fs-contentserver
 NAME_FILE=fs-nameserver
 META_FILE=fs-metaserver
 
+
 CONTENT_LOG_FILE=fscontent_log.log
 NAME_LOG_FILE=fsname_log.log
 META_LOG_FILE=fsmeta_log.log
@@ -44,7 +45,6 @@ DEPLOY_LOG_ZOOKEEPER_CLUSTER_FILE=fsdeploy_zk_cluster_log.log
 
 ID_RSA_PUB=$HOME/.ssh/id_rsa.pub
 IPTABLES_FILE=/etc/sysconfig/iptables
-
 
 
 function initenv()

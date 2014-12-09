@@ -17,6 +17,7 @@
 . ./fsdeploy_install.sh
 
 
+
 SCRIPT=`basename $0`
 export CURPWD=$(cd `dirname $0`; pwd)
 
@@ -244,6 +245,10 @@ function fsmeta_admin()
 function fscontent_admin()
 {
     case "$1" in
+        install)
+            echo "content install...";
+            dofscontent_install;
+            ;;
         start)
             echo "content start...";
             dofscontent_start;

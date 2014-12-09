@@ -4,6 +4,53 @@
 
 export CONTENT_FILE=bin/${CONTENT_FILE}
 
+CONTENT_ZK_PROPERTIES_BAK=${CONTENT_FILE}/zookeeper.properties_bak
+CONTENT_ZK_PROPERTIES=${CONTENT_FILE}/zookeeper.properties
+
+
+
+#------------------------------
+# fscontent_install
+# description:  启动fscontent
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
+function fscontent_install()
+{
+    HOSTIP=$1
+    unzip -o ${CONTENT_FILE}.zip  -d ./bin
+    if [ ! -f ${CONTENT_ZK_PROPERTIES_BAK} ] 
+    then 
+        cp ${CONTENT_ZK_PROPERTIES} ${CONTENT_ZK_PROPERTIES_BAK}; 
+    else
+        cp ${CONTENT_ZK_PROPERTIES_BAK} ${CONTENT_ZK_PROPERTIES}; 
+    fi
+
+    
+    MYHOST=
+    for i in ${ZOOKEEPER_NODE_ARR[@]}
+    do 
+        MYID=`echo $i | awk -F= '{print $1}'| \
+            awk -F\. '{print $2}'`;
+        HOSTIP=`echo $i | awk -F= '{print $2}' | \
+            awk -F: '{print $1}'`;
+        #echo ${MYID}
+        #echo ${HOSTIP}
+        MYHOST=${MYHOST}${HOSTIP}:${ZOOKEEPER_PORT}","
+    done
+    MYHOST=${MYHOST%,*}
+    sed -e 's/=.*/='${MYHOST}'/g' ${CONTENT_ZK_PROPERTIES_BAK} > ${CONTENT_ZK_PROPERTIES}
+   }
+
+function dofscontent_install()
+{
+    echo "dofscontent_install"
+    ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
+        "cd ${UDSPACKAGE_PATH}; \
+        source /etc/profile; \
+        sh fscontent_install.sh content_install ${CONTENT_SERVER}"
+    
+}
 
 #------------------------------
 # fscontent_start
@@ -29,8 +76,9 @@ function fscontent_start()
 
     echo "${HOSTIP} fscontent start";
     #java -version
-    cd ${CONTENT_FILE}/target && \
-        java -jar -server ${CONTENT_SERVER_PARAMS} fs-contentserver-1.0-SNAPSHOT.jar
+    cd ${CONTENT_FILE} && \
+        #java -jar -server ${CONTENT_SERVER_PARAMS} fs-contentserver-1.0-SNAPSHOT.jar
+        sh fs-contentserver.sh
     cd ../../
     sleep 5s;
 }
@@ -191,3 +239,12 @@ then
     echo "fscontent_status ...";
     fscontent_status ${HOSTIP};
 fi
+
+if [ "$1" = content_install ]
+then 
+    HOSTIP=$2;
+    echo "fscontent_install ...";
+    fscontent_install ${HOSTIP};
+fi
+
+

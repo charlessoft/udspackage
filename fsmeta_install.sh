@@ -4,6 +4,8 @@
 
 export META_FILE=bin/${META_FILE}
 
+META_ZK_PROPERTIES_BAK=${META_FILE}/zookeeper.properties_bak
+META_ZK_PROPERTIES=${META_FILE}/zookeeper.properties
 
 #------------------------------
 # fsmeta_start
