@@ -11,28 +11,21 @@ source ./config
 #------------------------------
 function deal_mongodb_patch()
 {
-    #echo ${MONGODB_MASTER}
-    if [ "$1" = "${MONGODB_MASTER}" ]; then \
-        echo "master: $1"; \
-        sed -e 's#TEMP_DBPATH#'${MONGODB_MASTER_DBPATH}'#g' "conf/mongodb_bak.conf" | \
-        sed -e 's#TEMP_MONGODBLOG#'${MONGODB_MASTER_LOGPATH}'#g' | \
-        sed -e 's/port\ =\ 27017/port\ =\ '${MONGODB_MASTER_PORT}'/g' | \
-        sed -e 's#TEMP_PIDFILEPATH#'${MONGODB_MASTER_PIDFILEPATH}'#g'  > mongodb_$1.conf
+    MONGODB_ARR_TMP=tmp/mongodbarr.tmp
+    echo ${MONGODB_SLAVE_ARR[*]}| sed -e 's/\ /\n/g' > ${MONGODB_ARR_TMP}
+    echo ${MONGODB_MASTER} >> ${MONGODB_ARR_TMP}
+    echo ${MONGODB_ARBITER}>> ${MONGODB_ARR_TMP}
+    MONGODB_ARR=`cat ${MONGODB_ARR_TMP}`
+    
+    echo ${MONGODB_ARR[@]}
+    for i in ${MONGODB_ARR[*]} 
+    do
+        sed -e 's#TEMP_DBPATH#'${MONGODB_DBPATH}'#g' "conf/mongodb_bak.conf" | \
+            sed -e 's#TEMP_MONGODBLOG#'${MONGODB_LOGPATH}'#g' | \
+            sed -e 's/port\ =\ 27017/port\ =\ '${MONGODB_PORT}'/g' | \
+            sed -e 's#TEMP_PIDFILEPATH#'${MONGODB_PIDFILEPATH}'#g' > mongodb_$i.conf
+    done
 
-    elif [ "$1" = "${MONGODB_ARBITER}" ]; then \
-        echo "arbiter: $1"; \
-        sed -e 's#TEMP_DBPATH#'${MONGODB_ARBITER_DBPATH}'#g' "conf/mongodb_bak.conf" | \
-        sed -e 's#TEMP_MONGODBLOG#'${MONGODB_ARBITER_LOGPATH}'#g' | \
-        sed -e 's/port\ =\ 27017/port\ =\ '${MONGODB_ARBITER_PORT}'/g' | \
-        sed -e 's#TEMP_PIDFILEPATH#'${MONGODB_ARBITER_PIDFILEPATH}'#g'  > mongodb_$1.conf  
-    else 
-        echo "slave: $1"; \
-        #可能需要判断下.是否就是slave
-        sed -e 's#TEMP_DBPATH#'${MONGODB_SLAVE_DBPATH}'#g' "conf/mongodb_bak.conf" | \
-        sed -e 's#TEMP_MONGODBLOG#'${MONGODB_SLAVE_LOGPATH}'#g' | \
-        sed -e 's/port\ =\ 27017/port\ =\ '${MONGODB_SLAVE_PORT}'/g' | \
-        sed -e 's#TEMP_PIDFILEPATH#'${MONGODB_SLAVE_PIDFILEPATH}'#g'  > mongodb_$1.conf 
-    fi
 
 }
 
@@ -50,7 +43,7 @@ function deal_mongodb_cluster_js_patch()
     nIndex=0;
     MAXPRIORITY=100;
     #生成mongodb js 脚本
-    echo "var db = connect('${MONGODB_MASTER}:${MONGODB_MASTER_PORT}/admin');" >> ${MONGODB_CLUSTER_JS};
+    echo "var db = connect('${MONGODB_MASTER}:${MONGODB_PORT}/admin');" >> ${MONGODB_CLUSTER_JS};
     echo "var cfg={
         \"_id\":\"testrs\",
         \"members\":[" >> ${MONGODB_CLUSTER_JS};
@@ -59,7 +52,7 @@ function deal_mongodb_cluster_js_patch()
     echo "
         {
         \"_id\":${nIndex},
-        \"host\":\"${MONGODB_MASTER}:${MONGODB_MASTER_PORT}\",
+        \"host\":\"${MONGODB_MASTER}:${MONGODB_PORT}\",
         \"priority\":${MAXPRIORITY}
         }" >> ${MONGODB_CLUSTER_JS};
 
@@ -71,7 +64,7 @@ function deal_mongodb_cluster_js_patch()
         echo "
         ,{
         \"_id\":${nIndex},
-        \"host\":\"${i}:${MONGODB_SLAVE_PORT}\",
+        \"host\":\"${i}:${MONGODB_PORT}\",
         \"priority\":${npriority}
         }" >> ${MONGODB_CLUSTER_JS};
     done
@@ -84,7 +77,7 @@ function deal_mongodb_cluster_js_patch()
     echo "
         ,{
         \"_id\":${nIndex},
-        \"host\":\"${MONGODB_ARBITER}:${MONGODB_ARBITER_PORT}\",
+        \"host\":\"${MONGODB_ARBITER}:${MONGODB_PORT}\",
         \"arbiterOnly\":true
         }" >> ${MONGODB_CLUSTER_JS};
         
@@ -104,7 +97,7 @@ function deal_mongodb_cluster_status_js_patch()
     MONGODB_CLUSTER_STATUS_JS=mongodb_cluster_status.js;
     rm -fr ./${MONGODB_CLUSTER_STATUS_JS};
 
-    echo "var db = connect('${MONGODB_MASTER}:${MONGODB_MASTER_PORT}/admin');" >> ${MONGODB_CLUSTER_STATUS_JS};
+    echo "var db = connect('${MONGODB_MASTER}:${MONGODB_PORT}/admin');" >> ${MONGODB_CLUSTER_STATUS_JS};
     echo "printjson(rs.status());" >> ${MONGODB_CLUSTER_STATUS_JS};
 
 }
@@ -121,6 +114,12 @@ then
     deal_mongodb_cluster_js_patch ${HOSTIP};
 fi
 
+if [ "$1" = deal_mongodb_patch ]
+then 
+    HOSTIP=$2
+    echo "deal_mongodb_patch...";
+    deal_mongodb_patch ${HOSTIP};
+fi
 
 if [ "$1" = deal_mongodb_cluster_status_js_patch ]
 then 

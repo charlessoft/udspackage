@@ -13,9 +13,9 @@ export MONGODB_CLUSTER_TMPLOG=${UDSPACKAGE_PATH}/tmp/mongodbclustertmp.log
 #------------------------------
 function mongodb_mkdir_master()
 {
-    mkdir ${MONGODB_MASTER_DBPATH} -p
-    mkdir `echo ${MONGODB_MASTER_LOGPATH} | sed 's/\/[^\/]*$//'` -p 
-    mkdir `echo ${MONGODB_MASTER_LOGPATH} | sed  's/\/[^\/]*$//'` -p
+    mkdir ${MONGODB_DBPATH} -p
+    mkdir `echo ${MONGODB_LOGPATH} | sed 's/\/[^\/]*$//'` -p 
+    mkdir `echo ${MONGODB_LOGPATH} | sed  's/\/[^\/]*$//'` -p
 }
 
 #------------------------------
@@ -25,8 +25,8 @@ function mongodb_mkdir_master()
 #------------------------------
 function mongodb_mkdir_slave()
 {
-    mkdir ${MONGODB_SLAVE_DBPATH} -p
-    mkdir `echo ${MONGODB_SLAVE_LOGPATH} | sed 's/\/[^\/]*$//'` -p 
+    mkdir ${MONGODB_DBPATH} -p
+    mkdir `echo ${MONGODB_LOGPATH} | sed 's/\/[^\/]*$//'` -p 
 }
 
 #------------------------------
@@ -36,8 +36,8 @@ function mongodb_mkdir_slave()
 #------------------------------
 function mongodb_mkdir_arbiter()
 {
-    mkdir ${MONGODB_ARBITER_DBPATH} -p
-    mkdir `echo ${MONGODB_ARBITER_LOGPATH} | sed 's/\/[^\/]*$//'` -p 
+    mkdir ${MONGODB_DBPATH} -p
+    mkdir `echo ${MONGODB_LOGPATH} | sed 's/\/[^\/]*$//'` -p 
 }
 
 #------------------------------
@@ -220,7 +220,7 @@ function mongodb_cluster()
     if [ -d ${MONGODB_FILE} ] 
     then 
         cd ${MONGODB_FILE}/bin && \
-            ./mongo ${MONGODB_ARBITER}:${MONGODB_ARBITER_PORT} ../../../mongodb_cluster.js > ${MONGODB_CLUSTER_TMPLOG}
+            ./mongo ${MONGODB_ARBITER}:${MONGODB_PORT} ../../../mongodb_cluster.js > ${MONGODB_CLUSTER_TMPLOG}
         cd ../../../
         grep -rin "\"ok\"\ :\ 1" ${MONGODB_CLUSTER_TMPLOG} >/dev/null 2>&1;
         if [ $? -eq 0 ]
@@ -393,7 +393,7 @@ function domongodb_master_start()
         " \
         cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        sh mongodb_install.sh mongodb_start ${MONGODB_MASTER} ${MONGODB_MASTER_PORT} \
+        sh mongodb_install.sh mongodb_start ${MONGODB_MASTER} ${MONGODB_PORT} \
         "
     res=$?
     if [ ${res} -ne 0 ] 
@@ -425,7 +425,7 @@ function domongodb_slave_start()
         ssh -p ${SSH_PORT} "$i" \
             "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
-            sh mongodb_install.sh mongodb_start $i ${MONGODB_SLAVE_PORT}; \
+            sh mongodb_install.sh mongodb_start $i ${MONGODB_PORT}; \
             "
         res=$?
         if [ ${res} -ne 0 ]; then 
@@ -448,7 +448,7 @@ function domongodb_arbiter_start()
     ssh -p ${SSH_PORT} "${MONGODB_ARBITER}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        sh mongodb_install.sh mongodb_start ${MONGODB_ARBITER} ${MONGODB_ARBITER_PORT} \
+        sh mongodb_install.sh mongodb_start ${MONGODB_ARBITER} ${MONGODB_PORT} \
         "
     res=$?
     if [ ${res} -ne 0 ] 
@@ -517,7 +517,7 @@ function domongodb_master_stop()
         " \
         cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        sh mongodb_install.sh mongodb_stop ${MONGODB_MASTER} ${MONGODB_MASTER_DBPATH} \
+        sh mongodb_install.sh mongodb_stop ${MONGODB_MASTER} ${MONGODB_DBPATH} \
         "
     res=$?
     if [ ${res} -ne 0 ] 
@@ -537,7 +537,7 @@ function domongodb_slave_stop()
         ssh -p ${SSH_PORT} "`echo $i|cut -d: -f 1`" \
             "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
-            sh mongodb_install.sh mongodb_stop $i ${MONGODB_SLAVE_DBPATH}; \
+            sh mongodb_install.sh mongodb_stop $i ${MONGODB_DBPATH}; \
             "
         res=$?
         if [ ${res} -ne 0 ] 
@@ -555,7 +555,7 @@ function domongodb_arbiter_stop()
     ssh -p ${SSH_PORT} "`echo ${MONGODB_ARBITER}|cut -d: -f 1`" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        sh mongodb_install.sh mongodb_stop ${MONGODB_ARBITER} ${MONGODB_ARBITER_DBPATH} \
+        sh mongodb_install.sh mongodb_stop ${MONGODB_ARBITER} ${MONGODB_DBPATH} \
         "
     res=$?
     if [ ${res} -ne 0 ] 
@@ -651,7 +651,7 @@ function domongodb_cluster_status()
 
 function domongodb_master_status()
 {
-    mongodb_status ${MONGODB_MASTER} ${MONGODB_MASTER_PORT}
+    mongodb_status ${MONGODB_MASTER} ${MONGODB_PORT}
 }
 
 function domongodb_slave_status()
@@ -659,7 +659,7 @@ function domongodb_slave_status()
 
     for i in ${MONGODB_SLAVE_ARR[@]} 
     do
-        mongodb_status $i ${MONGODB_SLAVE_PORT}
+        mongodb_status $i ${MONGODB_PORT}
         echo ""
     done
 }
@@ -667,7 +667,7 @@ function domongodb_slave_status()
 function domongodb_arbiter_status()
 {
 
-    mongodb_status ${MONGODB_ARBITER} ${MONGODB_ARBITER_PORT}
+    mongodb_status ${MONGODB_ARBITER} ${MONGODB_PORT}
 }
 
 #------------------------------

@@ -32,9 +32,7 @@ function initporttable()
     echo ${RIAK_PROTOBUF_PORT} >> ${PORTTMP}
     echo ${RIAK_ERLANG_PORT_RANGE/-/:} >> ${PORTTMP};
 
-    echo ${MONGODB_MASTER_PORT}  >> ${PORTTMP};
-    echo ${MONGODB_SLAVE_PORT}  >> ${PORTTMP};
-    echo ${MONGODB_ARBITER_PORT}  >> ${PORTTMP};
+    echo ${MONGODB_PORT}  >> ${PORTTMP};
 }
 
 

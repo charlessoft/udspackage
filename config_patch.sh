@@ -52,7 +52,7 @@ function deal_mongodb_config()
 
     echo "addUser riakcon=${RIAKHOSTIP}:${RIAK_PROTOBUF_PORT} \
         riakbuk=userBucket \
-        mongocon=${MONGODB_MASTER}:${MONGODB_MASTER_PORT} \
+        mongocon=${MONGODB_MASTER}:${MONGODB_PORT} \
         mongousr=${MONGODB_DBUSER} \
         mongopwd=${MONGODB_DBPASSWORD} \
         mongodbn=${MONGODB_DBNAME} \
@@ -76,7 +76,7 @@ function deal_configuration()
     #echo ${RIAK_RINK_LIST//\ /,}
     sed -e 's/META_SERVER/'${META_SERVER}'/g' ./conf/configuration.json | \
         sed -e 's/MONGODB_HOST/'${MONGODB_MASTER}'/g' | \
-        sed -e 's/MONGODB_PORT/'${MONGODB_MASTER_PORT}'/g' | \
+        sed -e 's/MONGODB_PORT/'${MONGODB_PORT}'/g' | \
         sed -e 's/MONGODB_DBNAME/'${MONGODB_DBNAME}'/g' | \
         sed -e 's/MONGODB_DBUSER/'${MONGODB_DBUSER}'/g' | \
         sed -e 's/MONGODB_DBPASSWORD/'${MONGODB_DBPASSWORD}'/g' | \
