@@ -7,6 +7,65 @@ export NAME_FILE=bin/${NAME_FILE}
 NAME_ZK_PROPERTIES_BAK=${NAME_FILE}/zookeeper.properties_bak
 NAME_ZK_PROPERTIES=${NAME_FILE}/zookeeper.properties
 
+
+
+#------------------------------
+# fsname_patchzookeeper
+# description:  替换fs-common SNAPSHOT.jar 的zookeeper 文件
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
+function fsname_patchzookeeper()
+{
+    initenv
+
+    MYHOST=
+    for i in ${ZOOKEEPER_NODE_ARR[@]}
+    do 
+        MYID=`echo $i | awk -F= '{print $1}'| \
+            awk -F\. '{print $2}'`;
+        HOSTIP=`echo $i | awk -F= '{print $2}' | \
+            awk -F: '{print $1}'`;
+        #echo ${MYID}
+        #echo ${HOSTIP}
+        MYHOST=${MYHOST}${HOSTIP}:${ZOOKEEPER_PORT}","
+    done
+    MYHOST=${MYHOST%,*}
+    sed -e 's/=.*/='${MYHOST}'/g' ${NAME_ZK_PROPERTIES_BAK} > ${NAME_ZK_PROPERTIES}
+
+
+    mkdir ${NAME_FILE}/lib/config -p 
+    cp ${NAME_ZK_PROPERTIES} ${NAME_FILE}/lib/config
+    cd ${NAME_FILE}/lib && \
+        jar uvf fs-common-1.0-SNAPSHOT.jar config/zookeeper.properties
+
+
+}
+#------------------------------
+# fsname_install
+# description:  安装fsname
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
+function fsname_install()
+{
+
+    HOSTIP=$1
+    unzip -o ${NAME_FILE}.zip  -d ./bin
+    if [ ! -f ${NAME_ZK_PROPERTIES_BAK} ] 
+    then 
+        cp ${NAME_ZK_PROPERTIES} ${NAME_ZK_PROPERTIES_BAK}; 
+    else
+        cp ${NAME_ZK_PROPERTIES_BAK} ${NAME_ZK_PROPERTIES}; 
+    fi
+
+    
+    fsname_patchzookeeper
+
+}
+
+
+
 #------------------------------
 # fsname_start
 # description:  启动fsnameserver
@@ -108,6 +167,22 @@ function fsname_log()
 
 
 #------------------------------
+# dofsname_install
+# description: 使用ssh 命令登陆到fsnameserver服务器,调用fsname_install
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
+function dofsname_install()
+{
+
+    echo "dofsname_install"
+    ssh -p "${SSH_PORT}" "${NAME_SERVER}" \
+        "cd ${UDSPACKAGE_PATH}; \
+        source /etc/profile; \
+        sh fsname_install.sh fsname_install ${NAME_SERVER}"
+}
+
+#------------------------------
 # dofsname_start
 # description: 使用ssh 命令登陆到fsnameserver服务器,调用 fsname_start 启动fsnameserver
 # params HOSTIP - ip address 
@@ -192,4 +267,6 @@ then
     echo "fsname_status ====="
     fsname_status ${HOSTIP}
 fi
+
+
 

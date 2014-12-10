@@ -7,6 +7,80 @@ export META_FILE=bin/${META_FILE}
 META_ZK_PROPERTIES_BAK=${META_FILE}/zookeeper.properties_bak
 META_ZK_PROPERTIES=${META_FILE}/zookeeper.properties
 
+
+#------------------------------
+# fsmeta_patchzookeeper
+# description:  替换fs-common SNAPSHOT.jar 的zookeeper 文件
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
+function fsmeta_patchzookeeper()
+{
+    initenv
+
+    MYHOST=
+    for i in ${ZOOKEEPER_NODE_ARR[@]}
+    do 
+        MYID=`echo $i | awk -F= '{print $1}'| \
+            awk -F\. '{print $2}'`;
+        HOSTIP=`echo $i | awk -F= '{print $2}' | \
+            awk -F: '{print $1}'`;
+        #echo ${MYID}
+        #echo ${HOSTIP}
+        MYHOST=${MYHOST}${HOSTIP}:${ZOOKEEPER_PORT}","
+    done
+    MYHOST=${MYHOST%,*}
+    sed -e 's/=.*/='${MYHOST}'/g' ${META_ZK_PROPERTIES_BAK} > ${META_ZK_PROPERTIES}
+
+    mkdir ${META_FILE}/lib/config -p 
+    cp ${META_ZK_PROPERTIES} ${META_FILE}/lib/config
+    cd ${META_FILE}/lib && \
+        jar uvf fs-common-1.0-SNAPSHOT.jar config/zookeeper.properties
+
+
+}
+
+#------------------------------
+# fsmeta_install
+# description:  安装fsname
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
+function fsmeta_install()
+{
+
+    HOSTIP=$1
+    unzip -o ${META_FILE}.zip  -d ./bin
+    if [ ! -f ${META_ZK_PROPERTIES_BAK} ] 
+    then 
+        cp ${META_ZK_PROPERTIES} ${META_ZK_PROPERTIES_BAK}; 
+    else
+        cp ${META_ZK_PROPERTIES_BAK} ${META_ZK_PROPERTIES}; 
+    fi
+
+    
+    MYHOST=
+    for i in ${ZOOKEEPER_NODE_ARR[@]}
+    do 
+        MYID=`echo $i | awk -F= '{print $1}'| \
+            awk -F\. '{print $2}'`;
+        HOSTIP=`echo $i | awk -F= '{print $2}' | \
+            awk -F: '{print $1}'`;
+        #echo ${MYID}
+        #echo ${HOSTIP}
+        MYHOST=${MYHOST}${HOSTIP}:${ZOOKEEPER_PORT}","
+    done
+    MYHOST=${MYHOST%,*}
+    sed -e 's/=.*/='${MYHOST}'/g' ${META_ZK_PROPERTIES_BAK} > ${META_ZK_PROPERTIES}
+
+    if [ $? -eq 0 ]
+    then 
+        echo "ok";
+    else 
+        echo "fail";
+    fi
+}
+
 #------------------------------
 # fsmeta_start
 # description:启动fsmeta
@@ -105,6 +179,22 @@ function fsmeta_log()
 }
 
 
+
+#------------------------------
+# dofsmeta_install
+# description: 使用ssh 命令登陆到fsmetaserver服务器,调用fsmeta_install
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
+function dofsname_install()
+{
+
+    echo "dofsname_install"
+    ssh -p "${SSH_PORT}" "${META_SERVER}" \
+        "cd ${UDSPACKAGE_PATH}; \
+        source /etc/profile; \
+        sh fsmeta_install.sh fsmeta_install ${META_SERVER}"
+}
 #------------------------------
 # dofsmeta_start
 # description:调用ssh命令 登陆指定服务器运行fsmeta

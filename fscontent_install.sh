@@ -8,6 +8,42 @@ CONTENT_ZK_PROPERTIES_BAK=${CONTENT_FILE}/zookeeper.properties_bak
 CONTENT_ZK_PROPERTIES=${CONTENT_FILE}/zookeeper.properties
 
 
+#------------------------------
+# fscontent_patchzookeeper
+# description:  替换fs-common SNAPSHOT.jar 的zookeeper 文件
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
+function fscontent_patchzookeeper()
+{
+    initenv
+    MYHOST=
+    for i in ${ZOOKEEPER_NODE_ARR[@]}
+    do 
+        MYID=`echo $i | awk -F= '{print $1}'| \
+            awk -F\. '{print $2}'`;
+        HOSTIP=`echo $i | awk -F= '{print $2}' | \
+            awk -F: '{print $1}'`;
+        #echo ${MYID}
+        #echo ${HOSTIP}
+        MYHOST=${MYHOST}${HOSTIP}:${ZOOKEEPER_PORT}","
+    done
+    MYHOST=${MYHOST%,*}
+    sed -e 's/=.*/='${MYHOST}'/g' ${CONTENT_ZK_PROPERTIES_BAK} > ${CONTENT_ZK_PROPERTIES}
+    mkdir ${CONTENT_FILE}/lib/config -p 
+    cp ${CONTENT_ZK_PROPERTIES} ${CONTENT_FILE}/lib/config
+    cd ${CONTENT_FILE}/lib && \
+        jar uvf fs-common-1.0-SNAPSHOT.jar config/zookeeper.properties
+
+
+    #if [ $? -eq 0 ]
+    #then 
+        #echo "ok";
+    #else 
+        #echo "fail";
+    #fi
+    
+}
 
 #------------------------------
 # fscontent_install
@@ -26,31 +62,9 @@ function fscontent_install()
         cp ${CONTENT_ZK_PROPERTIES_BAK} ${CONTENT_ZK_PROPERTIES}; 
     fi
 
-    
-    MYHOST=
-    for i in ${ZOOKEEPER_NODE_ARR[@]}
-    do 
-        MYID=`echo $i | awk -F= '{print $1}'| \
-            awk -F\. '{print $2}'`;
-        HOSTIP=`echo $i | awk -F= '{print $2}' | \
-            awk -F: '{print $1}'`;
-        #echo ${MYID}
-        #echo ${HOSTIP}
-        MYHOST=${MYHOST}${HOSTIP}:${ZOOKEEPER_PORT}","
-    done
-    MYHOST=${MYHOST%,*}
-    sed -e 's/=.*/='${MYHOST}'/g' ${CONTENT_ZK_PROPERTIES_BAK} > ${CONTENT_ZK_PROPERTIES}
-   }
-
-function dofscontent_install()
-{
-    echo "dofscontent_install"
-    ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
-        "cd ${UDSPACKAGE_PATH}; \
-        source /etc/profile; \
-        sh fscontent_install.sh content_install ${CONTENT_SERVER}"
-    
+    fscontent_patchzookeeper
 }
+
 
 #------------------------------
 # fscontent_start
@@ -154,6 +168,21 @@ function fscontent_log()
 }
 
 
+
+#------------------------------
+# dofscontent_install
+# description:  使用ssh登陆到fscontent服务器安装fscontentserver
+# return success 0, fail 1
+#------------------------------
+function dofscontent_install()
+{
+    echo "dofscontent_install"
+    ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
+        "cd ${UDSPACKAGE_PATH}; \
+        source /etc/profile; \
+        sh fscontent_install.sh content_install ${CONTENT_SERVER}"
+    
+}
 
 #------------------------------
 # dofscontent_start
