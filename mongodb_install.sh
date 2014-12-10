@@ -86,10 +86,10 @@ function mongodb_install()
     
     if [ ! -d ${MONGODB_FILE} ] 
     then 
-        if [ -f ${MONGODB_FILE}.zip ] 
+        if [ -f ${MONGODB_FILE}.gz ] 
         then 
-            #tar zxvf ${MONGODB_FILE}.gz -C ./bin 2>&1 >/dev/null; 
-            unzip -o ${MONGODB_FILE}.zip -d ./bin 2>&1 >/dev/null;
+            tar zxvf ${MONGODB_FILE}.gz -C ./bin 2>&1 >/dev/null; 
+            #unzip ${MONGODB_FILE}.zip -d ./bin 2>&1 >/dev/null;
             if [ $? -ne 0 ] 
             then 
                 cfont -red "mongodb unzip fail\n" -reset; 
