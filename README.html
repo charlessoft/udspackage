@@ -293,8 +293,140 @@ img {
 <body>
 <h1>UDS自动安装部署工具</h1>
 <h1>概述</h1>
-<p>本shell脚本用于自动化安装基础软件以支持UDS_FS正常运行
-根据配置文件配置,理论上允许3个以上riak,Mongodb,zookeeper,配置执行</p>
+<p>本shell脚本用于自动化安装UDS_FS<br />
+根据配置文件配置,理论上允许3个以上riak,Mongodb,zookeeper集群部署</p>
+<h1>配置文件说明</h1>
+<h6>udspackage安装路径</h6>
+<blockquote>
+<p>INSTALL_PATH=/apps</p>
+</blockquote>
+<h6>mongodb文件名</h6>
+<blockquote>
+<p>MONGODB<em>FILE=mongodb-linux-x86</em>64-2.6.3</p>
+</blockquote>
+<h6>jdk文件名</h6>
+<blockquote>
+<p>JDK<em>FILE=jdk1.6.0</em>45</p>
+</blockquote>
+<h6>riak文件名</h6>
+<blockquote>
+<p>RIAK<em>FILE=riak-2.0.2-1.el5.x86</em>64.rpm  
+</p>
+</blockquote>
+<h6>zookeeper文件名</h6>
+<blockquote>
+<p>ZOOKEEPER_FILE=zookeeper-3.4.6  
+</p>
+</blockquote>
+<h6>fscontent server文件名</h6>
+<blockquote>
+<p>CONTENT_SERVER=10.211.55.18</p>
+</blockquote>
+<h6>fsmeta server文件名</h6>
+<blockquote>
+<p>META_SERVER=10.211.55.21</p>
+</blockquote>
+<h6>fsname server文件名</h6>
+<blockquote>
+<p>NAME_SERVER=10.211.55.22</p>
+</blockquote>
+<h6>用户账号密码</h6>
+<blockquote>
+<p>USERNAME=weblogic</p>
+<p>USERPWD=abcdefg</p>
+</blockquote>
+<p>fscontent-nameserver-metaserver参数优化配置,默认不需要修改</p>
+<blockquote>
+<p>META<em>SERVER</em>PARAMS=&quot;-Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M&quot;</p>
+<p>NAME<em>SERVER</em>PARAMS=&quot;-Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M&quot;</p>
+<p>CONTENT<em>SERVER</em>PARAMS=&quot;-Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M&quot;</p>
+</blockquote>
+<h6>riak 相关服务器地址,多个riak增加到数组中</h6>
+<blockquote>
+<p>RIAK_RINK=( \<br />
+    10.211.55.18 \<br />
+    10.211.55.21 \<br />
+    10.211.55.22 \<br />
+    )</p>
+<p>RIAK<em>FIRST</em>NODE=${RIAK_RINK[0]}</p>
+<p>RIAK<em>HTTP</em>PORT=8098</p>
+<p>RIAK<em>EPMD</em>PORT=4369</p>
+<p>RIAK<em>HANDOFF</em>PORT=8099</p>
+<p>RIAK_DEFPORT=44571</p>
+<p>RIAK<em>ERLANG</em>PORT_RANGE=6000-7999</p>
+<p>RIAK<em>PROTOBUF</em>PORT=8087</p>
+</blockquote>
+<h6>mongodb Repliset相关配置</h6>
+<blockquote>
+<h5>MONGODB MASTER</h5>
+<p>MONGODB<em>MASTER=10.211.55.18
+MONGODB</em>MASTER<em>DBPATH=/home/${USERNAME}/mongodb/data/master
+MONGODB<em>MASTER</em>LOGPATH=/home/${USERNAME}/mongodb/log/master.log
+MONGODB</em>MASTER<em>PIDFILEPATH=/home/${USERNAME}/mongodb/master.pid
+MONGODB</em>MASTER_PORT=27017</p>
+<h4>MONGODB SLAVE</h4>
+<p>MONGODB<em>SLAVE=10.211.55.21
+MONGODB</em>SLAVE<em>DBPATH=/home/${USERNAME}/mongodb/data/slave
+MONGODB<em>SLAVE</em>LOGPATH=/home/${USERNAME}/mongodb/log/slave.log
+MONGODB</em>SLAVE<em>PIDFILEPATH=/home/${USERNAME}/mongodb/slave.pid
+MONGODB</em>SLAVE_PORT=27017</p>
+<h5>如果多个mongodb 集群.ip写入到一下数组中</h5>
+<p>MONGODB<em>SLAVE</em>ARR=( \<br />
+   ${MONGODB_SLAVE} \<br />
+   )</p>
+<h5>MONGODB ARIBTER</h5>
+<p>MONGODB<em>ARBITER=10.211.55.22
+MONGODB</em>ARBITER<em>DBPATH=/home/${USERNAME}/mongodb/data/slave
+MONGODB<em>ARBITER</em>LOGPATH=/home/${USERNAME}/mongodb/log/slave.log
+MONGODB</em>ARBITER<em>PIDFILEPATH=/home/${USERNAME}/mongodb/slave.pid
+MONGODB</em>ARBITER_PORT=27017</p>
+</blockquote>
+<h6>JAVA 多个jdk增加到ip数组中</h6>
+<blockquote>
+<p>JDK_ARR=( \
+   10.211.55.18 \<br />
+   10.211.55.21 \<br />
+   10.211.55.22 \<br />
+   )</p>
+</blockquote>
+<h6>zookeeper 配置相关</h6>
+<blockquote>
+<p>ZOOKEEPER<em>DATADIR=/home/${USERNAME}/zookeeper/data
+ZOOKEEPER</em>LOGDIR=/home/${USERNAME}/zookeeper/data/log
+ZOOKEEPER_NODE<em>ARR=( \
+   server.1=10.211.55.18:2888:3888 \
+   server.2=10.211.55.21:2888:3888 \
+   server.3=10.211.55.22:2888:3888 \
+   )
+ZOOKEEPER</em>PORT=2181</p>
+</blockquote>
+<h6>需要开放的防火墙端口列表</h6>
+<blockquote>
+<p>IPTABLES<em>ACCESS</em>PORT=( \<br />
+   123 \<br />
+   456 \<br />
+   )</p>
+</blockquote>
+<h6>刷新zookeeper配置</h6>
+<blockquote>
+<p>ZOOKEEPER<em>USER=admin
+ZOOKEEPER</em>PASSWORD=pa44w0rd
+ZOOKEEPER<em>CONFIG<em>NAME=/udsfs/configuration
+ZOOKEEPER</em>CONFIG</em>PATH=configuration.json
+ZOOKEEPER<em>CLUSTER</em>NAME=/udsfs/cluster
+ZOOKEEPER<em>CLUSTER</em>PATH=cluster</p>
+</blockquote>
+<h6>刷新mongodb配置</h6>
+<blockquote>
+<p>MONGODB<em>DBUSER=uds</em>fs
+MONGODB<em>DBPASSWORD=pa44w0rd
+MONGODB<em>DBNAME=uds</em>fs
+MONGODB</em>COL=user
+MONGODB<em>ADDUSERNAME=zhangyao
+MONGODB</em>ADDPASSWORD=pa44w0rd
+MONGODB_BUCKETS=uds
+FILE<em>TMP</em>PATH=/tmp4</p>
+</blockquote>
 <h1>使用步骤</h1>
 <p>1.以root权限拷贝脚本到目标机器目录下,例如:/apps<br />
 sh runsh.sh env initcfg <br />
