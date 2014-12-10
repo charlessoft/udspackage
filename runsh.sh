@@ -526,6 +526,11 @@ function mongodb_admin()
             done 
             deal_mongodb_cluster_js_patch 
             deal_mongodb_cluster_status_js_patch
+            deal_mongodb_db_auth_js_patch
+            ;;
+        dbauth)
+            echo "mongodb auth"
+            domongodb_db_auth;
             ;;
         status) 
             echo "mongodb status";
@@ -542,7 +547,7 @@ function mongodb_admin()
             ;;
         stop)
             echo "=====mongodb stop=====";
-            domongodb_stop;
+            domongodb_stop "$@"
             ;;
         *)
             mongodb_help;

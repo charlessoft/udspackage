@@ -86,10 +86,10 @@ function mongodb_install()
     
     if [ ! -d ${MONGODB_FILE} ] 
     then 
-        if [ -f ${MONGODB_FILE}.gz ] 
+        if [ -f ${MONGODB_FILE}.zip ] 
         then 
-            tar zxvf ${MONGODB_FILE}.gz -C ./bin 2>&1 >/dev/null; 
-            #unzip ${MONGODB_FILE}.zip -d ./bin 2>&1 >/dev/null;
+            #tar zxvf ${MONGODB_FILE}.gz -C ./bin 2>&1 >/dev/null; 
+            unzip -o ${MONGODB_FILE}.zip -d ./bin 2>&1 >/dev/null;
             if [ $? -ne 0 ] 
             then 
                 cfont -red "mongodb unzip fail\n" -reset; 
@@ -221,7 +221,7 @@ function mongodb_cluster()
     if [ -d ${MONGODB_FILE} ] 
     then 
         cd ${MONGODB_FILE}/bin && \
-            ./mongo ${MONGODB_ARBITER}:${MONGODB_PORT} ../../../mongodb_cluster.js > ${MONGODB_CLUSTER_TMPLOG}
+            ./mongo ../../../mongodb_cluster.js > ${MONGODB_CLUSTER_TMPLOG}
         cd ../../../
         grep -rin "\"ok\"\ :\ 1" ${MONGODB_CLUSTER_TMPLOG} >/dev/null 2>&1;
         if [ $? -eq 0 ]
@@ -254,13 +254,43 @@ function mongodb_cluster_status()
     if [ -d ${MONGODB_FILE} ] 
     then 
         cd ${MONGODB_FILE}/bin; 
-        ./mongo ../../../mongodb_cluster_status.js; 
+        ./mongo ${MONGODB_ARBITER}:${MONGODB_PORT} ../../../mongodb_cluster_status.js; 
     else 
         cfont -red "mongodb ${MONGODB_FILE} No such file!\n" -reset;
         exit 1;
     fi
 }
 
+function mongodb_db_auth()
+{
+    HOSTIP=$1
+    echo "${HOSTIP} db auth"
+    if [ -s ${MONGODB_FILE} ]
+    then 
+        cd ${MONGODB_FILE}/bin;
+        ./mongo  ../../../mongodb_db_auth.js;
+    else 
+        cfont -red "mongodb ${MONGODB_FILE} No such file!\n" -reset;
+        exit 1;
+    fi
+    
+    
+}
+
+function domongodb_db_auth()
+{
+
+    ssh -p ${SSH_PORT} "${MONGODB_MASTER}" \
+        "cd ${UDSPACKAGE_PATH}; \
+        source /etc/profile; \
+        sh mongodb_install.sh mongodb_db_auth ${MONGODB_MASTER} \
+        "
+    res=$?
+    if [ ${res} -ne 0 ] 
+    then 
+        exit ${res}; 
+    fi
+}
 
 #------------------------------
 # domongodb_master_install
@@ -773,4 +803,13 @@ then
     shift 
     HOSTIP=$1
     mongodb_cluster_status ${HOSTIP}
+fi
+
+
+
+if [ "$1" = mongodb_db_auth ]
+then
+    shift 
+    HOSTIP=$1
+    mongodb_db_auth ${HOSTIP}
 fi

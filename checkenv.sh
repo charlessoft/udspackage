@@ -164,6 +164,9 @@ function docheckinstalledstatus()
             -not -name "riakcheck.log" \
             -not -name "jdkcheck.log" \
             -not -name "mongodbclustertmp.log" \
+            -not -name "contentserver.log" \
+            -not -name "nameserver.log" \
+            -not -name "metaserver.log" \
             -exec 'cat' {} \; > test.tmp;
     cd ../
 

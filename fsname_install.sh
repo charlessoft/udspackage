@@ -92,7 +92,7 @@ function fsname_stop()
     HOSTIP=$1
     echo "${HOSTIP} name stop";
 
-    fsname_status
+    fsname_status ${HOSTIP}
     if [ $? -eq 0 ] 
     then 
         kill `ps -ef | grep "fs-nameserver" | grep -v "grep" | awk '{print $2}'`; 

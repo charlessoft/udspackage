@@ -29,6 +29,17 @@ function deal_mongodb_patch()
 
 }
 
+function deal_mongodb_db_auth_js_patch()
+{
+
+    MONGODB_DB_AUTH_JS=mongodb_db_auth.js
+    rm -fr ./${MONGODB_DB_AUTH_JS}
+    echo "var db = connect('${MONGODB_MASTER}:${MONGODB_PORT}/admin');" >> ${MONGODB_DB_AUTH_JS};
+    echo "db.createUser({user:\"${MONGODB_SUPPER_USER}\", pwd:\"${MONGODB_SUPPER_PASSWORD}\", roles:[\"root\"]})" >> ${MONGODB_DB_AUTH_JS}
+    echo "db.createUser({user:\"${MONGODB_DBUSER}\", pwd:\"${MONGODB_DBPASSWORD}\", roles:[{ role: \"readWrite\", db: \"${MONGODB_DBNAME}\" }]})" >> ${MONGODB_DB_AUTH_JS}
+}
+
+
 #------------------------------
 # deal_mongodb_cluster_js_patch
 # description: 修改mongodb_cluster.js 集群配置文件
@@ -107,6 +118,24 @@ function deal_mongodb_cluster_status_js_patch()
 #-------------------------------
 #根据传递的参数执行命令
 #-------------------------------
+
+
+
+if [ "$1" = deal_mongodb_db_auth_js_patch ]
+then 
+    HOSTIP=$2;
+    echo "deal_mongodb_db_auth_js_patch";
+    #deal_mongodb_cluster_js_patch ${HOSTIP};
+    deal_mongodb_db_auth_js_patch ${HOSTIP}
+fi
+
+if [ "$1" = deal_mongodb_cluster_js_patch ]
+then 
+    HOSTIP=$2;
+    echo "deal_mongodb_cluster_js_patch ...";
+    deal_mongodb_cluster_js_patch ${HOSTIP};
+fi
+
 if [ "$1" = deal_mongodb_cluster_js_patch ]
 then 
     HOSTIP=$2;

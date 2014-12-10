@@ -1,8 +1,8 @@
 #!/bin/bash
 SSH_PORT=22
 
-MONGODB_FILE=mongodb-linux-x86_64-2.6.3
-#MONGODB_FILE=mongodb-linux-x86_64-2.6.5
+#MONGODB_FILE=mongodb-linux-x86_64-2.6.3
+MONGODB_FILE=mongodb-linux-x86_64-2.6.5
 JDK_FILE=jdk1.6.0_45
 RIAK_FILE=riak-2.0.2-1.el5.x86_64.rpm
 ZOOKEEPER_FILE=zookeeper-3.4.6
