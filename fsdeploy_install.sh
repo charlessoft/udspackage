@@ -15,14 +15,6 @@ function fsdeploy_install()
 {
     HOSTIP=$1
     unzip -o ${DEPLOY_FILE}.zip  -d ./bin/uds-deploy
-    #if [ ! -f ${CONTENT_ZK_PROPERTIES_BAK} ] 
-    #then 
-        #cp ${CONTENT_ZK_PROPERTIES} ${CONTENT_ZK_PROPERTIES_BAK}; 
-    #else
-        #cp ${CONTENT_ZK_PROPERTIES_BAK} ${CONTENT_ZK_PROPERTIES}; 
-    #fi
-
-    #fscontent_patchzookeeper
 }
 
 #------------------------------
@@ -56,7 +48,7 @@ function fsdeploy_refresh_zookeeper_cluster_cfg()
     ZOOKEEPER_CONFIG_CLUSTER_CONTENT=`cat ./${UDS_ZOOKEEPER_CLUSTER_CONFIG}`
     echo ${ZOOKEEPER_CONFIG_CLUSTER_CONTENT}
 
-    cd ${DEPLOY_FILE}/target && \
+    cd ${DEPLOY_FILE} && \
         java -jar uds-deploy-3.0.0-SNAPSHOT.jar ${ZOOKEEPER_CONFIG_CLUSTER_CONTENT}
     cd ../../../
     sleep 2s;
@@ -74,7 +66,7 @@ function fsdeploy_refresh_mongodb_cfg()
     initenv
     MONGODB_CONFIG_CONTENT=`cat ./${UDS_MONGODB_CONFIG}`
     echo ${MONGODB_CONFIG_CONTENT}
-    cd ${DEPLOY_FILE}/target && \
+    cd ${DEPLOY_FILE} && \
         java -jar uds-deploy-3.0.0-SNAPSHOT.jar  ${MONGODB_CONFIG_CONTENT}
     cd ../../../ 
     sleep 2s;
