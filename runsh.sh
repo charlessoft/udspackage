@@ -149,7 +149,7 @@ function fsname_help()
 Usage: ${SCRIPT} fsname <command>
 where <command> is one of the following:  
 \
-    { start | stop | status | log }
+    { install | start | stop | status | log }
     "
     cfont -reset
 }
@@ -166,7 +166,7 @@ function fscontent_help()
 Usage: ${SCRIPT} fscontent <command>
 where <command> is one of the following:  
 \
-    { start | stop | status | log }
+    { install | start | stop | status | log }
     "
     cfont -reset
 
@@ -183,7 +183,7 @@ function fsmeta_help()
 Usage: ${SCRIPT} fsmeta <command>
 where <command> is one of the following:  
 \
-    { start | stop | status | log }
+    { install | start | stop | status | log }
     "
     cfont -reset
 
@@ -214,7 +214,8 @@ function fsname_admin()
             echo "nameserver install...";
             shift 
             dofsname_install;
-            #*)
+            ;;
+            *)
             fsname_help;
             ;;
     esac
@@ -240,6 +241,10 @@ function fsmeta_admin()
         log)
             echo "metaserver collect log...";
             fsmeta_log;
+            ;;
+        install)
+            echo "metaserver install...";
+            dofsmeta_install;
             ;;
         *)
             fsmeta_help;

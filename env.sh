@@ -36,9 +36,9 @@ NAME_FILE=fs-nameserver
 META_FILE=fs-metaserver
 
 
-CONTENT_LOG_FILE=fscontent_log.log
-NAME_LOG_FILE=fsname_log.log
-META_LOG_FILE=fsmeta_log.log
+CONTENT_LOG_FILE=contentserver.log
+NAME_LOG_FILE=nameserver.log
+META_LOG_FILE=metaserver.log
 DEPLOY_LOG_ZOOKEEPER_FILE=fsdeploy_zk_log.log
 DEPLOY_LOG_MONGODB_FILE=fsdeploy_mongodb_log.log
 DEPLOY_LOG_ZOOKEEPER_CLUSTER_FILE=fsdeploy_zk_cluster_log.log
@@ -74,25 +74,25 @@ function setjdkenv()
     echo export JAVA_BIN='$JAVA_HOME'/bin >> ${ENVBASHRC}
     echo export PATH='$JAVA_HOME':'$JAVA_BIN':'$PATH' >> ${ENVBASHRC}
 
-      if [ `whoami` = "${USERNAME}" ] 
-      then
-          #echo "aa";
-          #echo "${HOME}/.bash_profile"
-          #exit 1
-          if [ -f ${HOME}/.bash_profile ]
-          then 
-              #判断是否存在
-              #grep -rin "JAVA_HOME"
-              echo "ok"
-          else 
-              echo export JAVA_HOME=$JAVA_HOME >> ${HOME}/.bash_profile
-              echo export JAVA_BIN='$JAVA_HOME'/bin >> ${HOME}/.bash_profile
-              echo export PATH='$JAVA_HOME':'$JAVA_BIN':'$PATH' >> ${HOME}/.bash_profile
-          fi
+      #if [ `whoami` = "${USERNAME}" ] 
+      #then
+          ##echo "aa";
+          ##echo "${HOME}/.bash_profile"
+          ##exit 1
+          #if [ -f ${HOME}/.bash_profile ]
+          #then 
+              ##判断是否存在
+              ##grep -rin "JAVA_HOME"
+              #echo "ok"
+          #else 
+              #echo export JAVA_HOME=$JAVA_HOME >> ${HOME}/.bash_profile
+              #echo export JAVA_BIN='$JAVA_HOME'/bin >> ${HOME}/.bash_profile
+              #echo export PATH='$JAVA_HOME':'$JAVA_BIN':'$PATH' >> ${HOME}/.bash_profile
+          #fi
 
-      else 
-          echo "aaddddd";
-      fi
+      #else 
+          #echo "aaddddd";
+      #fi
 
     echo "jdk path=${JAVA_HOME}"
     #java -version

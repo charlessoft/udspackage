@@ -49,9 +49,9 @@ function deal_riakconf()
         sed -e 's/MINNUM/'${MINNUM}'/g' | \
         sed -e 's/MAXNUM/'${MAXNUM}'/g' | \
         sed -e 's#TMPPLATFORM_DATA_DIR# '${RIAK_PLATFORM_DATA_DIR}'#g' | \
-        sed -e 's#TMP8098# '${RRIAK_HTTP_POR}'#g' | \
-        sed -e 's#TMP8087# '${RIAK_PROTOBUF_PORT}'#g' | \
-        sed -e 's#TMPMULTI# '${RIAK_STORAGE_BACKEND}'#g' \
+        sed -e 's#TMP8098#'${RIAK_HTTP_PORT}'#g' | \
+        sed -e 's#TMP8087#'${RIAK_PROTOBUF_PORT}'#g' | \
+        sed -e 's#TMPMULTI#'${RIAK_STORAGE_BACKEND}'#g' \
         > riak_${HOSTIP}.cfg
 
     #if [ $? -ne 0 ] 

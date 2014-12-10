@@ -65,16 +65,17 @@ function fsname_start()
     then 
         cfont -red "jdk environment error! fsname-server start fail\n" -reset; exit 1;
     fi
-    fsname_status
+    fsname_status ${HOSTIP}
     if [ $? -eq 0 ] 
     then 
-        cfont -green "${HOSTIP} fs-nameserver is running\n" -reset; exit 0;
+        cfont -red "${HOSTIP} fs-nameserver already start\n" -reset; exit 0;
     fi
 
     echo "${HOSTIP} name start";
     #java -version
-    cd ${NAME_FILE}/target && \
-        java -jar -server ${NAME_SERVER_PARAMS} fs-nameserver-1.0-SNAPSHOT.jar
+    cd ${NAME_FILE} && \
+        #java -jar -server ${NAME_SERVER_PARAMS} fs-nameserver-1.0-SNAPSHOT.jar
+    sh fs-nameserver.sh
     cd ../../
     sleep 5s;
 }
@@ -139,8 +140,8 @@ function fsname_log()
 {
     echo "${NAME_SERVER} collect log";
 
-    echo "scp ${NAME_SERVER}:${UDSPACKAGE_PATH}/log/${NAME_LOG_FILE} ./log/";
-    scp ${NAME_SERVER}:${UDSPACKAGE_PATH}/log/${NAME_LOG_FILE} ./log/
+    echo "scp ${NAME_SERVER}:${UDSPACKAGE_PATH}/bin/${NAME_FILE}/${NAME_LOG_FILE} ./log/";
+    scp ${NAME_SERVER}:${UDSPACKAGE_PATH}/bin/${NAME_FILE}/${NAME_LOG_FILE} ./log/
     if [ $? -eq 0 ] 
     then 
         cfont -green "collect ${NAME_LOG_FILE} log success!\n" -reset ;
@@ -179,8 +180,7 @@ function dofsname_start()
     ssh -p "${SSH_PORT}" "${NAME_SERVER}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        nohup sh fsname_install.sh fsname_start ${NAME_SERVER} \
-        > log/${NAME_LOG_FILE} 2>&1 &"
+        sh fsname_install.sh fsname_start ${NAME_SERVER}"
 
 }
 

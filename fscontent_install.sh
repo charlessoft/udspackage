@@ -55,10 +55,10 @@ function fscontent_install()
 function fscontent_start()
 {
     HOSTIP=$1
-    initenv
+    initenv ${HOSTIP}
     if [ $? -ne 0 ] 
     then 
-        cfont -red"jdk environment error ! fs-contentserver start fail\n" -reset; 
+        cfont -red "jdk environment error ! fs-contentserver start fail\n" -reset; 
         exit 1;
     fi
 
@@ -135,8 +135,8 @@ function fscontent_status()
 function fscontent_log()
 {
    echo "${CONTENT_SERVER} collect log";
-   echo "scp ${CONTENT_SERVER}:${UDSPACKAGE_PATH}/log/${CONTENT_LOG_FILE} ./log/";
-   scp ${CONTENT_SERVER}:${UDSPACKAGE_PATH}/log/${CONTENT_LOG_FILE} ./log/;
+   echo "scp ${CONTENT_SERVER}:${UDSPACKAGE_PATH}/bin/${CONTENT_FILE}/${CONTENT_LOG_FILE} ./log/";
+   scp ${CONTENT_SERVER}:${UDSPACKAGE_PATH}/bin/${CONTENT_FILE}/${CONTENT_LOG_FILE} ./log/;
 
    if [ $? -eq 0 ] 
    then 
@@ -175,9 +175,8 @@ function dofscontent_start()
     ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        nohup sh fscontent_install.sh content_start ${CONTENT_SERVER}  \
-        > log/${CONTENT_LOG_FILE} 2>&1 &"
-    sleep 2s;
+        sh fscontent_install.sh content_start ${CONTENT_SERVER}"
+
 }
 
 

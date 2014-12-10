@@ -16,7 +16,7 @@ META_ZK_PROPERTIES=${META_FILE}/zookeeper.properties
 #------------------------------
 function fsmeta_patchzookeeper()
 {
-    initenv
+    initenv 
     mkdir ${META_FILE}/lib/config -p 
     cp ./zookeeper.properties ${META_FILE}/lib/config
     cd ${META_FILE}/lib && \
@@ -57,20 +57,21 @@ function fsmeta_install()
 function fsmeta_start()
 {
     HOSTIP=$1
-    initenv
+    initenv ${HOSTIP}
     if [ $? -ne 0 ] 
     then 
         cfont -red "jdk environment error! fsmeta-server start fail!\n" -reset; exit 1;
     fi
-    fsmeta_status
+    fsmeta_status ${HOSTIP}
     if [ $? -eq 0 ] 
     then 
         cfont -green "${HOSTIP} fs-metaserver is running\n" -reset; exit 0;
     fi
 
-    echo "${HOSTIP} meta start";
-    cd ${META_FILE}/target && \
-        java -jar -server ${META_SERVER_PARAMS} fs-metaserver-1.0-SNAPSHOT.jar
+    echo "${HOSTIP} fs-metaserver start";
+    cd ${META_FILE} && \
+        #java -jar -server ${META_SERVER_PARAMS} fs-metaserver-1.0-SNAPSHOT.jar
+    sh fs-metaserver.sh
     cd ../../
     sleep 5s;
 }
@@ -84,12 +85,12 @@ function fsmeta_start()
 function fsmeta_status()
 {
     HOSTIP=$1
-    echo "${HOSTIP} meta status";
+    echo "${HOSTIP} fs-metaserver status";
     ps -ef | grep "fs-metaserver" | grep -v "grep" 
     res=$?
     if [ ${res} -eq 0 ] 
     then 
-        cfont -green "${HOSTIP} fs-metaserver is running\n" -reset; 
+        cfont -red "${HOSTIP} fs-metaserver already start!\n" -reset; 
         echo "${HOSTIP} fs-metaserver check success!" > ${META_CHECK_LOG}; 
     else
         cfont -red "${HOSTIP} fs-metaserver is probably not running\n" -reset; 
@@ -110,7 +111,7 @@ function fsmate_stop()
     HOSTIP=$1
     echo "${HOSTIP} meta stop";
 
-    fsmeta_status
+    fsmeta_status ${HOSTIP}
     if [ $? -eq 0 ] 
     then 
         #kill 
@@ -134,8 +135,8 @@ function fsmeta_log()
 {
 
    echo "${META_SERVER} collect log";
-   echo "scp ${META_SERVER}:${UDSPACKAGE_PATH}/log/${META_LOG_FILE} ./log/";
-   scp ${META_SERVER}:${UDSPACKAGE_PATH}/log/${META_LOG_FILE} ./log/
+   echo "scp ${META_SERVER}:${UDSPACKAGE_PATH}/bin/${META_FILE}/${META_LOG_FILE} ./log/";
+   scp ${META_SERVER}:${UDSPACKAGE_PATH}/bin/${META_FILE}/${META_LOG_FILE} ./log/
 
    if [ $? -eq 0 ]
    then 
@@ -153,7 +154,7 @@ function fsmeta_log()
 # params HOSTIP - ip address 
 # return success 0, fail 1
 #------------------------------
-function dofsname_install()
+function dofsmeta_install()
 {
 
     echo "dofsname_install"
@@ -170,11 +171,16 @@ function dofsname_install()
 function dofsmeta_start()
 {
     echo "dofsmeta_start";
+    #ssh -p "${SSH_PORT}" "${META_SERVER}" \
+        #"cd ${UDSPACKAGE_PATH}; \
+        #source /etc/profile; \
+        #nohup sh fsmeta_install.sh fsmeta_start ${META_SERVER} \
+        #> log/${META_LOG_FILE} 2>&1 &"
+
     ssh -p "${SSH_PORT}" "${META_SERVER}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        nohup sh fsmeta_install.sh fsmeta_start ${META_SERVER} \
-        > log/${META_LOG_FILE} 2>&1 &"
+        sh fsmeta_install.sh fsmeta_start ${META_SERVER}"
 }
 
 
