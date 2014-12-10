@@ -47,6 +47,10 @@ ID_RSA_PUB=$HOME/.ssh/id_rsa.pub
 IPTABLES_FILE=/etc/sysconfig/iptables
 
 
+META_SERVER_PARAMS="-Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M"
+NAME_SERVER_PARAMS="-Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M"
+CONTENT_SERVER_PARAMS="-Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M"
+
 function initenv()
 {
     HOSTIP=$1
@@ -66,9 +70,29 @@ function setjdkenv()
     if [ ! -d ${JAVA_HOME} ]; then \
         cfont -red "JDK ${JAVA_HOME} No such file!\n" -reset ; return 1;
     fi
-    echo export JAVA_HOME=${JAVA_HOME} >> ${ENVBASHRC}
-    echo export JAVA_BIN=${JAVA_HOME}/bin >> ${ENVBASHRC}
-    echo export PATH=${JAVA_HOME}:${PATH} >> ${ENVBASHRC}
+    echo export JAVA_HOME=$JAVA_HOME >> ${ENVBASHRC}
+    echo export JAVA_BIN='$JAVA_HOME'/bin >> ${ENVBASHRC}
+    echo export PATH='$JAVA_HOME':'$JAVA_BIN':'$PATH' >> ${ENVBASHRC}
+
+      if [ `whoami` = "${USERNAME}" ] 
+      then
+          #echo "aa";
+          #echo "${HOME}/.bash_profile"
+          #exit 1
+          if [ -f ${HOME}/.bash_profile ]
+          then 
+              #判断是否存在
+              #grep -rin "JAVA_HOME"
+              echo "ok"
+          else 
+              echo export JAVA_HOME=$JAVA_HOME >> ${HOME}/.bash_profile
+              echo export JAVA_BIN='$JAVA_HOME'/bin >> ${HOME}/.bash_profile
+              echo export PATH='$JAVA_HOME':'$JAVA_BIN':'$PATH' >> ${HOME}/.bash_profile
+          fi
+
+      else 
+          echo "aaddddd";
+      fi
 
     echo "jdk path=${JAVA_HOME}"
     #java -version

@@ -1,6 +1,6 @@
 #!/bin/bash 
 . ./config 
-
+. ./env.sh
 
 #------------------------------
 # deal_zkconfig
@@ -31,3 +31,27 @@ function deal_zkconfig()
     fi
 }
 
+function deal_zkperproperty()
+{
+
+    MYHOST=
+    for i in ${ZOOKEEPER_NODE_ARR[@]}
+    do 
+        MYID=`echo $i | awk -F= '{print $1}'| \
+            awk -F\. '{print $2}'`;
+        HOSTIP=`echo $i | awk -F= '{print $2}' | \
+            awk -F: '{print $1}'`;
+        #echo ${MYID}
+        #echo ${HOSTIP}
+        MYHOST=${MYHOST}${HOSTIP}:${ZOOKEEPER_PORT}","
+    done
+    MYHOST=${MYHOST%,*}
+    sed -e 's/=.*/='${MYHOST}'/g' conf/zookeeper.properties > zookeeper.properties
+}
+
+
+#if [ "$1" = zk_zookeeperproperty ]
+#then 
+    #echo "zk_zookeeperproperty...";
+    #zk_zookeeperproperty 
+#fi

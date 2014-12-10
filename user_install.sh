@@ -19,7 +19,7 @@ function user_createuser()
     else 
         cfont -green "${HOSTIP} ${USERNAME} add user ${USERNAME}\n" -reset;
 
-        useradd ${USERNAME} -G root;
+        useradd  -m -G root ${USERNAME};
         echo "${USERPWD}" | passwd --stdin ${USERNAME};
     fi
 

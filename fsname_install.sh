@@ -19,26 +19,13 @@ function fsname_patchzookeeper()
 {
     initenv
 
-    MYHOST=
-    for i in ${ZOOKEEPER_NODE_ARR[@]}
-    do 
-        MYID=`echo $i | awk -F= '{print $1}'| \
-            awk -F\. '{print $2}'`;
-        HOSTIP=`echo $i | awk -F= '{print $2}' | \
-            awk -F: '{print $1}'`;
-        #echo ${MYID}
-        #echo ${HOSTIP}
-        MYHOST=${MYHOST}${HOSTIP}:${ZOOKEEPER_PORT}","
-    done
-    MYHOST=${MYHOST%,*}
-    sed -e 's/=.*/='${MYHOST}'/g' ${NAME_ZK_PROPERTIES_BAK} > ${NAME_ZK_PROPERTIES}
-
-
     mkdir ${NAME_FILE}/lib/config -p 
-    cp ${NAME_ZK_PROPERTIES} ${NAME_FILE}/lib/config
+    cp ./zookeeper.properties ${NAME_FILE}/lib/config
     cd ${NAME_FILE}/lib && \
         jar uvf fs-common-1.0-SNAPSHOT.jar config/zookeeper.properties
 
+    cd ../../../ 
+    rm -fr ${NAME_FILE}/lib/config
 
 }
 #------------------------------
@@ -51,16 +38,14 @@ function fsname_install()
 {
 
     HOSTIP=$1
-    unzip -o ${NAME_FILE}.zip  -d ./bin
-    if [ ! -f ${NAME_ZK_PROPERTIES_BAK} ] 
-    then 
-        cp ${NAME_ZK_PROPERTIES} ${NAME_ZK_PROPERTIES_BAK}; 
-    else
-        cp ${NAME_ZK_PROPERTIES_BAK} ${NAME_ZK_PROPERTIES}; 
-    fi
-
+    unzip -o ${NAME_FILE}.zip  -d ${NAME_FILE}
     
-    fsname_patchzookeeper
+    if [ $? -eq 0 ]
+    then
+        fsname_patchzookeeper
+    else 
+        cfont -red "unzip ${NAME_FILE} fail!\n" -reset;
+    fi
 
 }
 
@@ -267,6 +252,5 @@ then
     echo "fsname_status ====="
     fsname_status ${HOSTIP}
 fi
-
 
 

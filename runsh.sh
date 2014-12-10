@@ -81,7 +81,7 @@ function riak_help()
 Usage: ${SCRIPT} riak <command>
 where <command> is one of the following:  
 \
-    { install | start | stop | status | join | commit }
+    { install | gencfg | start | stop | status | join | commit }
     "
     cfont -reset
 }
@@ -132,7 +132,7 @@ function fsdeploy_help()
 Usage: ${SCRIPT} fsdeploy <command>
 where <command> is one of the following:  
 \
-    { refreshzookeeper | refreshzookeepercluster | refreshmongodb | zookeeperlog | mongodblog | zookeeperclusterlog }
+    { install | refreshzookeeper | refreshzookeepercluster | refreshmongodb | zookeeperlog | mongodblog | zookeeperclusterlog }
     "
     cfont  -reset
 
@@ -210,7 +210,11 @@ function fsname_admin()
             echo "nameserver collect log...";
             fsname_log;
             ;;
-        *)
+        install)
+            echo "nameserver install...";
+            shift 
+            dofsname_install;
+            #*)
             fsname_help;
             ;;
     esac
@@ -310,6 +314,14 @@ function riak_admin()
             shift
             doriak_install "$@";
             ;;
+        gencfg)
+            echo "riak gencfg...";
+            shift 
+            for i in ${RIAK_RINK[@]} 
+            do
+                deal_riakconf $i
+            done 
+            ;;
         *)
             riak_help
             ;;
@@ -365,6 +377,7 @@ function env_admin()
             mongodb_admin gencfg;
             zookeeper_admin gencfg;
             sh config_patch.sh
+            riak_admin gencfg
             touch install.lock
             ;;
         *)
@@ -406,6 +419,11 @@ function fsdeploy_admin()
             shift
             dofsdeploy_mongodb_log;
             ;;
+        install)
+            echo "fsdeplpy install...";
+            shift 
+            dofsdeploy_install;
+            ;;
         *)
             echo "deploy_admin"
             fsdeploy_help
@@ -445,6 +463,7 @@ function zookeeper_admin()
                     awk -F: '{print $1}'`
                 deal_zkconfig ${HOSTIP}
             done 
+            deal_zkperproperty
             ;;
         log)
             echo "collect zookeeper log";
@@ -538,7 +557,9 @@ function clean()
     rm -fr *.js
     rm -fr configuration.json
     rm -fr install.lock
+    rm -fr zookeeper.properties
 }
+
 function runall()
 {
     
@@ -576,10 +597,14 @@ else \
     mongodb_admin install
     mongodb_admin start
     mongodb_admin cluster 
+    fsdeploy_admin install
     fsdeploy_admin refreshzookeeper 
     fsdeploy_admin refreshmongodb
     fsdeploy_admin refreshzookeepercluster
 
+    fscontent_admin install
+    fsname_admin install 
+    fsmeta_admin install 
     fscontent_admin start
     fsname_admin start 
     fsmeta_admin start

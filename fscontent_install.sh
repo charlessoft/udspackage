@@ -17,32 +17,13 @@ CONTENT_ZK_PROPERTIES=${CONTENT_FILE}/zookeeper.properties
 function fscontent_patchzookeeper()
 {
     initenv
-    MYHOST=
-    for i in ${ZOOKEEPER_NODE_ARR[@]}
-    do 
-        MYID=`echo $i | awk -F= '{print $1}'| \
-            awk -F\. '{print $2}'`;
-        HOSTIP=`echo $i | awk -F= '{print $2}' | \
-            awk -F: '{print $1}'`;
-        #echo ${MYID}
-        #echo ${HOSTIP}
-        MYHOST=${MYHOST}${HOSTIP}:${ZOOKEEPER_PORT}","
-    done
-    MYHOST=${MYHOST%,*}
-    sed -e 's/=.*/='${MYHOST}'/g' ${CONTENT_ZK_PROPERTIES_BAK} > ${CONTENT_ZK_PROPERTIES}
     mkdir ${CONTENT_FILE}/lib/config -p 
-    cp ${CONTENT_ZK_PROPERTIES} ${CONTENT_FILE}/lib/config
+    cp ./zookeeper.properties  ${CONTENT_FILE}/lib/config
     cd ${CONTENT_FILE}/lib && \
         jar uvf fs-common-1.0-SNAPSHOT.jar config/zookeeper.properties
+    cd ../../../
+    rm -fr ${CONTENT_FILE}/lib/config
 
-
-    #if [ $? -eq 0 ]
-    #then 
-        #echo "ok";
-    #else 
-        #echo "fail";
-    #fi
-    
 }
 
 #------------------------------
@@ -54,15 +35,14 @@ function fscontent_patchzookeeper()
 function fscontent_install()
 {
     HOSTIP=$1
-    unzip -o ${CONTENT_FILE}.zip  -d ./bin
-    if [ ! -f ${CONTENT_ZK_PROPERTIES_BAK} ] 
-    then 
-        cp ${CONTENT_ZK_PROPERTIES} ${CONTENT_ZK_PROPERTIES_BAK}; 
-    else
-        cp ${CONTENT_ZK_PROPERTIES_BAK} ${CONTENT_ZK_PROPERTIES}; 
-    fi
+    unzip -o ${CONTENT_FILE}.zip  -d ${CONTENT_FILE};
 
-    fscontent_patchzookeeper
+    if [ $? -eq 0 ]
+    then
+        fscontent_patchzookeeper
+    else 
+        cfont -red "unzip ${CONTENT_FILE} fail!\n" -reset;
+    fi
 }
 
 

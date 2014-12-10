@@ -1,7 +1,7 @@
 #!/bin/bash 
 . ./config
 . ./env.sh
-
+. ./riak_patch.sh 
 export RIAK_FILE=bin/${RIAK_FILE}
 
 #------------------------------
@@ -26,7 +26,15 @@ function riak_install()
     else 
         cfont -red "already installed " `rpm -q riak` "\n" -reset;
     fi
-    sh riak_patch.sh $1
+    deal_sudoers  ${HOSTIP}
+
+    if [ ! -f "${RIAK_CONF_BAK}" ] 
+    then 
+        echo "cp ${RIAK_CONF} ${RIAK_CONF_BAK}; "
+        cp ${RIAK_CONF} ${RIAK_CONF_BAK}; 
+    fi
+    cp riak_${HOSTIP}.cfg ${RIAK_CONF};
+    
 
 }
 
@@ -56,7 +64,7 @@ function riak_start()
         riak start
         if [ $? -eq 0 ] 
         then 
-            cfont -green "start success!\n" -reset; 
+            cfont -green "${HOSTIP} start success!\n" -reset; 
         else
             cfont -red "${HOSTIP} riak fail!\n" -reset;
             res=1;

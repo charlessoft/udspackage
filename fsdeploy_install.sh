@@ -6,6 +6,26 @@ export DEPLOY_FILE=bin/${DEPLOY_FILE}
 
 
 #------------------------------
+# fsdeploy_install
+# description:  启动fscontent
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
+function fsdeploy_install()
+{
+    HOSTIP=$1
+    unzip -o ${DEPLOY_FILE}.zip  -d ./bin/uds-deploy
+    #if [ ! -f ${CONTENT_ZK_PROPERTIES_BAK} ] 
+    #then 
+        #cp ${CONTENT_ZK_PROPERTIES} ${CONTENT_ZK_PROPERTIES_BAK}; 
+    #else
+        #cp ${CONTENT_ZK_PROPERTIES_BAK} ${CONTENT_ZK_PROPERTIES}; 
+    #fi
+
+    #fscontent_patchzookeeper
+}
+
+#------------------------------
 # fsdeploy_refresh_zookeeper_cfg
 # description:  刷新zookeeper 配置
 # return success 0, fail 1
@@ -17,7 +37,7 @@ function fsdeploy_refresh_zookeeper_cfg()
     echo ${ZOOKEEPER_CONFIG_CONTENT}
     echo ${PWD};
 
-    cd ${DEPLOY_FILE}/target && \
+    cd ${DEPLOY_FILE} && \
         java -jar uds-deploy-3.0.0-SNAPSHOT.jar ${ZOOKEEPER_CONFIG_CONTENT}
     cd ../../../
     sleep 2s;
@@ -125,6 +145,15 @@ else
    fi
 }
 
+
+function dofsdeploy_install()
+{
+
+    ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
+        "cd ${UDSPACKAGE_PATH}; \
+        source /etc/profile; \
+        sh fsdeploy_install.sh fsdeploy_install ${CONTENT_SERVER}"
+}
 
 #------------------------------
 # dofsdeploy_refresh_zookeeper_cluster_cfg
@@ -282,4 +311,12 @@ then
     HOSTIP=$2
     echo "fsdeploy_mongodb_log";
     fsdeploy_mongodb_log ${HOSTIP}
+fi
+
+
+if [ "$1" = fsdeploy_install ]
+then 
+    HOSTIP=$2
+    echo "fsdeploy_install";
+    fsdeploy_install ${HOSTIP}
 fi

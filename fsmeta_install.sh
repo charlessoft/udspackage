@@ -17,25 +17,12 @@ META_ZK_PROPERTIES=${META_FILE}/zookeeper.properties
 function fsmeta_patchzookeeper()
 {
     initenv
-
-    MYHOST=
-    for i in ${ZOOKEEPER_NODE_ARR[@]}
-    do 
-        MYID=`echo $i | awk -F= '{print $1}'| \
-            awk -F\. '{print $2}'`;
-        HOSTIP=`echo $i | awk -F= '{print $2}' | \
-            awk -F: '{print $1}'`;
-        #echo ${MYID}
-        #echo ${HOSTIP}
-        MYHOST=${MYHOST}${HOSTIP}:${ZOOKEEPER_PORT}","
-    done
-    MYHOST=${MYHOST%,*}
-    sed -e 's/=.*/='${MYHOST}'/g' ${META_ZK_PROPERTIES_BAK} > ${META_ZK_PROPERTIES}
-
     mkdir ${META_FILE}/lib/config -p 
-    cp ${META_ZK_PROPERTIES} ${META_FILE}/lib/config
+    cp ./zookeeper.properties ${META_FILE}/lib/config
     cd ${META_FILE}/lib && \
         jar uvf fs-common-1.0-SNAPSHOT.jar config/zookeeper.properties
+    cd ../../../ 
+    rm -fr ${META_FILE}/lib/config
 
 
 }
@@ -50,35 +37,15 @@ function fsmeta_install()
 {
 
     HOSTIP=$1
-    unzip -o ${META_FILE}.zip  -d ./bin
-    if [ ! -f ${META_ZK_PROPERTIES_BAK} ] 
-    then 
-        cp ${META_ZK_PROPERTIES} ${META_ZK_PROPERTIES_BAK}; 
-    else
-        cp ${META_ZK_PROPERTIES_BAK} ${META_ZK_PROPERTIES}; 
-    fi
-
-    
-    MYHOST=
-    for i in ${ZOOKEEPER_NODE_ARR[@]}
-    do 
-        MYID=`echo $i | awk -F= '{print $1}'| \
-            awk -F\. '{print $2}'`;
-        HOSTIP=`echo $i | awk -F= '{print $2}' | \
-            awk -F: '{print $1}'`;
-        #echo ${MYID}
-        #echo ${HOSTIP}
-        MYHOST=${MYHOST}${HOSTIP}:${ZOOKEEPER_PORT}","
-    done
-    MYHOST=${MYHOST%,*}
-    sed -e 's/=.*/='${MYHOST}'/g' ${META_ZK_PROPERTIES_BAK} > ${META_ZK_PROPERTIES}
+    unzip -o ${META_FILE}.zip  -d ${META_FILE}
 
     if [ $? -eq 0 ]
-    then 
-        echo "ok";
+    then
+        fsmeta_patchzookeeper
     else 
-        echo "fail";
+        cfont -red "unzip ${META_FILE} fail!\n" -reset;
     fi
+    
 }
 
 #------------------------------
@@ -246,6 +213,14 @@ function dofsmeta_status()
 #-------------------------------
 #根据传递的参数执行命令
 #-------------------------------
+
+if [ "$1" = fsmeta_install ]
+then 
+    HOSTIP=$2
+    echo "fsmeta_install ====="
+    fsmeta_install ${HOSTIP}
+fi
+
 if [ "$1" = fsmeta_start ]
 then 
     HOSTIP=$2

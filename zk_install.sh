@@ -35,6 +35,7 @@ function zk_init()
     fi
     export ZOOKEEPER_HOSTARR
 }
+
 #------------------------------
 # zk_install
 # description: 解压zookeeper
@@ -370,3 +371,4 @@ then
     HOSTIP=$2
     zk_log ${HOSTIP} 
 fi
+
