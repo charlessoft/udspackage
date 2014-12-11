@@ -229,7 +229,7 @@ function mongodb_cluster()
     if [ -d ${MONGODB_FILE} ] 
     then 
         cd ${MONGODB_FILE}/bin && \
-            ./mongo ../../../mongodb_cluster.js > ${MONGODB_CLUSTER_TMPLOG}
+            ./mongo ${MONGODB_MASTER}:${MONGODB_PORT} ../../../mongodb_cluster.js > ${MONGODB_CLUSTER_TMPLOG}
         cd ../../../
         grep -rin "\"ok\"\ :\ 1" ${MONGODB_CLUSTER_TMPLOG} >/dev/null 2>&1;
         if [ $? -eq 0 ]
@@ -276,7 +276,7 @@ function mongodb_db_auth()
     if [ -s ${MONGODB_FILE} ]
     then 
         cd ${MONGODB_FILE}/bin;
-        ./mongo  ../../../mongodb_db_auth.js;
+        ./mongo  ${MONGODB_MASTER}:${MONGODB_PORT} ../../../mongodb_db_auth.js;
     else 
         cfont -red "mongodb ${MONGODB_FILE} No such file!\n" -reset;
         exit 1;

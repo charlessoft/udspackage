@@ -14,7 +14,14 @@ export DEPLOY_FILE=bin/${DEPLOY_FILE}
 function fsdeploy_install()
 {
     HOSTIP=$1
-    unzip -o ${DEPLOY_FILE}.zip  -d ./bin/uds-deploy
+    unzip -o ${DEPLOY_FILE}.zip  -d ./bin/uds-deploy >/dev/null 2>&1;
+    if [ $? -eq 0 ]
+    then 
+        cfont -green "deploy install success!\n" -reset ; 
+    else 
+        cfont -red "deploy install fail!\n" -reset;
+    fi
+
 }
 
 #------------------------------

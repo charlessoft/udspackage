@@ -37,7 +37,7 @@ function fsmeta_install()
 {
 
     HOSTIP=$1
-    unzip -o ${META_FILE}.zip  -d ${META_FILE}
+    unzip -o ${META_FILE}.zip  -d ${META_FILE} >/dev/null 2>&1;
 
     if [ $? -eq 0 ]
     then

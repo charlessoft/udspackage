@@ -16,9 +16,6 @@ USERPWD=abcdefg
 
 INSTALL_PATH=/apps
 
-#default config 
-
-
 checkfile=( curl \
     vi \
     )
@@ -41,24 +38,19 @@ RIAK_PLATFORM_DATA_DIR=/var/lib/riak
 RIAK_STORAGE_BACKEND=multi
 
 #-----mongodb-----
-#MONGODB MASTER
-MONGODB_MASTER=10.211.55.18
 
 MONGODB_DBPATH=/home/${USERNAME}/mongodb/data/master  
 MONGODB_LOGPATH=/home/${USERNAME}/mongodb/log/master.log 
 MONGODB_PIDFILEPATH=/home/${USERNAME}/mongodb/master.pid
 MONGODB_PORT=27017
 
-
-#MONGODB SLAVE
+#MONGODB MASTER
+MONGODB_MASTER=10.211.55.18
 MONGODB_SLAVE=10.211.55.21
-
 #如果多个mongodb 集群.ip写入到一下数组中
 MONGODB_SLAVE_ARR=( \
     ${MONGODB_SLAVE} \
     )
-
-#MONGODB ARIBTER
 MONGODB_ARBITER=10.211.55.22
 
 

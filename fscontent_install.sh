@@ -35,7 +35,7 @@ function fscontent_patchzookeeper()
 function fscontent_install()
 {
     HOSTIP=$1
-    unzip -o ${CONTENT_FILE}.zip  -d ${CONTENT_FILE};
+    unzip -o ${CONTENT_FILE}.zip  -d ${CONTENT_FILE} >/dev/null 2>&1;
 
     if [ $? -eq 0 ]
     then

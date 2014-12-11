@@ -38,7 +38,7 @@ function fsname_install()
 {
 
     HOSTIP=$1
-    unzip -o ${NAME_FILE}.zip  -d ${NAME_FILE}
+    unzip -o ${NAME_FILE}.zip  -d ${NAME_FILE} >/dev/null 2>&1;
     
     if [ $? -eq 0 ]
     then
