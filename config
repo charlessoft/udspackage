@@ -44,7 +44,6 @@ MONGODB_LOGPATH=/home/${USERNAME}/mongodb/log/master.log
 MONGODB_PIDFILEPATH=/home/${USERNAME}/mongodb/master.pid
 MONGODB_PORT=27017
 
-#MONGODB MASTER
 MONGODB_MASTER=10.211.55.18
 MONGODB_SLAVE=10.211.55.21
 #如果多个mongodb 集群.ip写入到一下数组中
@@ -63,7 +62,6 @@ JDK_ARR=( \
 
 
 #----zookeeper----
-#ZOOKEEPER
 ZOOKEEPER_DATADIR=/home/${USERNAME}/zookeeper/data
 ZOOKEEPER_LOGDIR=/home/${USERNAME}/zookeeper/data/log
 ZOOKEEPER_NODE_ARR=( \

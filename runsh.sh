@@ -606,13 +606,13 @@ else \
     #zookeeper_admin stop
 
     mongodb_admin install
-    mongodb_admin start false
+    mongodb_admin start auth=false
     mongodb_admin cluster 
     sleep 20s;
     mongodb_admin dbauth
     
     mongodb_admin stop 
-    mongodb_admin start true
+    mongodb_admin start auth=true
     fsdeploy_admin install
     fsdeploy_admin refreshzookeeper 
     fsdeploy_admin refreshmongodb

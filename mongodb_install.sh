@@ -509,12 +509,12 @@ function domongodb_start()
     firstargs=$1
 
     newstr=`tr '[A-Z]' '[a-z]' <<<"${firstargs}"`
-    if [  x"${newstr}" == x"true" ] #[ x"${newstr}" == x"false"  ]
+    if [  x"${newstr}" == x"auth=true" ] #[ x"${newstr}" == x"false"  ]
     then 
         echo "ok";
         export authflag=true
         shift
-    elif [ x"${newstr}" == x"false"  ]
+    elif [ x"${newstr}" == x"auth=false"  ]
     then
         echo "ok false"
         export authflag=false
