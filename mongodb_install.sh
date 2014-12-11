@@ -357,15 +357,18 @@ function domongodb_arbiter_install()
 {
 
     #echo "${MONGODB_ARBITER} 安装 arbiter mongodb"
-    ssh -p ${SSH_PORT} "${MONGODB_ARBITER}" \
-        "cd ${UDSPACKAGE_PATH}; \
-        source /etc/profile; \
-        sh mongodb_install.sh mongodb_install ${MONGODB_ARBITER} \
-        "
-    res=$?
-    if [ ${res} -ne 0 ] 
+    if [ x"${MONGODB_ARBITER}" != x"" ]
     then 
-        exit ${res}; \
+        ssh -p ${SSH_PORT} "${MONGODB_ARBITER}" \
+            "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh mongodb_install.sh mongodb_install ${MONGODB_ARBITER} \
+            "
+        res=$?
+        if [ ${res} -ne 0 ] 
+        then 
+            exit ${res}; 
+        fi
     fi
 }
 
@@ -482,17 +485,20 @@ function domongodb_slave_start()
 function domongodb_arbiter_start()
 {
 
-    echo "start ${MONGODB_ARBITER} arbiter mongodb"
-
-    ssh -p ${SSH_PORT} "${MONGODB_ARBITER}" \
-        "cd ${UDSPACKAGE_PATH}; \
-        source /etc/profile; \
-        sh mongodb_install.sh mongodb_start ${MONGODB_ARBITER} ${MONGODB_PORT}  ${authflag} \
-        "
-    res=$?
-    if [ ${res} -ne 0 ] 
+    if [ x"${MONGODB_ARBITER}" != x"" ]
     then 
-        exit ${res}; 
+        echo "start ${MONGODB_ARBITER} arbiter mongodb"
+
+        ssh -p ${SSH_PORT} "${MONGODB_ARBITER}" \
+            "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh mongodb_install.sh mongodb_start ${MONGODB_ARBITER} ${MONGODB_PORT}  ${authflag} \
+            "
+        res=$?
+        if [ ${res} -ne 0 ] 
+        then 
+            exit ${res}; 
+        fi
     fi
 }
 
@@ -511,12 +517,12 @@ function domongodb_start()
     newstr=`tr '[A-Z]' '[a-z]' <<<"${firstargs}"`
     if [  x"${newstr}" == x"auth=true" ] #[ x"${newstr}" == x"false"  ]
     then 
-        echo "ok";
+        echo "auth=true";
         export authflag=true
         shift
     elif [ x"${newstr}" == x"auth=false"  ]
     then
-        echo "ok false"
+        echo "auth=false"
         export authflag=false
         shift 
     fi
@@ -607,17 +613,20 @@ function domongodb_slave_stop()
 function domongodb_arbiter_stop()
 {
 
-    echo "stop ${MONGODB_ARBITER} arbiter mongodb";
-
-    ssh -p ${SSH_PORT} "`echo ${MONGODB_ARBITER}|cut -d: -f 1`" \
-        "cd ${UDSPACKAGE_PATH}; \
-        source /etc/profile; \
-        sh mongodb_install.sh mongodb_stop ${MONGODB_ARBITER} ${MONGODB_DBPATH} \
-        "
-    res=$?
-    if [ ${res} -ne 0 ] 
+    if [ x"${MONGODB_ARBITER}" != x"" ]
     then 
-        exit ${res}; \
+        echo "stop ${MONGODB_ARBITER} arbiter mongodb";
+
+        ssh -p ${SSH_PORT} "`echo ${MONGODB_ARBITER}|cut -d: -f 1`" \
+            "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh mongodb_install.sh mongodb_stop ${MONGODB_ARBITER} ${MONGODB_DBPATH} \
+            "
+        res=$?
+        if [ ${res} -ne 0 ] 
+        then 
+            exit ${res}; 
+        fi
     fi
 }
 
@@ -678,14 +687,16 @@ function domongodb_stop()
 #------------------------------
 function domongodb_cluster()
 {
-    echo "domongodb_cluster";
-    HOSTIP=`echo ${MONGODB_ARBITER}|cut -d: -f 1`
-    echo ${HOSTIP}
-    ssh -p ${SSH_PORT} "${HOSTIP}" \
-        "cd ${UDSPACKAGE_PATH}; \
-        source /etc/profile; \
-        sh mongodb_install.sh mongodb_cluster ${HOSTIP}"
-
+    if [ x"${MONGODB_ARBITER}" != x"" ] 
+    then 
+        echo "domongodb_cluster";
+        HOSTIP=`echo ${MONGODB_ARBITER}|cut -d: -f 1`
+        echo ${HOSTIP}
+        ssh -p ${SSH_PORT} "${HOSTIP}" \
+            "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh mongodb_install.sh mongodb_cluster ${HOSTIP}"
+    fi
 }
 
 
@@ -724,7 +735,10 @@ function domongodb_slave_status()
 function domongodb_arbiter_status()
 {
 
-    mongodb_status ${MONGODB_ARBITER} ${MONGODB_PORT}
+    if [ x"${MONGODB_ARBITER}" != x"" ]
+    then 
+        mongodb_status ${MONGODB_ARBITER} ${MONGODB_PORT}
+    fi
 }
 
 #------------------------------

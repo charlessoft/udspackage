@@ -44,7 +44,7 @@ do
 
     fi
 
-    echo "$line" | grep -rinE "success|leader|follower" 2>&1 >/dev/null;
+    echo "$line" | grep -rinE "success|leader|follower|standalone" 2>&1 >/dev/null;
     if [ $? -eq 0 ] 
     then 
         cfont -green "$line\n" -reset; 

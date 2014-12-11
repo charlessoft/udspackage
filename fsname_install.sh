@@ -60,7 +60,7 @@ function fsname_install()
 function fsname_start()
 {
     HOSTIP=$1
-    initenv
+    initenv ${HOSTIP}
     if [ $? -ne 0 ]
     then 
         cfont -red "jdk environment error! fsname-server start fail\n" -reset; exit 1;
