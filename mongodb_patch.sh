@@ -56,7 +56,7 @@ function deal_mongodb_cluster_js_patch()
     #生成mongodb js 脚本
     echo "var db = connect('${MONGODB_MASTER}:${MONGODB_PORT}/admin');" >> ${MONGODB_CLUSTER_JS};
     echo "var cfg={
-        \"_id\":\"testrs\",
+        \"_id\":\"udsfs\",
         \"members\":[" >> ${MONGODB_CLUSTER_JS};
 
     #生成master 

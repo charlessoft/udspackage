@@ -118,6 +118,10 @@ function mongodb_start()
     echo "${HOSTIP} start mongodb ";
     PORT=$2
     AUTHFLAG=$3 
+    if [ x"${AUTHFLAG}" = x"" ]
+    then 
+        AUTHFLAG=false
+    fi
     echo "auth=${AUTHFLAG}"
 
     sed -i 's/auth=.*/auth='${AUTHFLAG}'/g' mongodb_${HOSTIP}.conf
