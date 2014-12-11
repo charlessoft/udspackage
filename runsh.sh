@@ -98,7 +98,7 @@ function mongodb_help()
 Usage: ${SCRIPT} riak <command>
 where <command> is one of the following:  
 \
-    { start | install | gencfg | status | cluster | cluster_status | stop }
+    { start | install | gencfg | status | cluster | cluster_status | stop | dbauth }
     "
     cfont  -reset
 }
@@ -547,6 +547,7 @@ function mongodb_admin()
             ;;
         stop)
             echo "=====mongodb stop=====";
+            shift
             domongodb_stop "$@"
             ;;
         *)
@@ -607,6 +608,7 @@ else \
     mongodb_admin install
     mongodb_admin start
     mongodb_admin cluster 
+    mongodb_admin dbauth
     fsdeploy_admin install
     fsdeploy_admin refreshzookeeper 
     fsdeploy_admin refreshmongodb
