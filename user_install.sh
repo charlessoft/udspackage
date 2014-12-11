@@ -31,6 +31,18 @@ function user_createuser()
 
     fi 
 
+    grep -n "envbashrc" /home/${USERNAME}/.bash_profile 
+    if [ $? -ne 0 ]
+    then 
+        export UDSPATH=${UDSPACKAGE_PATH}
+        echo "export UDSPATH=${UDSPACKAGE_PATH}" >> /home/${USERNAME}/.bash_profile;
+        #echo ". '${UDSPACKAGE_PATH}/envbashrc'"
+        echo "if [ -f $UDSPATH/envbashrc ]; then " >> /home/${USERNAME}/.bash_profile;
+        echo "      . $UDSPATH/envbashrc" >> /home/${USERNAME}/.bash_profile;
+        echo "fi" >> /home/${USERNAME}/.bash_profile;
+        chmod 644 /home/${USERNAME}/.bash_profile
+    fi
+
 }
 
 
