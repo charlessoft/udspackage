@@ -90,7 +90,7 @@ function fsmeta_status()
     res=$?
     if [ ${res} -eq 0 ] 
     then 
-        cfont -red "${HOSTIP} fs-metaserver already start!\n" -reset; 
+        cfont -green "${HOSTIP} fs-metaserver is running!\n" -reset; 
         echo "${HOSTIP} fs-metaserver check success!" > ${META_CHECK_LOG}; 
     else
         cfont -red "${HOSTIP} fs-metaserver is probably not running\n" -reset; 
