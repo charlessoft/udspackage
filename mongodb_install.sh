@@ -117,6 +117,10 @@ function mongodb_start()
     HOSTIP=$1
     echo "${HOSTIP} start mongodb ";
     PORT=$2
+    AUTHFLAG=$3 
+    echo "auth=${AUTHFLAG}"
+
+    sed -i 's/auth=.*/auth='${AUTHFLAG}'/g' mongodb_${HOSTIP}.conf
     mongodb_status ${HOSTIP} ${PORT}
     if [ $? -ne 0 ] 
     then 
@@ -424,7 +428,7 @@ function domongodb_master_start()
         " \
         cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        sh mongodb_install.sh mongodb_start ${MONGODB_MASTER} ${MONGODB_PORT} \
+        sh mongodb_install.sh mongodb_start ${MONGODB_MASTER} ${MONGODB_PORT} ${authflag} \
         "
     res=$?
     if [ ${res} -ne 0 ] 
@@ -456,7 +460,7 @@ function domongodb_slave_start()
         ssh -p ${SSH_PORT} "$i" \
             "cd ${UDSPACKAGE_PATH}; \
             source /etc/profile; \
-            sh mongodb_install.sh mongodb_start $i ${MONGODB_PORT}; \
+            sh mongodb_install.sh mongodb_start $i ${MONGODB_PORT} ${authflag}; \
             "
         res=$?
         if [ ${res} -ne 0 ]; then 
@@ -479,7 +483,7 @@ function domongodb_arbiter_start()
     ssh -p ${SSH_PORT} "${MONGODB_ARBITER}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        sh mongodb_install.sh mongodb_start ${MONGODB_ARBITER} ${MONGODB_PORT} \
+        sh mongodb_install.sh mongodb_start ${MONGODB_ARBITER} ${MONGODB_PORT}  ${authflag} \
         "
     res=$?
     if [ ${res} -ne 0 ] 
@@ -496,6 +500,24 @@ function domongodb_arbiter_start()
 #------------------------------
 function domongodb_start()
 {
+    args=$#
+    #lastargs=${!args}
+    firstargs=$1
+
+    newstr=`tr '[A-Z]' '[a-z]' <<<"${firstargs}"`
+    if [  x"${newstr}" == x"true" ] #[ x"${newstr}" == x"false"  ]
+    then 
+        echo "ok";
+        export authflag=true
+        shift
+    elif [ x"${newstr}" == x"false"  ]
+    then
+        echo "ok false"
+        export authflag=false
+        shift 
+    fi
+
+
     if [ $# -ge 1 ]
     then
 
@@ -777,7 +799,8 @@ then
     #mongodb_init ${HOSTIP}
     #临时增加测试
     PORT=$3
-    mongodb_start ${HOSTIP} ${PORT}
+    AUTHFLAG=$4
+    mongodb_start ${HOSTIP} ${PORT} ${AUTHFLAG}
 fi
 
 if [ "$1" = mongodb_status ]
