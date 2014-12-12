@@ -48,6 +48,9 @@ DEPLOY_LOG_ZOOKEEPER_STORAGE_FILE=fsdeploy_zk_storageresource_log.log
 ID_RSA_PUB=$HOME/.ssh/id_rsa.pub
 IPTABLES_FILE=/etc/sysconfig/iptables
 
+MONGODB_DBNAME=uds_fs
+MONGODB_COL=user 
+
 
 META_SERVER_PARAMS="-Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M"
 NAME_SERVER_PARAMS="-Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M"

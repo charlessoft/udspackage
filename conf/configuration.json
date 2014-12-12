@@ -9,14 +9,10 @@
                 "caption": "元数据服务器集群节点IP，请用','分隔",
                 "value": "META_SERVER"
             },
-            "mongodb_host": {
+            "mongodb_servers": {
                 "caption": "mongodb地址",
                 "value": "MONGODB_HOST"
-            },
-            "mongodb_port": {
-                "caption": "mongodb端口",
-                "value": "MONGODB_PORT"
-            },
+            }
             "dbname": {
                 "caption": "mongodb数据库名",
                 "value": "MONGODB_DBNAME"
@@ -141,7 +137,7 @@
             },
             "default_store_resource_code":{
                 "caption": "系统默认存储资源码",
-                "value": "linux"
+                "value": "default"
             }
         }
     }
