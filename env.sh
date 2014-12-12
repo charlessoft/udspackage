@@ -29,7 +29,7 @@ UDS_ZOOKEEPER_CLUSTER_CONFIG=udscluster.cfg
 UDS_ZOOKEEPER_STORAGE_CONFIG=udsstorageresource.cfg
 UDS_MONGODB_CONFIG=udsmongodb.cfg
 CONFIGURATION=configuration.json
-DEPLOY_FILE=uds-deploy
+DEPLOY_FILE=fs-deploy
 
 
 CONTENT_FILE=fs-contentserver

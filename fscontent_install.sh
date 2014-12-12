@@ -160,7 +160,7 @@ function dofscontent_install()
     ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        sh fscontent_install.sh content_install ${CONTENT_SERVER}"
+        sh fscontent_install.sh fscontent_install ${CONTENT_SERVER}"
     
 }
 
@@ -175,7 +175,7 @@ function dofscontent_start()
     ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        sh fscontent_install.sh content_start ${CONTENT_SERVER}"
+        sh fscontent_install.sh fscontent_start ${CONTENT_SERVER}"
 
 }
 
@@ -191,7 +191,7 @@ function dofscontent_stop()
     ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        sh fscontent_install.sh content_stop ${CONTENT_SERVER};"
+        sh fscontent_install.sh fscontent_stop ${CONTENT_SERVER};"
 }
 
 
@@ -209,7 +209,7 @@ function dofscontent_status()
     ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        sh fscontent_install.sh content_status ${CONTENT_SERVER};"
+        sh fscontent_install.sh fscontent_status ${CONTENT_SERVER};"
 
 }
 
@@ -225,7 +225,7 @@ fi
 
 
 
-if [ "$1" = content_start ]
+if [ "$1" = fscontent_start ]
 then 
     HOSTIP=$2;
     echo "fscontent_start ...";
@@ -233,7 +233,7 @@ then
 fi
 
 
-if [ "$1" = content_stop ]
+if [ "$1" = fscontent_stop ]
 then 
     HOSTIP=$2;
     echo "fscontent_stop ...";
@@ -241,14 +241,14 @@ then
 fi
 
 
-if [ "$1" = content_status ]
+if [ "$1" = fscontent_status ]
 then 
     HOSTIP=$2;
     echo "fscontent_status ...";
     fscontent_status ${HOSTIP};
 fi
 
-if [ "$1" = content_install ]
+if [ "$1" = fscontent_install ]
 then 
     HOSTIP=$2;
     echo "fscontent_install ...";
