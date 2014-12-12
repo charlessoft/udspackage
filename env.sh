@@ -26,6 +26,7 @@ RIAK_CONF=/etc/riak/riak.conf
 
 UDS_ZOOKEEPER_CONFIG=udszookeeper.cfg
 UDS_ZOOKEEPER_CLUSTER_CONFIG=udscluster.cfg
+UDS_ZOOKEEPER_STORAGE_CONFIG=udsstorageresource.cfg
 UDS_MONGODB_CONFIG=udsmongodb.cfg
 CONFIGURATION=configuration.json
 DEPLOY_FILE=uds-deploy
@@ -42,6 +43,7 @@ META_LOG_FILE=metaserver.log
 DEPLOY_LOG_ZOOKEEPER_FILE=fsdeploy_zk_log.log
 DEPLOY_LOG_MONGODB_FILE=fsdeploy_mongodb_log.log
 DEPLOY_LOG_ZOOKEEPER_CLUSTER_FILE=fsdeploy_zk_cluster_log.log
+DEPLOY_LOG_ZOOKEEPER_STORAGE_FILE=fsdeploy_zk_storageresource_log.log
 
 ID_RSA_PUB=$HOME/.ssh/id_rsa.pub
 IPTABLES_FILE=/etc/sysconfig/iptables
