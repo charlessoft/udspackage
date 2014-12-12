@@ -1,0 +1,15 @@
+{
+    "clazz": "com.sgcc.uds.fs.client.content.centralize.StorageResourceCentralize",
+    "code": "default",
+    "contentServiceClass": "com.sgcc.uds.fs.client.content.centralize.ContentServiceCentralizeImpl",
+    "hosts": [TMPCONTENT],
+    "items": [
+        {
+            "index": 1,
+            "limitSize": TMPLIMITSIZE,
+            "path": TMPSTORAGERESOURCE_PATH,
+            "usedSize": 0
+        }
+    ],
+    "laveSize": 104857600
+}
