@@ -132,10 +132,9 @@ function fsdeploy_help()
 Usage: ${SCRIPT} fsdeploy <command>
 where <command> is one of the following:  
 \
-    { install | refreshzookeeper | refreshzookeepercluster | refreshmongodb | zookeeperlog | mongodblog | zookeeperclusterlog }
+    { install | refreshzookeeper | refreshzookeepercluster | refreshmongodb | refreshstorageresource | zookeeperlog | mongodblog | zookeeperclusterlog | storageresourcelog }
     "
     cfont  -reset
-
 }
 
 #------------------------------
@@ -408,6 +407,16 @@ function fsdeploy_admin()
             echo "refresh mongodb config...";
             shift
             dofsdeploy_refresh_mongodb_cfg;
+            ;;
+        refreshstorageresource)
+            echo "refresh storageresource...";
+            shift 
+            dofsdeploy_refresh_storageresource_cfg;
+            ;;
+        storageresourcelog)
+            echo "collect deploy zookeeper storageresource...";
+            shift 
+            dofsdeploy_storageresource_log;
             ;;
         zookeeperlog)
             echo "collect deploy zookeeper config log...";
