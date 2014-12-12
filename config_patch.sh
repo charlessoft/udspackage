@@ -19,6 +19,24 @@ function deal_zookeeper_config()
 
 }
 
+#------------------------------
+# deal_zookeeper_storageresource_confg
+# description: 刷zookeeper storage配置文件
+# return success 0 ,fail 1
+#------------------------------
+function deal_zookeeper_storageresource_confg()
+{
+    #生成udsstorage
+    echo "generage zookeeper storage resource config...";
+    ZOOKEEPER_HOSTIP=`echo ${ZOOKEEPER_NODE_ARR} | awk -F= '{print $2}' | \
+        awk -F: '{print $1}'`
+    echo "zookeeper connect=${ZOOKEEPER_HOSTIP}:${ZOOKEEPER_PORT} \
+        user=${ZOOKEEPER_USER} \
+        password=${ZOOKEEPER_PASSWORD} \
+        ${ZOOKEEPER_STORAGERESOURCE_NAME}=${UDSPACKAGE_PATH}/storageresource.json"  > ${UDS_ZOOKEEPER_STORAGE_CONFIG}
+
+}
+
 
 #------------------------------
 # deal_zookeeper_cluster_config
@@ -89,7 +107,24 @@ function deal_configuration()
 
 }
 
+#------------------------------
+# deal_storageresource
+# description: 生成storageresource.json
+# return success 0 ,fail 1
+#------------------------------
+function deal_storageresource()
+{
+    echo "generate storageresource...";
+    #需要content_server数组 "127.0.01","1239.9..01"
+    sed -e 's/TMPCONTENT/\"'${CONTENT_SERVER}'\"/g' ./conf/storageResource-default.json | \
+        sed -e 's/TMPLIMITSIZE/'${ZOOKEEPER_STORAGERESOURCE_LIMITSIZE}'/g' | \
+        sed -e 's#TMPSTORAGERESOURCE_PATH#'\"${ZOOKEEPER_STORAGERESOURCE_NAME}\"'#g' > ./storageresource.json
+
+}
+
 deal_zookeeper_config
 deal_mongodb_config
 deal_configuration
 deal_zookeeper_cluster_config
+deal_storageresource
+deal_zookeeper_storageresource_confg

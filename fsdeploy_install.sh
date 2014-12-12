@@ -3,6 +3,8 @@
 . ./env.sh
 
 export DEPLOY_FILE=bin/${DEPLOY_FILE}
+#todoooooo需要连接到zookeepr上
+#ZOOKEEPER_NODE_ARR
 
 
 #------------------------------
@@ -25,6 +27,24 @@ function fsdeploy_install()
 }
 
 #------------------------------
+# fsdeploy_refresh_storageresource_cfg
+# description:  刷新zookeeper storage 节点配置
+# params HOSTIP - ip address 
+# return success 0, fail 1
+#------------------------------
+function fsdeploy_refresh_storageresource_cfg()
+{
+    HOSTIP=$1 
+    initenv ${HOSTIP}
+    ZOOKEEPER_STORAGERESOURCE_CONFIG_CONTENT=`cat ./${UDS_ZOOKEEPER_STORAGE_CONFIG}`
+    echo ${ZOOKEEPER_STORAGERESOURCE_CONFIG_CONTENT};
+
+    cd ${DEPLOY_FILE} && \
+        java -jar uds-deploy-3.0.0-SNAPSHOT.jar ${ZOOKEEPER_STORAGERESOURCE_CONFIG_CONTENT}
+    cd ../../../
+}
+
+#------------------------------
 # fsdeploy_refresh_zookeeper_cfg
 # description:  刷新zookeeper 配置
 # return success 0, fail 1
@@ -37,7 +57,7 @@ function fsdeploy_refresh_zookeeper_cfg()
     echo ${PWD};
 
     cd ${DEPLOY_FILE} && \
-        java -jar uds-deploy-3.0.0-SNAPSHOT.jar ${ZOOKEEPER_CONFIG_CONTENT}
+        echo "java -jar uds-deploy-3.0.0-SNAPSHOT.jar ${ZOOKEEPER_CONFIG_CONTENT}"
     cd ../../../
     sleep 2s;
 
@@ -79,6 +99,25 @@ function fsdeploy_refresh_mongodb_cfg()
     sleep 2s;
 }
 
+
+#------------------------------
+# fsdeploy_storageresource_log
+# description:  调用ssh命令登陆指定服务器调用fsdeploy_storageresource_log收集日志
+# return success 0, fail 1
+#------------------------------
+function fsdeploy_storageresource_log()
+{
+    HOSTIP=$1
+    echo "${HOSTIP} collect deploy stroageresource log";
+    echo "scp ${HOSTIP}:${UDSPACKAGE_PATH}/log/${DEPLOY_LOG_ZOOKEEPER_STORAGE_FILE} ./log/";
+    scp ${HOSTIP}:${UDSPACKAGE_PATH}/log/${DEPLOY_LOG_ZOOKEEPER_STORAGE_FILE} ./log/
+    if [ $? -eq 0 ] 
+    then 
+        cfont -green "collect deploy zookeeper storageresource log success!\n" -reset ;
+    else 
+        cfont -red "collecg deploy zookeeper storageresource log fail!\n" -reset;
+    fi
+}
 
 #------------------------------
 # fsdeploy_zookeeper_cluster_log
@@ -169,6 +208,23 @@ function dofsdeploy_refresh_zookeeper_cluster_cfg()
     #sleep 2s;
 }
 
+
+
+#------------------------------
+# dofsdeploy_refresh_storageresource_cfg
+# description:  调用ssh命令登陆指定服务器调用fsdeploy_refresh_storageresource_cfg刷新配置
+# return success 0, fail 1
+#------------------------------
+function dofsdeploy_refresh_storageresource_cfg()
+{
+    ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
+        "cd ${UDSPACKAGE_PATH}; \
+        source /etc/profile; \
+        nohup sh fsdeploy_install.sh fsdeploy_refresh_storageresource_cfg ${CONTENT_SERVER}  \
+        > log/${DEPLOY_LOG_ZOOKEEPER_STORAGE_FILE} 2>&1 &"
+    #sleep 2s;
+}
+
 #------------------------------
 # dofsdeploy_refresh_zookeeper_cfg
 # description:  调用ssh命令登陆指定服务器调用fsdeploy_refresh_zookeeper_cfg刷新配置
@@ -205,6 +261,22 @@ function dofsdeploy_refresh_mongodb_cfg()
 }
 
 
+#------------------------------
+# dofsdeploy_storageresource_log()
+# description:  使用ssh 命令登陆到指定服务器收集log
+# return success 0, fail 1
+#------------------------------
+function dofsdeploy_storageresource_log()
+{
+    echo "dofsdeploy_storageresource_log log";
+    
+    ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
+        "cd ${UDSPACKAGE_PATH}; \
+        source /etc/profile; \
+        sh fsdeploy_install.sh fsdeploy_storageresource_log ${CONTENT_SERVER}  
+       " 
+
+}
 
 
 
@@ -318,4 +390,19 @@ then
     HOSTIP=$2
     echo "fsdeploy_install";
     fsdeploy_install ${HOSTIP}
+fi
+
+if [ "$1" = fsdeploy_refresh_storageresource_cfg ]
+then 
+    echo "paraaa";
+    HOSTIP=$2
+    echo "fsdeploy_refresh_storageresource_cfg "
+    fsdeploy_refresh_storageresource_cfg  ${HOSTIP}
+fi
+
+if [ "$1" = fsdeploy_storageresource_log ]
+then 
+    HOSTIP=$2
+    echo "fsdeploy_storageresource_log "
+    fsdeploy_storageresource_log ${HOSTIP}
 fi
