@@ -58,7 +58,8 @@ function deal_mongodb_config()
         mongodbn=${MONGODB_DBNAME} \
         mongocol=${MONGODB_COL} \
         username=${MONGODB_ADDUSERNAME} \
-        password=${MONGODB_ADDPASSWORD} buckets=uds" > ${UDS_MONGODB_CONFIG}
+        password=${MONGODB_ADDPASSWORD} \
+        buckets=${MONGODB_BUCKETS}" > ${UDS_MONGODB_CONFIG}
 
 }
 
