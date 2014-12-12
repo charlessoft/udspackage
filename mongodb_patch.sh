@@ -26,6 +26,14 @@ function deal_mongodb_patch()
             sed -e 's#TEMP_PIDFILEPATH#'${MONGODB_PIDFILEPATH}'#g' > mongodb_$i.conf
     done
 
+    num=${#MONGODB_ARR[@]} 
+    if [ ${num} -eq 1 ]
+    then
+        echo ${PWD};
+        sed -i 's/replSet=udsfs/#replSet=udsfs/g' mongodb_${MONGODB_MASTER}.conf
+    fi
+
+
 
 }
 
@@ -36,7 +44,8 @@ function deal_mongodb_db_auth_js_patch()
     rm -fr ./${MONGODB_DB_AUTH_JS}
     echo "var db = connect('${MONGODB_MASTER}:${MONGODB_PORT}/admin');" >> ${MONGODB_DB_AUTH_JS};
     echo "db.createUser({user:\"${MONGODB_SUPPER_USER}\", pwd:\"${MONGODB_SUPPER_PASSWORD}\", roles:[\"root\"]})" >> ${MONGODB_DB_AUTH_JS}
-    echo "db.createUser({user:\"${MONGODB_DBUSER}\", pwd:\"${MONGODB_DBPASSWORD}\", roles:[{ role: \"readWrite\", db: \"${MONGODB_DBNAME}\" }]})" >> ${MONGODB_DB_AUTH_JS}
+    echo "var udsdb = connect('${MONGODB_MASTER}:${MONGODB_PORT}/uds_fs');" >> ${MONGODB_DB_AUTH_JS};
+    echo "udsdb.createUser({user:\"${MONGODB_DBUSER}\", pwd:\"${MONGODB_DBPASSWORD}\", roles:[{ role: \"readWrite\", db: \"${MONGODB_DBNAME}\" }]})" >> ${MONGODB_DB_AUTH_JS}
 }
 
 
