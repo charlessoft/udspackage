@@ -10,9 +10,9 @@
 function deal_zookeeper_config()
 {
     echo "generate zookeeper config...";
-    ZOOKEEPER_HOSTIP=`echo ${ZOOKEEPER_NODE_ARR} | awk -F= '{print $2}' | \
-        awk -F: '{print $1}'`
-    echo "zookeeper connect=${ZOOKEEPER_HOSTIP}:${ZOOKEEPER_PORT} \
+    #ZOOKEEPER_HOSTIP=`echo ${ZOOKEEPER_NODE_ARR} | awk -F= '{print $2}' | \
+        #awk -F: '{print $1}'`
+    echo "zookeeper connect=${ZOOKEEPER_FIRST_NODE_HOSTIP}:${ZOOKEEPER_PORT} \
         user=${ZOOKEEPER_USER} \
         password=${ZOOKEEPER_PASSWORD} \
         ${ZOOKEEPER_CONFIG_NAME}=${UDSPACKAGE_PATH}/configuration.json"  > ${UDS_ZOOKEEPER_CONFIG}
@@ -28,9 +28,9 @@ function deal_zookeeper_storageresource_confg()
 {
     #生成udsstorage
     echo "generage zookeeper storage resource config...";
-    ZOOKEEPER_HOSTIP=`echo ${ZOOKEEPER_NODE_ARR} | awk -F= '{print $2}' | \
-        awk -F: '{print $1}'`
-    echo "zookeeper connect=${ZOOKEEPER_HOSTIP}:${ZOOKEEPER_PORT} \
+    #ZOOKEEPER_HOSTIP=`echo ${ZOOKEEPER_NODE_ARR} | awk -F= '{print $2}' | \
+        #awk -F: '{print $1}'`
+    echo "zookeeper connect=${ZOOKEEPER_FIRST_NODE_HOSTIP}:${ZOOKEEPER_PORT} \
         user=${ZOOKEEPER_USER} \
         password=${ZOOKEEPER_PASSWORD} \
         ${ZOOKEEPER_STORAGERESOURCE_NAME}=${UDSPACKAGE_PATH}/storageresource.json"  > ${UDS_ZOOKEEPER_STORAGE_CONFIG}
@@ -47,9 +47,9 @@ function deal_zookeeper_cluster_config()
 {
 
     echo "generate zookeeper cluster config...";
-    ZOOKEEPER_HOSTIP=`echo ${ZOOKEEPER_NODE_ARR} | awk -F= '{print $2}' | \
-        awk -F: '{print $1}'`
-    echo "zookeeper connect=${ZOOKEEPER_HOSTIP}:${ZOOKEEPER_PORT} \
+    #ZOOKEEPER_HOSTIP=`echo ${ZOOKEEPER_NODE_ARR} | awk -F= '{print $2}' | \
+        #awk -F: '{print $1}'`
+    echo "zookeeper connect=${ZOOKEEPER_FIRST_NODE_HOSTIP}:${ZOOKEEPER_PORT} \
         user=${ZOOKEEPER_USER} \
         password=${ZOOKEEPER_PASSWORD} \
         ${ZOOKEEPER_CLUSTER_NAME}=${UDSPACKAGE_PATH}/cluster"  > ${UDS_ZOOKEEPER_CLUSTER_CONFIG}

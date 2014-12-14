@@ -56,6 +56,10 @@ META_SERVER_PARAMS="-Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSi
 NAME_SERVER_PARAMS="-Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M"
 CONTENT_SERVER_PARAMS="-Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M"
 
+#zookeeper 第一个节点
+    ZOOKEEPER_FIRST_NODE_HOSTIP=`echo ${ZOOKEEPER_NODE_ARR[0]} | awk -F= '{print $2}' | \
+        awk -F: '{print $1}'`
+
 function initenv()
 {
     HOSTIP=$1

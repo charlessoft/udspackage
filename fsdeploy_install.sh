@@ -187,10 +187,10 @@ else
 function dofsdeploy_install()
 {
 
-    ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
+    ssh -p "${SSH_PORT}" "${ZOOKEEPER_FIRST_NODE_HOSTIP}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        sh fsdeploy_install.sh fsdeploy_install ${CONTENT_SERVER}"
+        sh fsdeploy_install.sh fsdeploy_install ${ZOOKEEPER_FIRST_NODE_HOSTIP}"
 }
 
 #------------------------------
@@ -200,10 +200,10 @@ function dofsdeploy_install()
 #------------------------------
 function dofsdeploy_refresh_zookeeper_cluster_cfg()
 {
-    ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
+    ssh -p "${SSH_PORT}" "${ZOOKEEPER_FIRST_NODE_HOSTIP}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        nohup sh fsdeploy_install.sh fsdeploy_refresh_zookeeper_cluster_cfg ${CONTENT_SERVER}  \
+        nohup sh fsdeploy_install.sh fsdeploy_refresh_zookeeper_cluster_cfg ${ZOOKEEPER_FIRST_NODE_HOSTIP}  \
         > log/${DEPLOY_LOG_ZOOKEEPER_CLUSTER_FILE} 2>&1 &"
     #sleep 2s;
 }
@@ -217,10 +217,10 @@ function dofsdeploy_refresh_zookeeper_cluster_cfg()
 #------------------------------
 function dofsdeploy_refresh_storageresource_cfg()
 {
-    ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
+    ssh -p "${SSH_PORT}" "${ZOOKEEPER_FIRST_NODE_HOSTIP}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        nohup sh fsdeploy_install.sh fsdeploy_refresh_storageresource_cfg ${CONTENT_SERVER}  \
+        nohup sh fsdeploy_install.sh fsdeploy_refresh_storageresource_cfg ${ZOOKEEPER_FIRST_NODE_HOSTIP}  \
         > log/${DEPLOY_LOG_ZOOKEEPER_STORAGE_FILE} 2>&1 &"
     #sleep 2s;
 }
@@ -234,10 +234,10 @@ function dofsdeploy_refresh_zookeeper_cfg()
 {
     echo "dofsdeply_refresh zookeeper cfg";
     echo ${DEPLOY_LOG_ZOOKEEPER_FILE};
-    ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
+    ssh -p "${SSH_PORT}" "${ZOOKEEPER_FIRST_NODE_HOSTIP}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        nohup sh fsdeploy_install.sh fsdeploy_refresh_zookeeper_cfg ${CONTENT_SERVER}  \
+        nohup sh fsdeploy_install.sh fsdeploy_refresh_zookeeper_cfg ${ZOOKEEPER_FIRST_NODE_HOSTIP}  \
         > log/${DEPLOY_LOG_ZOOKEEPER_FILE} 2>&1 &"
     #sleep 2s;
 }
@@ -250,10 +250,10 @@ function dofsdeploy_refresh_zookeeper_cfg()
 #------------------------------
 function dofsdeploy_refresh_mongodb_cfg()
 {
-    ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
+    ssh -p "${SSH_PORT}" "${ZOOKEEPER_FIRST_NODE_HOSTIP}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        nohup sh fsdeploy_install.sh fsdeploy_refresh_mongodb_cfg ${CONTENT_SERVER}  \
+        nohup sh fsdeploy_install.sh fsdeploy_refresh_mongodb_cfg ${ZOOKEEPER_FIRST_NODE_HOSTIP}  \
         > log/${DEPLOY_LOG_MONGODB_FILE} 2>&1 &"
     sleep 2s;
 
@@ -270,10 +270,10 @@ function dofsdeploy_storageresource_log()
 {
     echo "dofsdeploy_storageresource_log log";
     
-    ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
+    ssh -p "${SSH_PORT}" "${ZOOKEEPER_FIRST_NODE_HOSTIP}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        sh fsdeploy_install.sh fsdeploy_storageresource_log ${CONTENT_SERVER}  
+        sh fsdeploy_install.sh fsdeploy_storageresource_log ${ZOOKEEPER_FIRST_NODE_HOSTIP}  
        " 
 
 }
@@ -289,10 +289,10 @@ function dofsdeploy_zookeeper_log()
 {
     echo "dodeploy_zookeeper_collect log";
     
-    ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
+    ssh -p "${SSH_PORT}" "${ZOOKEEPER_FIRST_NODE_HOSTIP}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        sh fsdeploy_install.sh fsdeploy_zookeeper_log ${CONTENT_SERVER}  
+        sh fsdeploy_install.sh fsdeploy_zookeeper_log ${ZOOKEEPER_FIRST_NODE_HOSTIP}  
        " 
 
 }
@@ -306,10 +306,10 @@ function dofsdeploy_zookeeper_cluster_log()
 {
     echo "dofsdeploy_zookeeper_cluster_log log";
     
-    ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
+    ssh -p "${SSH_PORT}" "${ZOOKEEPER_FIRST_NODE_HOSTIP}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        sh fsdeploy_install.sh fsdeploy_zookeeper_cluster_log ${CONTENT_SERVER}  
+        sh fsdeploy_install.sh fsdeploy_zookeeper_cluster_log ${ZOOKEEPER_FIRST_NODE_HOSTIP}  
        " 
 
 }
@@ -324,10 +324,10 @@ function dofsdeploy_mongodb_log()
 {
     echo "dodeploy_mongodb_collect log";
     
-    ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
+    ssh -p "${SSH_PORT}" "${ZOOKEEPER_FIRST_NODE_HOSTIP}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        sh fsdeploy_install.sh fsdeploy_mongodb_log ${CONTENT_SERVER}
+        sh fsdeploy_install.sh fsdeploy_mongodb_log ${ZOOKEEPER_FIRST_NODE_HOSTIP}
     "       
     sleep 2s;
 
