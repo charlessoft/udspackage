@@ -12,7 +12,7 @@
             "mongodb_servers": {
                 "caption": "mongodb地址",
                 "value": "MONGODB_HOST"
-            }
+            },
             "dbname": {
                 "caption": "mongodb数据库名",
                 "value": "MONGODB_DBNAME"

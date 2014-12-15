@@ -30,6 +30,7 @@ UDS_ZOOKEEPER_STORAGE_CONFIG=udsstorageresource.cfg
 UDS_MONGODB_CONFIG=udsmongodb.cfg
 CONFIGURATION=configuration.json
 DEPLOY_FILE=fs-deploy
+DEPLOY_FILE_NAME=fs-deploy-1.0-SNAPSHOT.jar
 
 
 CONTENT_FILE=fs-contentserver
@@ -66,8 +67,10 @@ NAME_SERVER_PARAMS="-Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSi
 CONTENT_SERVER_PARAMS="-Xms2048M -Xmx2048M -Xss512k -XX:PermSize=256M -XX:MaxPermSize=512M"
 
 #zookeeper 第一个节点
-    ZOOKEEPER_FIRST_NODE_HOSTIP=`echo ${ZOOKEEPER_NODE_ARR[0]} | awk -F= '{print $2}' | \
-        awk -F: '{print $1}'`
+ZOOKEEPER_FIRST_NODE_HOSTIP=`echo ${ZOOKEEPER_NODE_ARR[0]} | awk -F= '{print $2}' | \
+    awk -F: '{print $1}'`
+
+CONTENT_FIRST_HOSTIP=${CONTENT_SERVER[0]}
 
 function initenv()
 {
@@ -119,7 +122,7 @@ function setjdkenv()
 function inithostarray()
 {
     cat /dev/null > ${HOSTARRAY_FILE};
-    echo "${CONTENT_SERVER}" >> ${HOSTARRAY_FILE};
+    echo "${CONTENT_SERVER}" | sed 's/\ /\n/g' >> ${HOSTARRAY_FILE};
     echo "${NAME_SERVER}" >> ${HOSTARRAY_FILE};
     echo "${RIAK_RINK[*]}"  | sed 's/\ /\n/g' >> ${HOSTARRAY_FILE}
     

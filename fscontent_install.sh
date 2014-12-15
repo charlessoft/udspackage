@@ -134,17 +134,29 @@ function fscontent_status()
 #------------------------------
 function fscontent_log()
 {
-   echo "${CONTENT_SERVER} collect log";
-   echo "scp ${CONTENT_SERVER}:${UDSPACKAGE_PATH}/bin/${CONTENT_FILE}/${CONTENT_LOG_FILE} ./log/";
-   scp ${CONTENT_SERVER}:${UDSPACKAGE_PATH}/bin/${CONTENT_FILE}/${CONTENT_LOG_FILE} ./log/;
+    HOSTIP=$1
+    echo "${HOSTIP} collect log";
+    echo "scp ${HOSTIP}:${UDSPACKAGE_PATH}/${CONTENT_FILE}/${CONTENT_LOG_FILE} ./log/${HOSTIP}_${CONTENT_LOG_FILE}";
+    scp ${HOSTIP}:${UDSPACKAGE_PATH}/${CONTENT_FILE}/${CONTENT_LOG_FILE} ./log/${HOSTIP}_${CONTENT_LOG_FILE};
 
-   if [ $? -eq 0 ] 
-   then 
-       cfont -green "collect fscontent log success!\n" -reset ;
-   else 
-       cfont -red "collecg fscontent log fail!\n" -reset;
-   fi
+    if [ $? -eq 0 ] 
+    then 
+        cfont -green "collect fscontent log success!\n" -reset ;
+    else 
+        cfont -red "collecg fscontent log fail!\n" -reset;
+    fi
 
+}
+
+function dofscontent_log()
+{
+    for i in ${CONTENT_SERVER[@]}
+    do 
+        ssh -p "${SSH_PORT}" "${i}" \
+            "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh fscontent_install.sh fscontent_log $i"
+    done
 }
 
 
@@ -157,10 +169,13 @@ function fscontent_log()
 function dofscontent_install()
 {
     echo "dofscontent_install"
-    ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
-        "cd ${UDSPACKAGE_PATH}; \
-        source /etc/profile; \
-        sh fscontent_install.sh fscontent_install ${CONTENT_SERVER}"
+    for i in ${CONTENT_SERVER[@]}
+    do 
+        ssh -p "${SSH_PORT}" "${i}" \
+            "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh fscontent_install.sh fscontent_install ${i}"
+    done 
     
 }
 
@@ -172,10 +187,13 @@ function dofscontent_install()
 function dofscontent_start()
 {
     echo "dofscontent_start";
-    ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
-        "cd ${UDSPACKAGE_PATH}; \
-        source /etc/profile; \
-        sh fscontent_install.sh fscontent_start ${CONTENT_SERVER}"
+    for i in ${CONTENT_SERVER[@]}
+    do 
+        ssh -p "${SSH_PORT}" "${i}" \
+            "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh fscontent_install.sh fscontent_start ${i}"
+    done
 
 }
 
@@ -188,10 +206,13 @@ function dofscontent_start()
 function dofscontent_stop()
 {
     echo "dofscontent_stop";
-    ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
-        "cd ${UDSPACKAGE_PATH}; \
-        source /etc/profile; \
-        sh fscontent_install.sh fscontent_stop ${CONTENT_SERVER};"
+    for i in ${CONTENT_SERVER[@]}
+    do 
+        ssh -p "${SSH_PORT}" "${i}" \
+            "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh fscontent_install.sh fscontent_stop ${i};"
+    done
 }
 
 
@@ -206,10 +227,13 @@ function dofscontent_status()
 {
     echo "dofscontent_status";
 
-    ssh -p "${SSH_PORT}" "${CONTENT_SERVER}" \
-        "cd ${UDSPACKAGE_PATH}; \
-        source /etc/profile; \
-        sh fscontent_install.sh fscontent_status ${CONTENT_SERVER};"
+    for i in ${CONTENT_SERVER[@]}
+    do 
+        ssh -p "${SSH_PORT}" "${i}" \
+            "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh fscontent_install.sh fscontent_status ${i};"
+    done
 
 }
 
@@ -256,3 +280,9 @@ then
 fi
 
 
+if [ "$1" = fscontent_log ]
+then 
+    HOSTIP=$2;
+    echo "fscontent_log ...";
+    fscontent_log ${HOSTIP};
+fi

@@ -1,7 +1,7 @@
 #!/bin/bash 
 . ./config
 . ./env.sh
-
+. ./config_patch.sh
 export DEPLOY_FILE=bin/${DEPLOY_FILE}
 #todoooooo需要连接到zookeepr上
 #ZOOKEEPER_NODE_ARR
@@ -16,7 +16,7 @@ export DEPLOY_FILE=bin/${DEPLOY_FILE}
 function fsdeploy_install()
 {
     HOSTIP=$1
-    unzip -o ${DEPLOY_FILE}.zip  -d ./bin/${DEPLOY_FILE} >/dev/null 2>&1;
+    unzip -o ${DEPLOY_FILE}.zip  -d ${DEPLOY_FILE} >/dev/null 2>&1;
     if [ $? -eq 0 ]
     then 
         cfont -green "deploy install success!\n" -reset ; 
@@ -34,13 +34,23 @@ function fsdeploy_install()
 #------------------------------
 function fsdeploy_refresh_storageresource_cfg()
 {
-    HOSTIP=$1 
+    if [ $# -eq 1 ]
+    then 
+        HOSTIP=$1 
+    else 
+        #跳过deal_zookeeper_storageresource_confg 
+        shift 
+    fi
+    #sh config_patch.sh deal_zookeeper_storageresource_confg "$@"
+    deal_zookeeper_storageresource_confg "$@"
+
     initenv ${HOSTIP}
     ZOOKEEPER_STORAGERESOURCE_CONFIG_CONTENT=`cat ./${UDS_ZOOKEEPER_STORAGE_CONFIG}`
     echo ${ZOOKEEPER_STORAGERESOURCE_CONFIG_CONTENT};
 
     cd ${DEPLOY_FILE} && \
-        java -jar uds-deploy-3.0.0-SNAPSHOT.jar ${ZOOKEEPER_STORAGERESOURCE_CONFIG_CONTENT}
+        java -jar ${DEPLOY_FILE_NAME}  \
+        ${ZOOKEEPER_STORAGERESOURCE_CONFIG_CONTENT}
     cd ../../../
 }
 
@@ -53,11 +63,10 @@ function fsdeploy_refresh_zookeeper_cfg()
 {
     initenv
     ZOOKEEPER_CONFIG_CONTENT=`cat ./${UDS_ZOOKEEPER_CONFIG}`
-    echo ${ZOOKEEPER_CONFIG_CONTENT}
-    echo ${PWD};
 
     cd ${DEPLOY_FILE} && \
-        echo "java -jar uds-deploy-3.0.0-SNAPSHOT.jar ${ZOOKEEPER_CONFIG_CONTENT}"
+        echo ${PWD}; \
+        java -jar ${DEPLOY_FILE_NAME} ${ZOOKEEPER_CONFIG_CONTENT}
     cd ../../../
     sleep 2s;
 
@@ -76,7 +85,7 @@ function fsdeploy_refresh_zookeeper_cluster_cfg()
     echo ${ZOOKEEPER_CONFIG_CLUSTER_CONTENT}
 
     cd ${DEPLOY_FILE} && \
-        java -jar uds-deploy-3.0.0-SNAPSHOT.jar ${ZOOKEEPER_CONFIG_CLUSTER_CONTENT}
+        java -jar ${DEPLOY_FILE_NAME}  ${ZOOKEEPER_CONFIG_CLUSTER_CONTENT}
     cd ../../../
     sleep 2s;
 
@@ -90,11 +99,21 @@ function fsdeploy_refresh_zookeeper_cluster_cfg()
 #------------------------------
 function fsdeploy_refresh_mongodb_cfg()
 {
-    initenv
+
+    if [ $# -eq 1 ]
+    then 
+        HOSTIP=$1 
+    else 
+        #跳过deal_zookeeper_storageresource_confg 
+        shift 
+    fi
+    sh config_patch.sh deal_mongodb_config "$@"
+
+    initenv ${HOSTIP}
     MONGODB_CONFIG_CONTENT=`cat ./${UDS_MONGODB_CONFIG}`
     echo ${MONGODB_CONFIG_CONTENT}
     cd ${DEPLOY_FILE} && \
-        java -jar uds-deploy-3.0.0-SNAPSHOT.jar  ${MONGODB_CONFIG_CONTENT}
+        java -jar ${DEPLOY_FILE_NAME}  ${MONGODB_CONFIG_CONTENT}
     cd ../../../ 
     sleep 2s;
 }
@@ -220,7 +239,7 @@ function dofsdeploy_refresh_storageresource_cfg()
     ssh -p "${SSH_PORT}" "${ZOOKEEPER_FIRST_NODE_HOSTIP}" \
         "cd ${UDSPACKAGE_PATH}; \
         source /etc/profile; \
-        nohup sh fsdeploy_install.sh fsdeploy_refresh_storageresource_cfg ${ZOOKEEPER_FIRST_NODE_HOSTIP}  \
+        nohup sh fsdeploy_install.sh fsdeploy_refresh_storageresource_cfg ${ZOOKEEPER_FIRST_NODE_HOSTIP} "$@" \
         > log/${DEPLOY_LOG_ZOOKEEPER_STORAGE_FILE} 2>&1 &"
     #sleep 2s;
 }
@@ -334,6 +353,7 @@ function dofsdeploy_mongodb_log()
 }
 
 
+
 #-------------------------------
 #根据传递的参数执行命令
 #-------------------------------
@@ -348,7 +368,7 @@ if [ "$1" = fsdeploy_refresh_mongodb_cfg ]
 then 
     HOSTIP=$2
     echo "fsdeploy_refresh_mongodb_cfg...";
-    fsdeploy_refresh_mongodb_cfg ${HOSTIP}
+    fsdeploy_refresh_mongodb_cfg "$@"
 fi
 
 
@@ -394,10 +414,9 @@ fi
 
 if [ "$1" = fsdeploy_refresh_storageresource_cfg ]
 then 
-    echo "paraaa";
     HOSTIP=$2
     echo "fsdeploy_refresh_storageresource_cfg "
-    fsdeploy_refresh_storageresource_cfg  ${HOSTIP}
+    fsdeploy_refresh_storageresource_cfg  "$@"
 fi
 
 if [ "$1" = fsdeploy_storageresource_log ]
