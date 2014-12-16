@@ -128,8 +128,11 @@ function docheckinstalledstatus()
         ./log/${NAME_SERVER}_nameservercheck.log
 
 
-    scp ${META_SERVER}:${UDSPACKAGE_PATH}/${META_CHECK_LOG} \
-        ./log/${META_SERVER}_metaservercheck.log
+    for i in ${META_SERVER[@]}
+    do
+        scp ${i}:${UDSPACKAGE_PATH}/${META_CHECK_LOG} \
+            ./log/${i}_metaservercheck.log
+    done
 
 
     cfont -green "collect riak log...\n" -reset;

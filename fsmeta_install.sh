@@ -158,10 +158,13 @@ function dofsmeta_install()
 {
 
     echo "dofsname_install"
-    ssh -p "${SSH_PORT}" "${META_SERVER}" \
-        "cd ${UDSPACKAGE_PATH}; \
-        source /etc/profile; \
-        sh fsmeta_install.sh fsmeta_install ${META_SERVER}"
+    for i in ${META_SERVER[@]}
+    do 
+        ssh -p "${SSH_PORT}" "${i}" \
+            "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh fsmeta_install.sh fsmeta_install ${i}"
+    done
 }
 #------------------------------
 # dofsmeta_start
@@ -171,16 +174,14 @@ function dofsmeta_install()
 function dofsmeta_start()
 {
     echo "dofsmeta_start";
-    #ssh -p "${SSH_PORT}" "${META_SERVER}" \
-        #"cd ${UDSPACKAGE_PATH}; \
-        #source /etc/profile; \
-        #nohup sh fsmeta_install.sh fsmeta_start ${META_SERVER} \
-        #> log/${META_LOG_FILE} 2>&1 &"
 
-    ssh -p "${SSH_PORT}" "${META_SERVER}" \
-        "cd ${UDSPACKAGE_PATH}; \
-        source /etc/profile; \
-        sh fsmeta_install.sh fsmeta_start ${META_SERVER}"
+    for i in ${META_SERVER[@]}
+    do 
+        ssh -p "${SSH_PORT}" "${i}" \
+            "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh fsmeta_install.sh fsmeta_start ${i}"
+    done
 }
 
 
@@ -193,10 +194,13 @@ function dofsmeta_start()
 function dofsmeta_stop()
 {
     echo "dofsmeta_stop";
-    ssh -p "${SSH_PORT}" "${META_SERVER}" \
-        "cd ${UDSPACKAGE_PATH}; \
-        source /etc/profile; \
-        sh fsmeta_install.sh fsmate_stop ${META_SERVER};"
+    for i in ${META_SERVER[@]}
+    do
+        ssh -p "${SSH_PORT}" "${i}" \
+            "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh fsmeta_install.sh fsmate_stop ${i};"
+    done
 }
 
 
@@ -209,10 +213,13 @@ function dofsmeta_status()
 {
     echo "fsdometa_status";
 
-    ssh -p "${SSH_PORT}" "${META_SERVER}" \
-        "cd ${UDSPACKAGE_PATH}; \
-        source /etc/profile; \
-        sh fsmeta_install.sh fsmeta_status ${META_SERVER};"
+    for i in ${META_SERVER[@]}
+    do 
+        ssh -p "${SSH_PORT}" "${i}" \
+            "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh fsmeta_install.sh fsmeta_status ${i};"
+    done
 
 }
 

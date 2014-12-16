@@ -115,7 +115,8 @@ function deal_configuration()
     echo "generate configration...";
     RIAK_RINK_LIST=`echo ${RIAK_RINK[@]}`;
     CONTENT_SERVER_LIST=`echo ${CONTENT_SERVER[@]} | sed -e 's/\ /,/g'`
-    sed -e 's/META_SERVER/'${META_SERVER},10.211.55.4'/g' ./conf/configuration.json | \
+    META_SERVER_LIST=`echo ${META_SERVER[@]} | sed -e 's/\ /,/g'`
+    sed -e 's/META_SERVER/'${META_SERVER_LIST},10.211.55.4'/g' ./conf/configuration.json | \
         sed -e 's/MONGODB_HOST/'${MONGODB_MASTER}:${MONGODB_PORT}'/g' | \
         sed -e 's/MONGODB_PORT/'${MONGODB_PORT}'/g' | \
         sed -e 's/MONGODB_DBNAME/'${MONGODB_DBNAME}'/g' | \

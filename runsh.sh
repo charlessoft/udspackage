@@ -626,9 +626,9 @@ else \
     mongodb_admin install
     mongodb_admin stop
     mongodb_admin start auth=false
-    #mongodb_admin cluster 
-    #sleep 20s;
-    #mongodb_admin dbauth
+    mongodb_admin cluster 
+    sleep 20s;
+    mongodb_admin dbauth
     
     mongodb_admin stop 
     mongodb_admin start auth=true
