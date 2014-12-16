@@ -115,9 +115,13 @@ function docheckinstalledstatus()
 
     #mongodb 是检测端口,不需要重新检测
     #riak 需要检测端口
+
     #有CONTENT_SERVER 就需要有找回content log 
-    scp ${CONTENT_SERVER}:${UDSPACKAGE_PATH}/${CONTENT_CHECK_LOG} \
-        ./log/${CONTENT_SERVER}_contentservercheck.log
+    for i in ${CONTENT_SERVER[*]} 
+    do 
+        scp ${i}:${UDSPACKAGE_PATH}/${CONTENT_CHECK_LOG} \
+            ./log/${i}_contentservercheck.log
+    done 
 
 
     scp ${NAME_SERVER}:${UDSPACKAGE_PATH}/${NAME_CHECK_LOG} \
@@ -167,6 +171,8 @@ function docheckinstalledstatus()
             -not -name "contentserver.log" \
             -not -name "nameserver.log" \
             -not -name "metaserver.log" \
+            -not -name "fsdeploy_zk_storageresource_log.log" \
+            -not -name "*contentserver.log" \
             -exec 'cat' {} \; > test.tmp;
     cd ../
 

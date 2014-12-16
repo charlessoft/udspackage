@@ -15,6 +15,7 @@
 . ./fsname_install.sh
 . ./user_install.sh
 . ./fsdeploy_install.sh
+. ./config_patch.sh
 
 
 
@@ -271,7 +272,7 @@ function fscontent_admin()
             ;;
         log)
             echo "content collect log...";
-            fscontent_log;
+            dofscontent_log;
             ;;
         *)
             fscontent_help;
@@ -380,7 +381,15 @@ function env_admin()
             cfont -green "init mongodb zookeeper config\n" -reset;
             mongodb_admin gencfg;
             zookeeper_admin gencfg;
-            sh config_patch.sh
+            #sh config_patch.sh
+            
+            deal_zookeeper_config "$@"
+            deal_mongodb_config "$@"
+            deal_configuration "$@"
+            deal_zookeeper_cluster_config "$@"
+
+            deal_zookeeper_storageresource_confg "$@"
+            #deal_storageresource "$@"
             riak_admin gencfg
             touch install.lock
             ;;
@@ -411,7 +420,7 @@ function fsdeploy_admin()
         refreshstorageresource)
             echo "refresh storageresource...";
             shift 
-            dofsdeploy_refresh_storageresource_cfg;
+            dofsdeploy_refresh_storageresource_cfg "$@"
             ;;
         storageresourcelog)
             echo "collect deploy zookeeper storageresource...";
@@ -615,10 +624,11 @@ else \
     #zookeeper_admin stop
 
     mongodb_admin install
+    mongodb_admin stop
     mongodb_admin start auth=false
-    mongodb_admin cluster 
-    sleep 20s;
-    mongodb_admin dbauth
+    #mongodb_admin cluster 
+    #sleep 20s;
+    #mongodb_admin dbauth
     
     mongodb_admin stop 
     mongodb_admin start auth=true
@@ -626,6 +636,7 @@ else \
     fsdeploy_admin refreshzookeeper 
     fsdeploy_admin refreshmongodb
     fsdeploy_admin refreshzookeepercluster
+    fsdeploy_admin refreshstorageresource 
 
     fscontent_admin install
     fsname_admin install 
