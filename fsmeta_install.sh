@@ -133,19 +133,30 @@ function fsmate_stop()
 #------------------------------
 function fsmeta_log()
 {
+    HOSTIP=$1
+    echo "${HOSTIP} collect log";
+    echo "scp ${HOSTIP}:${UDSPACKAGE_PATH}/${META_FILE}/${META_LOG_FILE} ./log/${HOSTIP}_${META_LOG_FILE}";
+    scp ${HOSTIP}:${UDSPACKAGE_PATH}/${META_FILE}/${META_LOG_FILE} ./log/${HOSTIP}_${META_LOG_FILE}
 
-   echo "${META_SERVER} collect log";
-   echo "scp ${META_SERVER}:${UDSPACKAGE_PATH}/bin/${META_FILE}/${META_LOG_FILE} ./log/";
-   scp ${META_SERVER}:${UDSPACKAGE_PATH}/bin/${META_FILE}/${META_LOG_FILE} ./log/
-
-   if [ $? -eq 0 ]
-   then 
-       cfont -green "collect ${META_LOG_FILE} log success!\n" -reset ;
-   else 
-       cfont -red "collecg ${META_LOG_FILE} log fail!\n" -reset;
-   fi
+    if [ $? -eq 0 ]
+    then 
+        cfont -green "collect ${META_LOG_FILE} log success!\n" -reset ;
+    else 
+        cfont -red "collecg ${META_LOG_FILE} log fail!\n" -reset;
+    fi
 }
 
+
+function dofsmeta_log()
+{
+    for i in ${META_SERVER[@]}
+    do 
+        ssh -p "${SSH_PORT}" "${i}" \
+            "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh fsmeta_install.sh fsmeta_log $i"
+    done
+}
 
 
 #------------------------------
@@ -255,3 +266,10 @@ then
     fsmeta_status ${HOSTIP}
 fi
 
+
+if [ "$1" = fsmeta_log ]
+then 
+    HOSTIP=$2
+    echo "fsmeta_log ====="
+    fsmeta_log ${HOSTIP}
+fi

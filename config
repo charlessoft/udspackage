@@ -12,8 +12,11 @@ CONTENT_SERVER=( \
     )
 META_SERVER=( \
     192.168.0.118 \
+    192.168.0.118 \
     )
-NAME_SERVER=192.168.0.118
+NAME_SERVER=( \
+    192.168.0.118 \
+    )
 
 USERNAME=weblogic
 USERPWD=abcdefg

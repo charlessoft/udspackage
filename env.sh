@@ -122,8 +122,8 @@ function setjdkenv()
 function inithostarray()
 {
     cat /dev/null > ${HOSTARRAY_FILE};
-    echo "${CONTENT_SERVER}" | sed 's/\ /\n/g' >> ${HOSTARRAY_FILE};
-    echo "${NAME_SERVER}" >> ${HOSTARRAY_FILE};
+    echo "${CONTENT_SERVER[*]}" | sed 's/\ /\n/g' >> ${HOSTARRAY_FILE};
+    echo "${NAME_SERVER[*]}" | sed 's/\ /\n/g' >> ${HOSTARRAY_FILE};
     echo "${RIAK_RINK[*]}"  | sed 's/\ /\n/g' >> ${HOSTARRAY_FILE}
     
     echo "${MONGODB_MASTER}" >> ${HOSTARRAY_FILE}

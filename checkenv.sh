@@ -124,8 +124,11 @@ function docheckinstalledstatus()
     done 
 
 
-    scp ${NAME_SERVER}:${UDSPACKAGE_PATH}/${NAME_CHECK_LOG} \
-        ./log/${NAME_SERVER}_nameservercheck.log
+    for i in ${NAME_SERVER[@]}
+    do 
+        scp ${i}:${UDSPACKAGE_PATH}/${NAME_CHECK_LOG} \
+            ./log/${i}_nameservercheck.log
+    done
 
 
     for i in ${META_SERVER[@]}

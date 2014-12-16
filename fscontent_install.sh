@@ -141,9 +141,9 @@ function fscontent_log()
 
     if [ $? -eq 0 ] 
     then 
-        cfont -green "collect fscontent log success!\n" -reset ;
+        cfont -green "collect ${HOSTIP} fscontent log success!\n" -reset ;
     else 
-        cfont -red "collecg fscontent log fail!\n" -reset;
+        cfont -red "collecg ${HOSTIP} fscontent log fail!\n" -reset;
     fi
 
 }

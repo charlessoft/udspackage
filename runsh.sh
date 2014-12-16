@@ -208,7 +208,7 @@ function fsname_admin()
             ;;
         log)
             echo "nameserver collect log...";
-            fsname_log;
+            dofsname_log;
             ;;
         install)
             echo "nameserver install...";
@@ -240,7 +240,7 @@ function fsmeta_admin()
             ;;
         log)
             echo "metaserver collect log...";
-            fsmeta_log;
+            dofsmeta_log;
             ;;
         install)
             echo "metaserver install...";

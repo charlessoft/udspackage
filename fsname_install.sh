@@ -74,8 +74,7 @@ function fsname_start()
     echo "${HOSTIP} name start";
     #java -version
     cd ${NAME_FILE} && \
-        #java -jar -server ${NAME_SERVER_PARAMS} fs-nameserver-1.0-SNAPSHOT.jar
-    sh fs-nameserver.sh
+        sh fs-nameserver.sh
     cd ../../
     sleep 5s;
 }
@@ -138,17 +137,29 @@ function fsname_status()
 #------------------------------
 function fsname_log()
 {
-    echo "${NAME_SERVER} collect log";
+    HOSTIP=$1
+    echo "${HOSTIP} collect log";
 
-    echo "scp ${NAME_SERVER}:${UDSPACKAGE_PATH}/bin/${NAME_FILE}/${NAME_LOG_FILE} ./log/";
-    scp ${NAME_SERVER}:${UDSPACKAGE_PATH}/bin/${NAME_FILE}/${NAME_LOG_FILE} ./log/
+    echo "scp ${HOSTIP}:${UDSPACKAGE_PATH}/${NAME_FILE}/${NAME_LOG_FILE} ./log/${HOSTIP}_${NAME_LOG_FILE}";
+    scp ${HOSTIP}:${UDSPACKAGE_PATH}/${NAME_FILE}/${NAME_LOG_FILE} ./log/${HOSTIP}_${NAME_LOG_FILE}
     if [ $? -eq 0 ] 
     then 
-        cfont -green "collect ${NAME_LOG_FILE} log success!\n" -reset ;
+        cfont -green "collect ${HOSTIP} fsnameserver log success!\n" -reset ;
     else 
-        cfont -red "collecg ${NAME_LOG_FILE} log fail!\n" -reset;
+        cfont -red "collecg ${HOSTIP} fsnameserver log fail!\n" -reset;
     fi
 
+}
+
+function dofsname_log()
+{
+    for i in ${NAME_SERVER[@]}
+    do 
+        ssh -p "${SSH_PORT}" "${i}" \
+            "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh fsname_install.sh fsname_log $i"
+    done
 }
 
 
@@ -162,10 +173,13 @@ function dofsname_install()
 {
 
     echo "dofsname_install"
-    ssh -p "${SSH_PORT}" "${NAME_SERVER}" \
-        "cd ${UDSPACKAGE_PATH}; \
-        source /etc/profile; \
-        sh fsname_install.sh fsname_install ${NAME_SERVER}"
+    for i in ${NAME_SERVER[@]}
+    do 
+        ssh -p "${SSH_PORT}" "${i}" \
+            "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh fsname_install.sh fsname_install ${i}"
+    done
 }
 
 #------------------------------
@@ -177,10 +191,13 @@ function dofsname_install()
 function dofsname_start()
 {
     echo "dofsname_start";
-    ssh -p "${SSH_PORT}" "${NAME_SERVER}" \
-        "cd ${UDSPACKAGE_PATH}; \
-        source /etc/profile; \
-        sh fsname_install.sh fsname_start ${NAME_SERVER}"
+    for i in ${NAME_SERVER[@]}
+    do 
+        ssh -p "${SSH_PORT}" "${i}" \
+            "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh fsname_install.sh fsname_start ${i}"
+    done
 
 }
 
@@ -194,10 +211,13 @@ function dofsname_start()
 function dofsname_stop()
 {
     echo "doname_status";
-    ssh -p "${SSH_PORT}" "${NAME_SERVER}" \
-        "cd ${UDSPACKAGE_PATH}; \
-        source /etc/profile; \
-        sh fsname_install.sh fsname_stop ${NAME_SERVER};"
+    for i in ${NAME_SERVER[@]}
+    do 
+        ssh -p "${SSH_PORT}" "${i}" \
+            "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh fsname_install.sh fsname_stop ${i};"
+    done
 }
 
 
@@ -210,10 +230,13 @@ function dofsname_status()
 {
     echo "dofsname_status";
 
-    ssh -p "${SSH_PORT}" "${NAME_SERVER}" \
-        "cd ${UDSPACKAGE_PATH}; \
-        source /etc/profile; \
-        sh fsname_install.sh fsname_status ${NAME_SERVER};"
+    for i in ${NAME_SERVER[@]}
+    do 
+        ssh -p "${SSH_PORT}" "${i}" \
+            "cd ${UDSPACKAGE_PATH}; \
+            source /etc/profile; \
+            sh fsname_install.sh fsname_status ${i};"
+    done
 
 }
 
@@ -254,3 +277,9 @@ then
 fi
 
 
+if [ "$1" = fsname_log ]
+then 
+    HOSTIP=$2
+    echo "fsname_log ===="
+    fsname_log ${HOSTIP}
+fi

@@ -116,13 +116,14 @@ function deal_configuration()
     RIAK_RINK_LIST=`echo ${RIAK_RINK[@]}`;
     CONTENT_SERVER_LIST=`echo ${CONTENT_SERVER[@]} | sed -e 's/\ /,/g'`
     META_SERVER_LIST=`echo ${META_SERVER[@]} | sed -e 's/\ /,/g'`
+    NAME_SERVER_LIST=`echo ${NAME_SERVER[@]} | sed -e 's/\ /,/g'`
     sed -e 's/META_SERVER/'${META_SERVER_LIST},10.211.55.4'/g' ./conf/configuration.json | \
         sed -e 's/MONGODB_HOST/'${MONGODB_MASTER}:${MONGODB_PORT}'/g' | \
         sed -e 's/MONGODB_PORT/'${MONGODB_PORT}'/g' | \
         sed -e 's/MONGODB_DBNAME/'${MONGODB_DBNAME}'/g' | \
         sed -e 's/MONGODB_DBUSER/'${MONGODB_DBUSER}'/g' | \
         sed -e 's/MONGODB_DBPASSWORD/'${MONGODB_DBPASSWORD}'/g' | \
-        sed -e 's/NAME_SERVER/'${NAME_SERVER},10.211.55.4'/g' | \
+        sed -e 's/NAME_SERVER/'${NAME_SERVER_LIST},10.211.55.4'/g' | \
         sed -e 's/PROTOBUF_PORT/'${RIAK_PROTOBUF_PORT}'/g' | \
         sed -e 's/CONTENT_SERVER/'${CONTENT_SERVER_LIST},10.211.55.4'/g' | \
         sed -e 's#FILE_TMP_PATH#'${FILE_TMP_PATH}'#g' | \
