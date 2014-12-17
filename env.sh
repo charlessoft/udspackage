@@ -32,7 +32,6 @@ CONFIGURATION=configuration.json
 DEPLOY_FILE=fs-deploy
 DEPLOY_FILE_NAME=fs-deploy-1.0-SNAPSHOT.jar
 
-
 CONTENT_FILE=fs-contentserver
 NAME_FILE=fs-nameserver
 META_FILE=fs-metaserver
@@ -51,6 +50,7 @@ IPTABLES_FILE=/etc/sysconfig/iptables
 
 MONGODB_DBNAME=uds_fs
 MONGODB_COL=user 
+MONGODB_KEYFILE=mongodb-keyfile
 
 
 #riak 端口

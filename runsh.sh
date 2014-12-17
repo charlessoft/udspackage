@@ -637,6 +637,7 @@ else \
     fsdeploy_admin refreshmongodb
     fsdeploy_admin refreshzookeepercluster
     fsdeploy_admin refreshstorageresource 
+    fsdeploy_admin refreshmongodb
 
     fscontent_admin install
     fsname_admin install 

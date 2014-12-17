@@ -103,6 +103,16 @@ function mongodb_install()
         cfont -green "mongodb already installed\n" -reset;
     fi
 
+    cp conf/mongodb-keyfile ${MONGODB_FILE}
+    if [ $? -eq 0 ]
+    then 
+        cfont -green "copy ${MONGODB_KEYFILE} ok\n" -reset ;
+        chmod 600 ${MONGODB_FILE}/${MONGODB_KEYFILE}
+    else 
+        cfont -red "copy ${MONGODB_KEYFILE} fail!\n" -reset;
+    fi
+    
+
 }
 
 
@@ -118,9 +128,12 @@ function mongodb_start()
     echo "${HOSTIP} start mongodb ";
     PORT=$2
     AUTHFLAG=$3 
-    if [ x"${AUTHFLAG}" = x"" ]
+    if  [ x"${AUTHFLAG}" = x"" -o x"${AUTHFLAG}" = x"false" ] 
     then 
         AUTHFLAG=false
+        sed -i 's/keyFile/#keyFile/g' mongodb_${HOSTIP}.conf
+    else
+        sed -i 's/#.*keyFile/keyFile/g' mongodb_${HOSTIP}.conf
     fi
     echo "auth=${AUTHFLAG}"
 
@@ -526,7 +539,6 @@ function domongodb_start()
         export authflag=false
         shift 
     fi
-
 
     if [ $# -ge 1 ]
     then

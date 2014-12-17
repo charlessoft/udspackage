@@ -18,15 +18,18 @@ function deal_mongodb_patch()
     MONGODB_ARR=`cat ${MONGODB_ARR_TMP}`
     
     echo ${MONGODB_ARR[@]}
+    num=0
     for i in ${MONGODB_ARR[*]} 
     do
         sed -e 's#TEMP_DBPATH#'${MONGODB_DBPATH}'#g' "conf/mongodb_bak.conf" | \
             sed -e 's#TEMP_MONGODBLOG#'${MONGODB_LOGPATH}'#g' | \
             sed -e 's/port\ =\ 27017/port\ =\ '${MONGODB_PORT}'/g' | \
+            sed -e 's#TEMP_KEYFILE#'${UDSPACKAGE_PATH}'/bin/'${MONGODB_FILE}'/'${MONGODB_KEYFILE}'#g' | \
             sed -e 's#TEMP_PIDFILEPATH#'${MONGODB_PIDFILEPATH}'#g' > mongodb_$i.conf
+        let num=${num}+1
     done
 
-    num=${#MONGODB_ARR[@]} 
+    #num=${#MONGODB_ARR[@]}  #从文件读取,无法得到数组个数,故改用let num=${num} +1
     if [ ${num} -eq 1 ]
     then
         echo ${PWD};
