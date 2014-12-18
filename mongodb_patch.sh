@@ -46,9 +46,11 @@ function deal_mongodb_db_auth_js_patch()
     MONGODB_DB_AUTH_JS=mongodb_db_auth.js
     rm -fr ./${MONGODB_DB_AUTH_JS}
     echo "var db = connect('${MONGODB_MASTER}:${MONGODB_PORT}/admin');" >> ${MONGODB_DB_AUTH_JS};
-    echo "db.createUser({user:\"${MONGODB_SUPPER_USER}\", pwd:\"${MONGODB_SUPPER_PASSWORD}\", roles:[\"root\"]})" >> ${MONGODB_DB_AUTH_JS}
+    echo "if( db.system.users.find({\"user\":\"${MONGODB_SUPPER_USER}\"}).count() <1 )" >> ${MONGODB_DB_AUTH_JS};
+    echo "    db.createUser({user:\"${MONGODB_SUPPER_USER}\", pwd:\"${MONGODB_SUPPER_PASSWORD}\", roles:[\"root\"]})" >> ${MONGODB_DB_AUTH_JS}
     echo "var udsdb = connect('${MONGODB_MASTER}:${MONGODB_PORT}/uds_fs');" >> ${MONGODB_DB_AUTH_JS};
-    echo "udsdb.createUser({user:\"${MONGODB_DBUSER}\", pwd:\"${MONGODB_DBPASSWORD}\", roles:[{ role: \"readWrite\", db: \"${MONGODB_DBNAME}\" }]})" >> ${MONGODB_DB_AUTH_JS}
+    echo "if( db.system.users.find({\"user\":\"${MONGODB_DBUSER}\"}).count() <1 )" >> ${MONGODB_DB_AUTH_JS};
+    echo "    udsdb.createUser({user:\"${MONGODB_DBUSER}\", pwd:\"${MONGODB_DBPASSWORD}\", roles:[{ role: \"readWrite\", db: \"${MONGODB_DBNAME}\" }]})" >> ${MONGODB_DB_AUTH_JS}
 }
 
 

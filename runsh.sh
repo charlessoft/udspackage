@@ -587,6 +587,7 @@ function clean()
     rm -fr configuration.json
     rm -fr install.lock
     rm -fr zookeeper.properties
+    rm -fr storageresource.json
 }
 
 function runall()

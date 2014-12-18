@@ -1,0 +1,99 @@
+#!/bin/bash
+SSH_PORT=22
+
+MONGODB_FILE=mongodb-linux-x86_64-2.6.5
+JDK_FILE=jdk1.6.0_45
+RIAK_FILE=riak-2.0.2-1.el5.x86_64.rpm
+ZOOKEEPER_FILE=zookeeper-3.4.6
+
+CONTENT_SERVER=( \
+    10.211.55.18 \
+    )
+META_SERVER=( \
+    10.211.55.21 \
+    )
+NAME_SERVER=( \
+    10.211.55.22 \
+    )
+
+USERNAME=weblogic
+USERPWD=abcdefg
+
+INSTALL_PATH=/apps
+
+checkfile=( curl \
+    vi \
+    )
+
+#----riak config-----
+RIAK_RINK=( \
+    10.211.55.18 \
+    10.211.55.21 \
+    10.211.55.22 \
+    )
+
+RIAK_PLATFORM_DATA_DIR=/var/lib/riak
+RIAK_STORAGE_BACKEND=multi
+
+#-----mongodb-----
+
+MONGODB_DBPATH=/home/${USERNAME}/mongodb/data/master  
+MONGODB_LOGPATH=/home/${USERNAME}/mongodb/log/master.log 
+MONGODB_PIDFILEPATH=/home/${USERNAME}/mongodb/master.pid
+MONGODB_PORT=27017
+
+MONGODB_MASTER=10.211.55.18
+MONGODB_SLAVE=10.211.55.21
+#如果多个mongodb 集群.ip写入到一下数组中
+MONGODB_SLAVE_ARR=( \
+    ${MONGODB_SLAVE} \
+    )
+MONGODB_ARBITER=10.211.55.22
+
+
+#JAVA
+JDK_ARR=( \
+    10.211.55.18 \
+    10.211.55.21 \
+    10.211.55.22 \
+    )
+
+
+#----zookeeper----
+ZOOKEEPER_DATADIR=/home/${USERNAME}/zookeeper/data
+ZOOKEEPER_LOGDIR=/home/${USERNAME}/zookeeper/data/log
+ZOOKEEPER_NODE_ARR=( \
+    server.1=10.211.55.18:2888:3888 \
+    server.2=10.211.55.21:2888:3888 \
+    server.3=10.211.55.22:2888:3888 \
+    )
+
+ZOOKEEPER_PORT=2181
+
+#allow port tables 
+IPTABLES_ACCESS_PORT=( \
+    8080 \
+    )
+
+
+#-----zookeeper_config-----
+ZOOKEEPER_USER=admin
+ZOOKEEPER_PASSWORD=pa44w0rd
+ZOOKEEPER_CONFIG_NAME=/udsfs/configuration
+ZOOKEEPER_CONFIG_PATH=configuration.json
+ZOOKEEPER_CLUSTER_NAME=/udsfs/cluster
+ZOOKEEPER_CLUSTER_PATH=cluster
+
+ZOOKEEPER_STORAGERESOURCE_NAME=/udsfs/storageResource/default
+ZOOKEEPER_STORAGERESOURCE_PATH=storageresource.json
+ZOOKEEPER_STORAGERESOURCE_LIMITSIZE=209715200
+#------mongodb_config-----
+MONGODB_DBUSER=uds_fs
+MONGODB_DBPASSWORD=pa44w0rd
+MONGODB_ADDUSERNAME=username_for_unittest
+MONGODB_ADDPASSWORD=pwd_for_unittest
+MONGODB_BUCKETS=bucket_for_unittest,uds_fs
+FILE_TMP_PATH=/tmp
+
+MONGODB_SUPPER_USER=admin
+MONGODB_SUPPER_PASSWORD=pa44w0rd
