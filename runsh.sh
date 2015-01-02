@@ -327,6 +327,12 @@ function riak_admin()
                 deal_riakconf $i
             done 
             ;;
+        reip)
+            echo "riak reip...";
+            shift 
+            #doriak_reip "$@";
+            riak_reip "$@";
+            ;;
         *)
             riak_help
             ;;
@@ -597,6 +603,9 @@ function runall()
           #zookeeper_admin gencfg 
           #mongodb_admin gencfg 
 
+          
+          clean
+          env_admin initcfg
           env_admin nopwd
           env_admin iptables
 

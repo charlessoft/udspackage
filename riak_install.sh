@@ -198,6 +198,39 @@ function riak_rink_status()
 
 } 
 
+function riak_reip()
+{
+    if [ $# -lt 2 ]
+    then 
+        cfont -red "riak reip need two params oldnodename newnodename\n" -reset;
+        cfont -red "eg. \n" -reset;
+        cfont -red "riak reip riak@127.0.0.1 riak@127.0.0.2\n" -reset;
+        exit 1;
+    fi
+    OLDNODENAME=$1
+    NEWNODENAME=$2
+    echo ${OLDNODENAME}
+    echo ${NEWNODENAME}
+    echo "riak reip";
+    service riak stop; 
+    
+    riak-admin reip ${OLDNODENAME} ${NEWNODENAME};
+    if [ -f ${RIAK_CONF} ]
+    then 
+        sed -i 's/nodename.*=.*/nodename = '${NEWNODENAME}'/g' ${RIAK_CONF}
+        if [ $? -eq 0 ]
+        then 
+            cfont -green "replace riak ip success!\n" -reset;
+        else 
+            cfont -red "replace riak ip fail!\n" -reset;
+        fi
+    fi
+    service riak start
+
+}
+
+
+
 
 #------------------------------
 # riak doriak_install
