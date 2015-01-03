@@ -82,7 +82,7 @@ function riak_help()
 Usage: ${SCRIPT} riak <command>
 where <command> is one of the following:  
 \
-    { install | gencfg | start | stop | status | join | commit }
+    { install | gencfg | start | stop | status | join | commit | reip }
     "
     cfont -reset
 }
@@ -596,6 +596,15 @@ function clean()
     rm -fr storageresource.json
 }
 
+#打包生成zip文件
+function buildzip()
+{
+    clean
+    sed -i 's/oplogSize.*=.*/oplogSize=10000/g' conf/mongodb_bak.conf
+    cd ../ 
+    tar cvzf udspackage.tar.gz --exclude=./udspackage/.git ./udspackage
+}
+
 function runall()
 {
     
@@ -721,6 +730,10 @@ case "$1" in
         shift 
         echo "clean all config, tmp file";
         clean 
+        ;;
+    buildzip)
+        shift
+        buildzip 
         ;;
     *)
         usage;
