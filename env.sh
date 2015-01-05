@@ -12,14 +12,14 @@ LOG=${INSTALL_PATH}/udsinstall.log
 LOG_MERGE=${INSTALL_PATH}/udsmerge.log
 
 #内部使用,不需要放在config中
-MONGODB_CHECK_LOG=log/mongodbcheck.log 
-JDK_CHECK_LOG=log/jdkcheck.log
-RIAK_CHECK_LOG=log/riakcheck.log
-ZOOKEEPER_CHECK_LOG=log/zookcheck.log 
-CONTENT_CHECK_LOG=log/contentservercheck.log
-NAME_CHECK_LOG=log/nameservercheck.log
-META_CHECK_LOG=log/metaservercheck.log
-HOSTARRAY_FILE=tmp/hostarray;
+MONGODB_CHECK_LOG=${UDSPACKAGE_PATH}/log/mongodbcheck.log 
+JDK_CHECK_LOG=${UDSPACKAGE_PATH}/log/jdkcheck.log
+RIAK_CHECK_LOG=${UDSPACKAGE_PATH}/log/riakcheck.log
+ZOOKEEPER_CHECK_LOG=${UDSPACKAGE_PATH}/log/zookcheck.log 
+CONTENT_CHECK_LOG=${UDSPACKAGE_PATH}/log/contentservercheck.log
+NAME_CHECK_LOG=${UDSPACKAGE_PATH}/log/nameservercheck.log
+META_CHECK_LOG=${UDSPACKAGE_PATH}/log/metaservercheck.log
+HOSTARRAY_FILE=${UDSPACKAGE_PATH}/tmp/hostarray;
 
 RIAK_CONF_BAK=/etc/riak/riak.conf_bak
 RIAK_CONF=/etc/riak/riak.conf

@@ -1,9 +1,20 @@
 #!/bin/bash 
 . ./config 
 . ./env.sh
-export MONGODB_FILE=bin/${MONGODB_FILE}
 export MONGODB_TMPLOG=${UDSPACKAGE_PATH}/tmp/mongodbtmp.log
 export MONGODB_CLUSTER_TMPLOG=${UDSPACKAGE_PATH}/tmp/mongodbclustertmp.log
+
+if [ x"${MONGODB_USE_EXIST}" = x"TRUE" ] 
+then 
+    if [ $MONGODB_INSTALL_PATH} = x"" ] 
+    then 
+        cfont -red "need MONGODB_INSTALL_PATH\n" -reset; 
+        exit 1;
+    fi
+    export MONGODB_FILE=${MONGODB_INSTALL_PATH}
+else 
+    export MONGODB_FILE=bin/${MONGODB_FILE}
+fi
 
 
 #------------------------------
@@ -81,37 +92,51 @@ function mongodb_init()
 #------------------------------
 function mongodb_install()
 {
-    HOSTIP=$1;
-    echo "${HOSTIP} install mongodb";
-    
-    if [ ! -d ${MONGODB_FILE} ] 
+    if [ x"${MONGODB_USE_EXIST}" = x"FALSE" ] 
     then 
-        if [ -f ${MONGODB_FILE}.zip ] 
+        HOSTIP=$1;
+        echo "${HOSTIP} install mongodb";
+
+        if [ ! -d ${MONGODB_FILE} ] 
         then 
-            #tar zxvf ${MONGODB_FILE}.gz -C ./bin 2>&1 >/dev/null; 
-            unzip -o ${MONGODB_FILE}.zip -d ./bin 2>&1 >/dev/null;
-            if [ $? -ne 0 ] 
+            if [ -f ${MONGODB_FILE}.zip ] 
             then 
-                cfont -red "mongodb unzip fail\n" -reset; 
+                #tar zxvf ${MONGODB_FILE}.gz -C ./bin 2>&1 >/dev/null; 
+                unzip -o ${MONGODB_FILE}.zip -d ./bin 2>&1 >/dev/null;
+                if [ $? -ne 0 ] 
+                then 
+                    cfont -red "mongodb unzip fail\n" -reset; 
+                else 
+                    cfont -green "mongodb unzip success!\n" -reset;
+                fi 
             else 
-                cfont -green "mongodb unzip success!\n" -reset;
-            fi 
+                cfont -red "${MONGODB_FILE}.gz No such file!\n" -reset;
+            fi
         else 
-            cfont -red "${MONGODB_FILE}.gz No such file!\n" -reset;
+            cfont -green "mongodb already installed\n" -reset;
         fi
     else 
-        cfont -green "mongodb already installed\n" -reset;
+        cfont -green "use system exist mongodb ${MONGODB_INSTALL_PATH}\n" -reset;
+        #return 0;
     fi
 
-    cp conf/mongodb-keyfile ${MONGODB_FILE}
+    #cp conf/mongodb-keyfile ${MONGODB_FILE}
+    #if [ $? -eq 0 ]
+    #then 
+        #cfont -green "copy ${MONGODB_KEYFILE} ok\n" -reset ;
+        #chmod 600 ${MONGODB_FILE}/${MONGODB_KEYFILE}
+    #else 
+        #cfont -red "copy ${MONGODB_KEYFILE} fail!\n" -reset;
+        #exit 1;
+    #fi
+    
+    chmod 600 ./conf/${MONGODB_KEYFILE}
     if [ $? -eq 0 ]
     then 
-        cfont -green "copy ${MONGODB_KEYFILE} ok\n" -reset ;
-        chmod 600 ${MONGODB_FILE}/${MONGODB_KEYFILE}
+        cfont -green "chmod ok\n" -reset;
     else 
-        cfont -red "copy ${MONGODB_KEYFILE} fail!\n" -reset;
-    fi
-    
+        cfont -red "chmod error\n" -reset;
+    fi 
 
 }
 
@@ -131,20 +156,20 @@ function mongodb_start()
     if  [ x"${AUTHFLAG}" = x"" -o x"${AUTHFLAG}" = x"false" ] 
     then 
         AUTHFLAG=false
-        sed -i 's/keyFile/#keyFile/g' mongodb_${HOSTIP}.conf
+        sed -i 's/keyFile/#keyFile/g' ${UDSPACKAGE_PATH}/mongodb_${HOSTIP}.conf
     else
-        sed -i 's/#.*keyFile/keyFile/g' mongodb_${HOSTIP}.conf
+        sed -i 's/#.*keyFile/keyFile/g' ${UDSPACKAGE_PATH}/mongodb_${HOSTIP}.conf
     fi
     echo "auth=${AUTHFLAG}"
 
-    sed -i 's/auth=.*/auth='${AUTHFLAG}'/g' mongodb_${HOSTIP}.conf
+    sed -i 's/auth=.*/auth='${AUTHFLAG}'/g' ${UDSPACKAGE_PATH}/mongodb_${HOSTIP}.conf
     mongodb_status ${HOSTIP} ${PORT}
     if [ $? -ne 0 ] 
     then 
         if [ -d ${MONGODB_FILE} ] 
         then 
             cd ${MONGODB_FILE}/bin; 
-            ./mongod -f ../../../mongodb_${HOSTIP}.conf > ${MONGODB_TMPLOG}
+            ./mongod -f ${UDSPACKAGE_PATH}/mongodb_${HOSTIP}.conf > ${MONGODB_TMPLOG}
             grep -rin "ERROR" ${MONGODB_TMPLOG} >/dev/null 2>&1;
             if [ $? -eq 0 ] 
             then 
@@ -289,7 +314,7 @@ function mongodb_db_auth()
     if [ -s ${MONGODB_FILE} ]
     then 
         cd ${MONGODB_FILE}/bin;
-        ./mongo  ${MONGODB_MASTER}:${MONGODB_PORT} ../../../mongodb_db_auth.js;
+        ./mongo  ${MONGODB_MASTER}:${MONGODB_PORT} ${UDSPACKAGE_PATH}/mongodb_db_auth.js;
     else 
         cfont -red "mongodb ${MONGODB_FILE} No such file!\n" -reset;
         exit 1;

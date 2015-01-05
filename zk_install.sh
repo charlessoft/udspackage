@@ -1,8 +1,18 @@
 #!/bin/bash 
 . ./config 
 . ./env.sh
-export ZOOKEEPER_FILE=bin/${ZOOKEEPER_FILE}
 export ZOOKEEPER_TMPLOG=${UDSPACKAGE_PATH}/tmp/zktmp.log
+if [ x"${ZOOKEEPER_USE_EXIST}" = x"TRUE" ] 
+then 
+    if [ ${ZOOKEEPER_INSTALL_PATH} = x"" ] 
+    then 
+        cfont -red "need ZOOKEEPER_INSTALL_PATH\n" -reset; 
+        exit 1;
+    fi
+    export ZOOKEEPER_FILE=${ZOOKEEPER_INSTALL_PATH}
+else 
+    export ZOOKEEPER_FILE=bin/${ZOOKEEPER_FILE}
+fi
 
 #------------------------------
 # zk_init
@@ -46,6 +56,11 @@ function zk_init()
 function zk_install()
 {
 
+    if [ x"${ZOOKEEPER_USE_EXIST}" = x"TRUE" ] 
+    then 
+        cfont -green "use system exist zookeeper ${ZOOKEEPER_INSTALL_PATH}\n" -reset;
+        return 0;
+    fi
     HOSTIP=$1
     MYID=$2
     echo "${HOSTIP}:${MYID} zk_install...";
@@ -103,10 +118,10 @@ function zk_start()
     fi
 
     cd ${ZOOKEEPER_FILE}/bin && \
-        sh ./zkServer.sh start > tmp.log
+        sh ./zkServer.sh start > /tmp/tmp.log
         sleep 3s;
         cfont -green 
-        echo `cat tmp.log`;
+        echo `cat /tmp/tmp.log`;
         cfont -reset
     cd ../../
 

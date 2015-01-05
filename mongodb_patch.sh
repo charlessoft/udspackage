@@ -24,7 +24,7 @@ function deal_mongodb_patch()
         sed -e 's#TEMP_DBPATH#'${MONGODB_DBPATH}'#g' "conf/mongodb_bak.conf" | \
             sed -e 's#TEMP_MONGODBLOG#'${MONGODB_LOGPATH}'#g' | \
             sed -e 's/port\ =\ 27017/port\ =\ '${MONGODB_PORT}'/g' | \
-            sed -e 's#TEMP_KEYFILE#'${UDSPACKAGE_PATH}'/bin/'${MONGODB_FILE}'/'${MONGODB_KEYFILE}'#g' | \
+            sed -e 's#TEMP_KEYFILE#'${UDSPACKAGE_PATH}'/conf/'${MONGODB_KEYFILE}'#g' | \
             sed -e 's#TEMP_PIDFILEPATH#'${MONGODB_PIDFILEPATH}'#g' > mongodb_$i.conf
         let num=${num}+1
     done
