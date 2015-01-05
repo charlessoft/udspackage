@@ -16,6 +16,7 @@
 . ./user_install.sh
 . ./fsdeploy_install.sh
 . ./config_patch.sh
+. ./memcached_install.sh
 
 
 
@@ -33,7 +34,7 @@ function usage()
     echo "\
 Usage: ${SCRIPT} <command>
 where <command> is one of the following:
-        { env | riak | mongodb | zookeeper | jdk | fscontent | fsname | fsmeta | fsdeploy | runall | clean }
+        { env | riak | mongodb | zookeeper | jdk | fscontent | fsname | fsmeta | fsdeploy | runall | clean | memcached }
     "   
     cfont -reset
 
@@ -186,6 +187,19 @@ where <command> is one of the following:
     { install | start | stop | status | log }
     "
     cfont -reset
+
+}
+
+function memcached_help()
+{
+    cfont -red
+    echo "\
+Usage: ${SCRIPT} memcached <command>
+where <command> is one of the following:
+\
+    { install }
+    "
+    cfont -reset;
 
 }
 
@@ -581,6 +595,20 @@ function mongodb_admin()
 
 }
 
+function memcached_admin()
+{
+    case "$1" in 
+        install)
+            echo "memcached install"
+            shift
+            domemcached_install "$@"
+            ;;
+        *)
+            memcached_help;
+            ;;
+    esac
+}
+
 
 function clean()
 {
@@ -734,6 +762,10 @@ case "$1" in
     buildzip)
         shift
         buildzip 
+        ;;
+    memcached)
+        shift 
+        memcached_admin "$@";
         ;;
     *)
         usage;
