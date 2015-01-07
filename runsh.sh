@@ -197,7 +197,7 @@ function memcached_help()
 Usage: ${SCRIPT} memcached <command>
 where <command> is one of the following:
 \
-    { install }
+    { install | status }
     "
     cfont -reset;
 
@@ -602,6 +602,11 @@ function memcached_admin()
             echo "memcached install"
             shift
             domemcached_install "$@"
+            ;;
+        status)
+            echo "memcached status"
+            shift 
+            domemcached_status "$@"
             ;;
         *)
             memcached_help;
