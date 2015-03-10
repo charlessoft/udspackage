@@ -648,6 +648,7 @@ function runall()
           
           clean
           env_admin initcfg
+          env_admin distribute 
           env_admin nopwd
           env_admin iptables
 

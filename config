@@ -7,13 +7,13 @@ RIAK_FILE=riak-2.0.2-1.el5.x86_64.rpm
 ZOOKEEPER_FILE=zookeeper-3.4.6
 
 CONTENT_SERVER=( \
-    10.211.55.18 \
+    10.211.55.22 \
     )
 META_SERVER=( \
-    10.211.55.21 \
+    10.211.55.30 \
     )
 NAME_SERVER=( \
-    10.211.55.22 \
+    10.211.55.31 \
     )
 
 USERNAME=weblogic
@@ -27,9 +27,9 @@ checkfile=( curl \
 
 #----riak config-----
 RIAK_RINK=( \
-    10.211.55.18 \
-    10.211.55.21 \
     10.211.55.22 \
+    10.211.55.30 \
+    10.211.55.31 \
     )
 
 RIAK_PLATFORM_DATA_DIR=/var/lib/riak
@@ -41,21 +41,22 @@ MONGODB_DBPATH=/home/${USERNAME}/mongodb/data/master
 MONGODB_LOGPATH=/home/${USERNAME}/mongodb/log/master.log 
 MONGODB_PIDFILEPATH=/home/${USERNAME}/mongodb/master.pid
 MONGODB_PORT=27017
+MONGODB_USE_EXIST=FALSE
 
-MONGODB_MASTER=10.211.55.18
-MONGODB_SLAVE=10.211.55.21
+MONGODB_MASTER=10.211.55.22
+MONGODB_SLAVE=10.211.55.30
 #如果多个mongodb 集群.ip写入到一下数组中
 MONGODB_SLAVE_ARR=( \
     ${MONGODB_SLAVE} \
     )
-MONGODB_ARBITER=10.211.55.22
+MONGODB_ARBITER=10.211.55.31
 
 
 #JAVA
 JDK_ARR=( \
-    10.211.55.18 \
-    10.211.55.21 \
     10.211.55.22 \
+    10.211.55.30 \
+    10.211.55.31 \
     )
 
 
@@ -63,9 +64,9 @@ JDK_ARR=( \
 ZOOKEEPER_DATADIR=/home/${USERNAME}/zookeeper/data
 ZOOKEEPER_LOGDIR=/home/${USERNAME}/zookeeper/data/log
 ZOOKEEPER_NODE_ARR=( \
-    server.1=10.211.55.18:2888:3888 \
-    server.2=10.211.55.21:2888:3888 \
-    server.3=10.211.55.22:2888:3888 \
+    server.1=10.211.55.22:2888:3888 \
+    server.2=10.211.55.30:2888:3888 \
+    server.3=10.211.55.31:2888:3888 \
     )
 
 ZOOKEEPER_PORT=2181

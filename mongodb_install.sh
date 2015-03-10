@@ -99,6 +99,7 @@ function mongodb_install()
 
         if [ ! -d ${MONGODB_FILE} ] 
         then 
+            #cfont -red "${PWD}" -reset;
             if [ -f ${MONGODB_FILE}.zip ] 
             then 
                 #tar zxvf ${MONGODB_FILE}.gz -C ./bin 2>&1 >/dev/null; 
