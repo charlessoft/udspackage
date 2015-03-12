@@ -217,7 +217,7 @@ function doconfigsshlogin()
     then 
         cfont -green "$USER id_rsa.pub exist!\n" -reset; \
     else
-        cfont -red "id_rsa.pub No such file! please perform [ssh-kengen] command generate id_rsa.pub\n" -reset;
+        cfont -red "id_rsa.pub No such file! please perform [ssh-keygen] command generate id_rsa.pub\n" -reset;
         exit 1; 
     fi
     
